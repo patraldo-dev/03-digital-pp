@@ -41,5 +41,16 @@
   "stats_support": "Support",
   "cta_title": "Prêt à Travailler Ensemble ?",
   "cta_text": "Discutons de la manière dont nous pouvons aider à donner vie à votre vision.",
-  "btn_contact": "Contactez-nous"
+  "btn_contact": "Contactez-nous",
+  "contact_error_server": "Erreur de configuration du serveur. Veuillez réessayer plus tard.",
+  "contact_error_missing_fields": "Tous les champs sont requis",
+  "contact_error_invalid_email": "Veuillez entrer une adresse e-mail valide",
+  "contact_error_send_failed": "Échec de l'envoi du message. Veuillez réessayer plus tard.",
+  "contact_success_message": "Merci ! Votre message a bien été envoyé. Nous vous répondrons bientôt.",
+  "email_header_title": "Nouvelle Soumission de Formulaire de Contact",
+  "email_label_from": "De",
+  "email_label_subject": "Sujet",
+  "email_label_message": "Message",
+  "email_footer_text": "Ce message a été envoyé via le formulaire de contact du site web sur",
+  "email_subject_line": "Formulaire de Contact"
 }

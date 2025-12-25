@@ -41,5 +41,16 @@
   "stats_support": "Soporte",
   "cta_title": "¿Listo para Trabajar Juntos?",
   "cta_text": "Hablemos sobre cómo podemos ayudar a dar vida a tu visión.",
-  "btn_contact": "Contáctanos"
+  "btn_contact": "Contáctanos",
+  "contact_error_server": "Error de configuración del servidor. Por favor inténtelo más tarde.",
+  "contact_error_missing_fields": "Todos los campos son obligatorios",
+  "contact_error_invalid_email": "Por favor introduzca una dirección de correo válida",
+  "contact_error_send_failed": "Error al enviar el mensaje. Por favor inténtelo más tarde.",
+  "contact_success_message": "¡Gracias! Su mensaje ha sido enviado correctamente. Nos pondremos en contacto con usted pronto.",
+  "email_header_title": "Nueva Solicitud de Contacto",
+  "email_label_from": "De",
+  "email_label_subject": "Asunto",
+  "email_label_message": "Mensaje",
+  "email_footer_text": "Este mensaje fue enviado a través del formulario de contacto del sitio web en",
+  "email_subject_line": "Contacto Web"
 }

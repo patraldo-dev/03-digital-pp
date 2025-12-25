@@ -1,132 +1,126 @@
-/**
- * @typedef {Object} EmailOptions
- * @property {string} to - Recipient email address
- * @property {string} subject - Email subject line
- * @property {string} text - Plain text content
- * @property {string} [html] - HTML content (optional)
- * @property {string} [from] - Sender email address (optional)
- */
+import { json } from '@sveltejs/kit';
+import { sendEmail } from '$lib/email.js';
+import { getTranslations } from '$lib/i18n/server.js';
 
-/**
- * @typedef {Object} MailgunEnv
- * @property {string} MAILGUN_API_KEY - Mailgun API key
- * @property {string} MAILGUN_DOMAIN - Mailgun domain
- */
+export async function POST({ request, platform }) {
+    // Access environment variables from platform.env
+    const { 
+        MAILGUN_FROM_EMAIL,
+        CONTACT_EMAIL 
+    } = platform.env;
 
-/**
- * Send an email via Mailgun API
- * @param {EmailOptions} options - Email configuration
- * @param {MailgunEnv} env - Environment variables
- * @returns {Promise<boolean>} Success status
- */
-export async function sendEmail(options, env) {
-	try {
-		const formData = new FormData();
-		formData.append('from', options.from || `Your Site <noreply@${env.MAILGUN_DOMAIN}>`);
-		formData.append('to', options.to);
-		formData.append('subject', options.subject);
-		formData.append('text', options.text);
-		if (options.html) {
-			formData.append('html', options.html);
-		}
+    // CRITICAL: Validate environment variables
+    if (!MAILGUN_FROM_EMAIL || !CONTACT_EMAIL) {
+        console.error('Missing required environment variables');
+        
+        // We can't detect language here safely if vars are missing, so default to EN for error
+        return json(
+            { error: 'Server configuration error. Please try again later.' },
+            { status: 500 }
+        );
+    }
 
-		const response = await fetch(
-			`https://api.mailgun.net/v3/${env.MAILGUN_DOMAIN}/messages`,
-			{
-				method: 'POST',
-				headers: {
-					'Authorization': `Basic ${btoa(`api:${env.MAILGUN_API_KEY}`)}`
-				},
-				body: formData
-			}
-		);
+    try {
+        // 1. Load Translations
+        // This detects language from cookie or Accept-Language header
+        const i18n = await getTranslations(request);
+        const t = i18n.t;
 
-		return response.ok;
-	} catch (error) {
-		console.error('Email sending failed:', error);
-		return false;
-	}
-}
+        const { name, email, subject, message } = await request.json();
+        
+        // Basic validation (Using i18n keys)
+        if (!name || !email || !subject || !message) {
+            return json(
+                { error: t.contact_error_missing_fields || 'All fields are required' },
+                { status: 400 }
+            );
+        }
+        
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return json(
+                { error: t.contact_error_invalid_email || 'Please enter a valid email address' },
+                { status: 400 }
+            );
+        }
+        
+        // Prepare email content - Translated HTML
+        // Note: I kept your existing blue styles (#007cba), but you could change them to #C94C35 (Brick)
+        const emailHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #333; border-bottom: 2px solid #007cba; padding-bottom: 10px;">
+                    ${t.email_header_title}
+                </h2>
+                
+                <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <p style="margin: 10px 0;"><strong>${t.email_label_from}:</strong> ${name}</p>
+                    <p style="margin: 10px 0;"><strong>${t.email_label_email}:</strong> 
+                        <a href="mailto:${email}" style="color: #007cba;">${email}</a>
+                    </p>
+                    <p style="margin: 10px 0;"><strong>${t.email_label_subject}:</strong> ${subject}</p>
+                </div>
+                
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #333;">${t.email_label_message}:</h3>
+                    <div style="background: white; padding: 15px; border-left: 4px solid #007cba; margin: 10px 0;">
+                        ${message.replace(/\n/g, '<br>')}
+                    </div>
+                </div>
+                
+                <div style="font-size: 12px; color: #666; margin-top: 30px; text-align: center;">
+                    <p>${t.email_footer_text} ${new Date().toLocaleString()}</p>
+                </div>
+            </div>
+        `;
 
-/**
- * @typedef {Object} EmailContent
- * @property {string} subject - Email subject
- * @property {string} text - Plain text content
- * @property {string} html - HTML content
- */
+        const emailText = `
+ ${t.email_header_title}
 
-/**
- * Get welcome email content based on subscription type
- * @param {'newsletter' | 'events'} type - Subscription type
- * @returns {EmailContent} Email content object
- */
-export function getWelcomeEmailContent(type) {
-	const isEvents = type === 'events';
-	
-	return {
-		subject: isEvents 
-			? 'Welcome to Our Events Updates!' 
-			: 'Welcome to Our Newsletter!',
-		text: isEvents
-			? 'Thanks for subscribing to our events updates! You\'ll be the first to know about upcoming events.'
-			: 'Thanks for subscribing to our newsletter! Stay tuned for updates.',
-		html: isEvents
-			? `
-				<h1>🎉 Welcome to Our Events!</h1>
-				<p>Thanks for subscribing to our events updates!</p>
-				<p>You'll be the first to know about:</p>
-				<ul>
-					<li>Upcoming events</li>
-					<li>Early bird tickets</li>
-					<li>Exclusive member perks</li>
-				</ul>
-				<p>Stay tuned!</p>
-			`
-			: `
-				<h1>📧 Welcome to Our Newsletter!</h1>
-				<p>Thanks for subscribing to our newsletter!</p>
-				<p>You'll receive regular updates about:</p>
-				<ul>
-					<li>Site updates</li>
-					<li>New features</li>
-					<li>Important announcements</li>
-				</ul>
-				<p>Stay tuned!</p>
-			`
-	};
-}
+ ${t.email_label_from}: ${name}
+ ${t.email_label_email}: ${email}
+ ${t.email_label_subject}: ${subject}
 
-// Add this function to your existing src/lib/email.js file
+ ${t.email_label_message}:
+ ${message}
 
-export function getConfirmationEmailContent(type, confirmationUrl) {
-	const typeText = type === 'newsletter' ? 'Newsletter' : 'Events';
+ ${t.email_footer_text} ${new Date().toLocaleString()}
+        `;
 
-	return {
-		subject: `Confirm Your ${typeText} Subscription`,
-		html: `
-			<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-				<h2>Confirm Your Subscription</h2>
-				<p>Thank you for subscribing to our ${typeText.toLowerCase()}!</p>
-				<p>Please click the button below to confirm your subscription:</p>
-				<div style="text-align: center; margin: 30px 0;">
-					<a href="${confirmationUrl}"
-						 style="background-color: #007cba; color: white; padding: 15px 30px;
-										text-decoration: none; border-radius: 5px; display: inline-block;">
-						Confirm Subscription
-					</a>
-				</div>
-				<p>Or copy and paste this link into your browser:</p>
-				<p><a href="${confirmationUrl}">${confirmationUrl}</a></p>
-				<p><small>This link will expire in 24 hours.</small></p>
-			</div>
-		`,
-		text: `
-Thank you for subscribing to our ${typeText.toLowerCase()}!
+        // Use of centralized email function
+        // The subject line also uses the translation (e.g., "Contacto Web: [Subject]")
+        const emailSent = await sendEmail({
+            from: MAILGUN_FROM_EMAIL,
+            to: CONTACT_EMAIL,
+            subject: `${t.email_subject_line}: ${subject}`,
+            text: emailText,
+            html: emailHtml
+        }, platform.env);
 
-Please confirm your subscription by visiting this link:
-${confirmationUrl}
+        if (!emailSent) {
+            console.error('Failed to send contact form email');
+            return json(
+                { error: t.contact_error_send_failed || 'Failed to send message. Please try again later.' },
+                { status: 500 }
+            );
+        }
 
-This link will expire in 24 hours.
-		`
-	};
+        console.log('Contact form email sent successfully:', {
+            name,
+            email,
+            subject,
+            timestamp: new Date().toISOString()
+        });
+        
+        return json({
+            message: t.contact_success_message || 'Thank you! Your message has been sent successfully.'
+        });
+        
+    } catch (error) {
+        console.error('Contact form error:', error);
+        return json(
+            { error: 'Failed to send message. Please try again later.' }, // Fallback error
+            { status: 500 }
+        );
+    }
 }

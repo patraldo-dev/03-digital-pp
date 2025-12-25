@@ -41,6 +41,17 @@
   "stats_support": "Support",
   "cta_title": "Ready to Work Together?",
   "cta_text": "Let's discuss how we can help bring your vision to life.",
-  "btn_contact": "Get in Touch"
+  "btn_contact": "Get in Touch",
+  "contact_error_server": "Server configuration error. Please try again later.",
+  "contact_error_missing_fields": "All fields are required",
+  "contact_error_invalid_email": "Please enter a valid email address",
+  "contact_error_send_failed": "Failed to send message. Please try again later.",
+  "contact_success_message": "Thank you! Your message has been sent successfully. We'll get back to you soon!",
+  "email_header_title": "New Contact Form Submission",
+  "email_label_from": "From",
+  "email_label_subject": "Subject",
+  "email_label_message": "Message",
+  "email_footer_text": "This message was sent via your website contact form on",
+  "email_subject_line": "Contact Form"
 
 }
