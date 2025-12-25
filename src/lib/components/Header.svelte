@@ -28,7 +28,7 @@
         <div class="nav-wrapper">
             
             <!-- 1. Logo (Visible always) -->
-            <a href="/" class="logo" on:click={closeMenu}>
+            <a href="/" class="logo" onclick={closeMenu}>
                 ¡Pinche Poutine!
             </a>
 
@@ -53,7 +53,7 @@
             <button 
                 class="hamburger" 
                 class:is-open={isOpen} 
-                on:click={toggleMenu}
+                onclick={toggleMenu}
                 aria-label="Toggle navigation"
             >
                 <span></span>
@@ -70,10 +70,10 @@
                 
                 <!-- Mobile Menu Links -->
                 <div class="mobile-links">
-                    <a href="/about" on:click={closeMenu} class="mobile-link">About Us</a>
-                    <a href="/services" on:click={closeMenu} class="mobile-link">Services</a>
-                    <a href="/blog" on:click={closeMenu} class="mobile-link">Blog</a>
-                    <a href="/contact" on:click={closeMenu} class="mobile-link">Contact</a>
+                    <a href="/about" onclick={closeMenu} class="mobile-link">About Us</a>
+                    <a href="/services" onclick={closeMenu} class="mobile-link">Services</a>
+                    <a href="/blog" onclick={closeMenu} class="mobile-link">Blog</a>
+                    <a href="/contact" onclick={closeMenu} class="mobile-link">Contact</a>
                 </div>
 
                 <!-- Mobile Language Switcher (Inside menu for cleaner UI) -->
