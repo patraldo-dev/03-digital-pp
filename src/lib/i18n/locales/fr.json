@@ -1,0 +1,20 @@
+{
+  "meta_title": "Accueil",
+  "meta_description": "Pinche Poutine: Développement Web créatif et projets d'animation innovants.",
+  "hero_title": "Fusion Numérique pour le Web Moderne",
+  "hero_subtitle": "Pionniers de la créativité accessible grâce aux outils open source et aux techniques de pointe.",
+  "btn_services": "Nos Services",
+  "btn_contact": "Contactez-nous",
+  "features_title": "Ce Que Nous Faisons",
+  "feature_anim_title": "Animation Innovante",
+  "feature_anim_desc": "Nous donnons vie aux dessins statiques. Utilisant des outils open source comme Wan Video et FFMPEG directement en ligne de commande, nous animons des esquisses sur Chromebooks avec des résultats professionnels.",
+  "feature_web_title": "Web Natif Edge",
+  "feature_web_desc": "Applications SvelteKit 5 ultra-rapides déployées sur Cloudflare Workers. Haute performance et faible latence à travers l'Amérique du Nord.",
+  "feature_stack_title": "Stack Moderne",
+  "feature_stack_desc": "Spécialistes de Cloudflare Images, Stream et de l'authentification DIY sécurisée utilisant Lucia 3.0.",
+  "newsletter_title": "Restez Connectés",
+  "newsletter_subtitle": "Abonnez-vous pour les derniers conseils sur l'animation et le développement web.",
+  "blog_title": "Dernières Idées",
+  "blog_btn": "Voir tous les articles",
+  "blog_empty": "Aucun article récent disponible."
+}

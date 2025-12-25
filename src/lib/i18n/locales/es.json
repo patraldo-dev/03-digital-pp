@@ -1,0 +1,20 @@
+{
+  "meta_title": "Inicio",
+  "meta_description": "Pinche Poutine: Desarrollo web creativo y proyectos de animación innovadores.",
+  "hero_title": "Fusión Digital para la Web Moderna",
+  "hero_subtitle": "Pioneros en creatividad accesible a través de herramientas de código abierto y técnicas de vanguardia.",
+  "btn_services": "Nuestros Servicios",
+  "btn_contact": "Contáctanos",
+  "features_title": "Lo Que Hacemos",
+  "feature_anim_title": "Animación Innovadora",
+  "feature_anim_desc": "Damos vida a los dibujos estáticos. Aportamos experiencia técnica animando bocetos en Chromebooks usando herramientas de código abierto: Wan Video y FFMPEG—todo desde la línea de comandos.",
+  "feature_web_title": "Web Nativa en el Edge",
+  "feature_web_desc": "Aplicaciones SvelteKit 5 ultrarrápidas desplegadas en Cloudflare Workers. Alto rendimiento y baja latencia en toda América del Norte.",
+  "feature_stack_title": "Stack Moderno",
+  "feature_stack_desc": "Especialistas en Cloudflare Images, Stream y autenticación DIY segura usando Lucia 3.0.",
+  "newsletter_title": "Mantente Conectado",
+  "newsletter_subtitle": "Suscríbete para recibir los últimos consejos sobre animación y desarrollo web.",
+  "blog_title": "Últimas Ideas",
+  "blog_btn": "Ver todos los posts",
+  "blog_empty": "No hay publicaciones recientes."
+}
