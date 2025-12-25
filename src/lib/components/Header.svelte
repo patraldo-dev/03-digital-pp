@@ -1,9 +1,24 @@
 <script>
+    // Svelte 5 Runes: State management
+    let isOpen = $state(false);
+
+    // Function to toggle mobile menu and lock body scroll
+    function toggleMenu() {
+        isOpen = !isOpen;
+        // Prevent scrolling behind the menu
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+    }
+
+    // Function to close menu (helper)
+    function closeMenu() {
+        isOpen = false;
+        document.body.style.overflow = '';
+    }
+
     // Language Switcher Logic
     function setLanguage(lang) {
-        // Set a cookie for 1 year
         document.cookie = `lang=${lang}; path=/; max-age=31536000`;
-        // Reload the page to apply the new language
+        // Reload is the simplest way to re-render SSR pages with new lang
         window.location.reload();
     }
 </script>
@@ -11,104 +26,151 @@
 <header class="header">
     <div class="container">
         <div class="nav-wrapper">
-            <!-- Logo Area -->
-            <a href="/" class="logo">¡Pinche Poutine!</a>
+            
+            <!-- 1. Logo (Visible always) -->
+            <a href="/" class="logo" on:click={closeMenu}>
+                ¡Pinche Poutine!
+            </a>
 
-            <!-- Navigation -->
-            <nav class="nav">
+            <!-- 2. Desktop Navigation (Hidden on Mobile) -->
+            <nav class="nav-desktop">
                 <a href="/about">About</a>
                 <a href="/services">Services</a>
                 <a href="/blog">Blog</a>
                 <a href="/contact" class="nav-cta">Contact</a>
             </nav>
 
-            <!-- Language Switcher -->
-            <div class="lang-switcher">
-                <button 
-                    class="lang-btn" 
-                    aria-label="Switch to English"
-                    onclick={() => setLanguage('en')}
-                >
-                    EN
-                </button>
+            <!-- 3. Language Switcher (Visible on Desktop) -->
+            <div class="lang-switcher-desktop">
+                <button class="lang-btn" onclick={() => setLanguage('en')}>EN</button>
                 <div class="divider">|</div>
-                <button 
-                    class="lang-btn" 
-                    aria-label="Cambiar a Español"
-                    onclick={() => setLanguage('es')}
-                >
-                    ES
-                </button>
+                <button class="lang-btn" onclick={() => setLanguage('es')}>ES</button>
                 <div class="divider">|</div>
-                <button 
-                    class="lang-btn" 
-                    aria-label="Passer au Français"
-                    onclick={() => setLanguage('fr')}
-                >
-                    FR
-                </button>
+                <button class="lang-btn" onclick={() => setLanguage('fr')}>FR</button>
             </div>
+
+            <!-- 4. Hamburger Button (Visible only on Mobile) -->
+            <button 
+                class="hamburger" 
+                class:is-open={isOpen} 
+                on:click={toggleMenu}
+                aria-label="Toggle navigation"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </div>
+
+    <!-- 5. Mobile Menu Drawer (Slide-in Overlay) -->
+    {#if isOpen}
+        <div class="mobile-menu-overlay">
+            <div class="mobile-menu-content">
+                
+                <!-- Mobile Menu Links -->
+                <div class="mobile-links">
+                    <a href="/about" on:click={closeMenu} class="mobile-link">About Us</a>
+                    <a href="/services" on:click={closeMenu} class="mobile-link">Services</a>
+                    <a href="/blog" on:click={closeMenu} class="mobile-link">Blog</a>
+                    <a href="/contact" on:click={closeMenu} class="mobile-link">Contact</a>
+                </div>
+
+                <!-- Mobile Language Switcher (Inside menu for cleaner UI) -->
+                <div class="mobile-lang-section">
+                    <p>Choose Language:</p>
+                    <div class="mobile-lang-buttons">
+                        <button class="mobile-lang-btn" onclick={() => setLanguage('en')}>English</button>
+                        <button class="mobile-lang-btn" onclick={() => setLanguage('es')}>Español</button>
+                        <button class="mobile-lang-btn" onclick={() => setLanguage('fr')}>Français</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    {/if}
 </header>
 
 <style>
+    /* --- CSS Variables --- */
+    :global(:root) {
+        --color-bg: #F9F6F0;
+        --color-text: #2D3A36;
+        --color-brick: #C94C35;
+        --color-sage: #8DA399;
+        --color-white: #FFFFFF;
+    }
+
+    /* --- Base Header Styles --- */
     .header {
-        background: var(--color-white, #F9F6F0);
+        background: var(--color-bg); /* Creamy */
         padding: 1rem 0;
         border-bottom: 1px solid rgba(45, 58, 54, 0.1);
         position: sticky;
         top: 0;
-        z-index: 100;
+        z-index: 1000; /* Ensure it sits on top of everything */
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
     }
 
     .nav-wrapper {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        height: 50px;
     }
 
+    /* Logo */
     .logo {
+        font-family: 'Outfit', sans-serif;
         font-weight: 900;
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         text-decoration: none;
-        color: var(--color-text, #2D3A36);
+        color: var(--color-text);
         text-transform: uppercase;
         letter-spacing: -0.5px;
+        position: relative;
+        z-index: 1001; /* Above menu overlay */
     }
 
-    .nav {
-        display: flex;
-        gap: 2rem;
-        align-items: center;
+    /* --- Desktop Nav (Hidden by default on Mobile) --- */
+    .nav-desktop {
+        display: none; /* Mobile First: Hide */
     }
 
-    .nav a {
+    .nav-desktop a {
+        font-family: 'Outfit', sans-serif;
         text-decoration: none;
-        color: var(--color-text, #2D3A36);
+        color: var(--color-text);
         font-weight: 500;
+        font-size: 1.05rem;
         transition: color 0.2s;
     }
 
-    .nav a:hover {
-        color: var(--color-brick, #C94C35);
+    .nav-desktop a:hover {
+        color: var(--color-brick);
     }
 
     .nav-cta {
-        background: var(--color-brick, #C94C35);
-        color: white !important;
+        background: var(--color-brick);
+        color: var(--color-white) !important;
         padding: 0.5rem 1.5rem;
         border-radius: 50px;
+        margin-left: 1rem;
     }
 
     .nav-cta:hover {
         background: #A83926 !important;
-        color: white;
+        color: var(--color-white);
     }
 
-    /* Language Switcher */
-    .lang-switcher {
-        display: flex;
+    /* --- Desktop Language Switcher --- */
+    .lang-switcher-desktop {
+        display: none; /* Mobile First: Hide */
         align-items: center;
         gap: 0.5rem;
         font-size: 0.9rem;
@@ -121,12 +183,13 @@
         cursor: pointer;
         color: #666;
         padding: 2px 4px;
-        font-size: 0.85rem;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
         transition: all 0.2s;
     }
 
     .lang-btn:hover {
-        color: var(--color-brick, #C94C35);
+        color: var(--color-brick);
         transform: translateY(-1px);
     }
 
@@ -135,14 +198,143 @@
         font-size: 0.8rem;
     }
 
-    /* Mobile handling (basic) */
-    @media (max-width: 768px) {
-        .nav {
-            display: none; /* You'd usually want a hamburger menu here */
+    /* --- Hamburger Button (Visible on Mobile) --- */
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 2.5rem;
+        height: 2.5rem;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        z-index: 1001; /* Above menu overlay */
+        padding: 0;
+    }
+
+    .hamburger span {
+        width: 2.5rem;
+        height: 3px;
+        background: var(--color-text);
+        border-radius: 10px;
+        transition: all 0.3s linear;
+        transform-origin: 1px;
+    }
+
+    /* Animation to X */
+    .hamburger.is-open span:nth-child(1) {
+        transform: rotate(45deg);
+    }
+    .hamburger.is-open span:nth-child(2) {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    .hamburger.is-open span:nth-child(3) {
+        transform: rotate(-45deg);
+    }
+
+    /* --- Mobile Menu Overlay --- */
+    .mobile-menu-overlay {
+        position: fixed;
+        inset: 0;
+        background: var(--color-text); /* Dark Green BG */
+        color: var(--color-white);
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        animation: slideIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .mobile-menu-content {
+        text-align: center;
+        width: 100%;
+        max-width: 400px;
+        padding: 2rem;
+    }
+
+    .mobile-links {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        margin-bottom: 4rem;
+    }
+
+    .mobile-link {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--color-white);
+        text-decoration: none;
+        border-bottom: 2px solid transparent;
+        padding-bottom: 0.5rem;
+        display: inline-block;
+    }
+
+    .mobile-link:hover {
+        color: var(--color-brick);
+        border-bottom-color: var(--color-brick);
+    }
+
+    /* Mobile Language Section inside Menu */
+    .mobile-lang-section {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .mobile-lang-section p {
+        margin: 0 0 1rem 0;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.8;
+    }
+
+    .mobile-lang-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .mobile-lang-btn {
+        background: transparent;
+        border: 2px solid var(--color-white);
+        color: var(--color-white);
+        padding: 0.8rem;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .mobile-lang-btn:hover {
+        background: var(--color-white);
+        color: var(--color-text);
+    }
+
+    /* --- Desktop Query (The "Flip") --- */
+    @media (min-width: 769px) {
+        .nav-desktop {
+            display: flex;
+            align-items: center;
         }
         
-        .lang-switcher {
-            gap: 0.25rem;
+        .lang-switcher-desktop {
+            display: flex;
+            margin-left: 2rem;
+        }
+
+        .hamburger {
+            display: none; /* Hide hamburger on desktop */
         }
     }
 </style>
