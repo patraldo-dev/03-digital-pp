@@ -62,5 +62,19 @@
   "resend_title": "Need to Confirm?",
   "resend_body": "You requested a new confirmation link. Click the button below to confirm your email address.",
   "resend_button": "Confirm My Email",
-  "resend_footer": "If you did not request this, please ignore this email."
+  "resend_footer": "If you did not request this, please ignore this email.",
+  "unsubscribe_error_required": "Email is required",
+  "unsubscribe_error_invalid": "Invalid email format",
+  "unsubscribe_error_not_found": "Email address not found in our records",
+  "unsubscribe_success": "You have been successfully unsubscribed from all email updates.",
+  "unsubscribe_error_server": "Failed to process unsubscription",
+  "goodbye_subject": "Goodbye from ¡Pinche Poutine! Digital",
+  "goodbye_title": "We'll miss the spice!",
+  "goodbye_body": "We're sorry to see you go. You've been successfully unsubscribed from our mailing list. If you ever want to jump back in for more animation or web tips, you know where to find us.",
+  "goodbye_button": "Resubscribe",
+  "subscribe_subject": "Confirm your email for ¡Pinche Poutine! Digital",
+  "subscribe_title": "Just one step left...",
+  "subscribe_body": "Thanks for signing up! To start receiving our spicy web dev tips, please confirm your email address by clicking the button below.",
+  "subscribe_button": "Confirm Email",
+  "subscribe_footer": "If you didn't sign up, you can safely ignore this email."
 }

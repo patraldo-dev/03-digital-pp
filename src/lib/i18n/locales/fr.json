@@ -62,5 +62,19 @@
   "resend_title": "Besoin de confirmation ?",
   "resend_body": "Vous avez demandé un nouveau lien de confirmation. Cliquez sur le bouton ci-dessous pour confirmer votre adresse e-mail.",
   "resend_button": "Confirmer mon e-mail",
-  "resend_footer": "Si vous n'avez pas demandé ceci, veuillez ignorer cet e-mail."
+  "resend_footer": "Si vous n'avez pas demandé ceci, veuillez ignorer cet e-mail.",
+  "unsubscribe_error_required": "L'e-mail est requis",
+  "unsubscribe_error_invalid": "Format d'e-mail invalide",
+  "unsubscribe_error_not_found": "Adresse e-mail introuvable dans nos dossiers",
+  "unsubscribe_success": "Vous avez été désabonné avec succès de toutes les mises à jour par e-mail.",
+  "unsubscribe_error_server": "Échec du traitement de la désinscription",
+  "goodbye_subject": "Au revoir de ¡Pinche Poutine! Digital",
+  "goodbye_title": "Nous allons regretter l'épice !",
+  "goodbye_body": "Nous sommes désolés de vous voir partir. Vous avez été désabonné avec succès de notre liste de diffusion. Si vous souhaitez revenir pour plus d'animations ou de conseils de développement web, vous savez où nous trouver.",
+  "goodbye_button": "Se réinscrire",
+  "subscribe_subject": "Confirmez votre e-mail pour ¡Pinche Poutine! Digital",
+  "subscribe_title": "Il ne manque plus qu'une étape...",
+  "subscribe_body": "Merci pour votre inscription ! Pour commencer à recevoir nos conseils de développement web, veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous.",
+  "subscribe_button": "Confirmer l'e-mail",
+  "subscribe_footer": "Si vous ne vous êtes pas inscrit, vous pouvez ignorer cet e-mail en toute sécurité."
 }

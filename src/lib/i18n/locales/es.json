@@ -62,5 +62,19 @@
   "resend_title": "¿Necesitas confirmar?",
   "resend_body": "Has solicitado un nuevo enlace de confirmación. Haz clic en el botón de abajo para confirmar tu dirección de correo electrónico.",
   "resend_button": "Confirmar mi correo",
-  "resend_footer": "Si no solicitaste esto, por favor ignora este correo."
+  "resend_footer": "Si no solicitaste esto, por favor ignora este correo.",
+  "unsubscribe_error_required": "El correo es requerido",
+  "unsubscribe_error_invalid": "Formato de correo inválido",
+  "unsubscribe_error_not_found": "Dirección de correo no encontrada en nuestros registros",
+  "unsubscribe_success": "Has sido dado de baja de todas las actualizaciones de correo electrónico.",
+  "unsubscribe_error_server": "Error al procesar la baja",
+  "goodbye_subject": "Adiós de ¡Pinche Poutine! Digital",
+  "goodbye_title": "¡Extrañaremos el picante!",
+  "goodbye_body": "Lamentamos que te vayas. Has sido dado de baja correctamente de nuestra lista de correo. Si alguna vez quieres volver para más animaciones o consejos de desarrollo web, sabes dónde encontrarnos.",
+  "goodbye_button": "Volver a suscribirse",
+  "subscribe_subject": "Confirma tu correo para ¡Pinche Poutine! Digital",
+  "subscribe_title": "Solo un paso más...",
+  "subscribe_body": "¡Gracias por suscribirte! Para empezar a recibir nuestros consejos de desarrollo web, confirma tu dirección de correo haciendo clic en el botón de abajo.",
+  "subscribe_button": "Confirmar correo",
+  "subscribe_footer": "Si no te suscribiste, puedes ignorar este correo con seguridad."
 }
