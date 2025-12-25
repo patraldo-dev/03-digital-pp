@@ -52,5 +52,10 @@
   "email_label_subject": "Sujet",
   "email_label_message": "Message",
   "email_footer_text": "Ce message a été envoyé via le formulaire de contact du site web sur",
-  "email_subject_line": "Formulaire de Contact"
+  "email_subject_line": "Formulaire de Contact",
+  "welcome_subject": "Bienvenue chez ¡Pinche Poutine! Digital",
+  "welcome_title": "Bienvenue dans la famille !",
+  "welcome_body": "Merci d'avoir confirmé votre adresse e-mail. Vous êtes maintenant officiellement abonné. Nous avons hâte de partager nos derniers projets d'animation et conseils de développement web avec vous.",
+  "welcome_button": "Visiter le site web",
+  "welcome_footer": "Vous avez reçu cet e-mail car vous vous êtes inscrit sur ¡Pinche Poutine! Digital"
 }

@@ -52,6 +52,10 @@
   "email_label_subject": "Subject",
   "email_label_message": "Message",
   "email_footer_text": "This message was sent via your website contact form on",
-  "email_subject_line": "Contact Form"
-
+  "email_subject_line": "Contact Form",
+  "welcome_subject": "Welcome to ¡Pinche Poutine! Digital",
+  "welcome_title": "Welcome to the Family!",
+  "welcome_body": "Thank you for confirming your email. You are now officially subscribed. We can't wait to share our latest animation projects and web dev tips with you.",
+  "welcome_button": "Visit Website",
+  "welcome_footer": "You received this email because you signed up on ¡Pinche Poutine! Digital"
 }
