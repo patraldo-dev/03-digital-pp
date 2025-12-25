@@ -1,95 +1,89 @@
 // src/routes/api/resend-confirmation/+server.js
 import { json } from '@sveltejs/kit';
-import { sendEmail as sendMailgunEmail, getConfirmationEmailContent } from '$lib/email.js';
+import { sendEmail } from '$lib/email.js'; // Correct Import
+import { getTranslations } from '$lib/i18n/server.js';
 
-export async function POST({ request, platform, url }) {
-	try {
-		if (!platform?.env) {
-			return json({ 
-				success: false, 
-				message: 'Service temporarily unavailable' 
-			}, { status: 500 });
-		}
+export async function POST({ request, platform }) {
+    const { 
+        MAILGUN_FROM_EMAIL
+    } = platform.env;
 
-		const { email, type } = await request.json();
+    try {
+        const { email } = await request.json();
 
-		// Validation
-		if (!email || !type) {
-			return json({
-				success: false,
-				message: 'Email and type are required'
-			}, { status: 400 });
-		}
+        if (!email) {
+            return json({ error: 'Email is required' }, { status: 400 });
+        }
 
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!emailRegex.test(email)) {
-			return json({
-				success: false,
-				message: 'Invalid email format'
-			}, { status: 400 });
-		}
+        // --- DB LOGIC ---
+        // Logic to generate/lookup token for this user
+        // const token = await db.generateToken(email);
+        const token = "mock-token-xyz"; // Mock
+        
+        const confirmUrl = `https://pinchepoutine.digital/api/confirm?token=${token}&email=${email}`;
 
-		// Find the subscriber
-		const subscriber = await platform.env.DB
-			.prepare('SELECT id, confirmed FROM subscribers WHERE email = ? AND type = ?')
-			.bind(email, type)
-			.first();
+        // 1. Load Translations
+        const i18n = await getTranslations(request);
+        const t = i18n.t;
 
-		if (!subscriber) {
-			return json({
-				success: false,
-				message: 'No subscription found for this email and type'
-			}, { status: 404 });
-		}
+        // 2. Build Email Content
+        const emailHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                
+                <!-- Header -->
+                <div style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                    <h1 style="color: #C94C35; margin: 0;">${t.resend_title}</h1>
+                </div>
 
-		if (subscriber.confirmed) {
-			return json({
-				success: false,
-				message: 'This subscription is already confirmed'
-			}, { status: 400 });
-		}
+                <!-- Body -->
+                <div style="padding: 20px 0;">
+                    <p style="font-size: 16px; color: #333; line-height: 1.6;">
+                        ${t.resend_body}
+                    </p>
+                </div>
 
-		// Generate new confirmation token
-		// Generate confirmation token using Web Crypto API
-const tokenArray = new Uint8Array(32);
-crypto.getRandomValues(tokenArray);
-const confirmationToken = Array.from(tokenArray, byte => byte.toString(16).padStart(2, '0')).join('');
-		const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+                <!-- Button -->
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${confirmUrl}" style="background-color: #C94C35; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                        ${t.resend_button}
+                    </a>
+                </div>
 
-		// Update the token
-		await platform.env.DB
-			.prepare('UPDATE subscribers SET confirmation_token = ?, token_expires_at = ? WHERE id = ?')
-			.bind(confirmationToken, expiresAt.toISOString(), subscriber.id)
-			.run();
+                <!-- Footer -->
+                <div style="text-align: center; padding-top: 20px; border-top: 1px solid #eee; color: #888; font-size: 12px;">
+                    <p>${t.resend_footer}</p>
+                    <p>${confirmUrl}</p>
+                </div>
+            </div>
+        `;
 
-		// Create confirmation URL
-		const confirmationUrl = `${url.origin}/api/confirm?token=${confirmationToken}`;
+        const emailText = `
+ ${t.resend_title}
 
-		// Send confirmation email
-		const emailContent = getConfirmationEmailContent(type, confirmationUrl);
-		const emailSent = await sendMailgunEmail({
-			to: email,
-			...emailContent
-		}, platform.env);
+ ${t.resend_body}
 
-		if (!emailSent) {
-			console.error('Failed to resend confirmation email to:', email);
-			return json({
-				success: false,
-				message: 'Failed to send confirmation email'
-			}, { status: 500 });
-		}
+ ${t.resend_button}: ${confirmUrl}
 
-		return json({
-			success: true,
-			message: 'Confirmation email sent! Please check your inbox.'
-		});
+ ${t.resend_footer}
+        `;
 
-	} catch (error) {
-		console.error('Resend confirmation error:', error);
-		return json({
-			success: false,
-			message: 'Failed to resend confirmation'
-		}, { status: 500 });
-	}
+        // 3. Send Email
+        const emailSent = await sendEmail({
+            from: MAILGUN_FROM_EMAIL,
+            to: email,
+            subject: t.resend_subject,
+            text: emailText,
+            html: emailHtml
+        }, platform.env);
+
+        if (!emailSent) {
+            return json({ error: 'Failed to send email' }, { status: 500 });
+        }
+
+        return json({ success: true, message: 'Confirmation link sent!' });
+
+    } catch (error) {
+        console.error('Resend confirmation error:', error);
+        return json({ error: 'Internal server error' }, { status: 500 });
+    }
 }

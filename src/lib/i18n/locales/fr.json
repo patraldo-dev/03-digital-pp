@@ -57,5 +57,10 @@
   "welcome_title": "Bienvenue dans la famille !",
   "welcome_body": "Merci d'avoir confirmé votre adresse e-mail. Vous êtes maintenant officiellement abonné. Nous avons hâte de partager nos derniers projets d'animation et conseils de développement web avec vous.",
   "welcome_button": "Visiter le site web",
-  "welcome_footer": "Vous avez reçu cet e-mail car vous vous êtes inscrit sur ¡Pinche Poutine! Digital"
+  "welcome_footer": "Vous avez reçu cet e-mail car vous vous êtes inscrit sur ¡Pinche Poutine! Digital",
+  "resend_subject": "Lien de confirmation renvoyé",
+  "resend_title": "Besoin de confirmation ?",
+  "resend_body": "Vous avez demandé un nouveau lien de confirmation. Cliquez sur le bouton ci-dessous pour confirmer votre adresse e-mail.",
+  "resend_button": "Confirmer mon e-mail",
+  "resend_footer": "Si vous n'avez pas demandé ceci, veuillez ignorer cet e-mail."
 }

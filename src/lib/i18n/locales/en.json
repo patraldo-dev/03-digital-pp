@@ -57,5 +57,10 @@
   "welcome_title": "Welcome to the Family!",
   "welcome_body": "Thank you for confirming your email. You are now officially subscribed. We can't wait to share our latest animation projects and web dev tips with you.",
   "welcome_button": "Visit Website",
-  "welcome_footer": "You received this email because you signed up on ¡Pinche Poutine! Digital"
+  "welcome_footer": "You received this email because you signed up on ¡Pinche Poutine! Digital",
+  "resend_subject": "Confirmation Link Resent",
+  "resend_title": "Need to Confirm?",
+  "resend_body": "You requested a new confirmation link. Click the button below to confirm your email address.",
+  "resend_button": "Confirm My Email",
+  "resend_footer": "If you did not request this, please ignore this email."
 }
