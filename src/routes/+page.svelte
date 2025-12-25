@@ -1,14 +1,15 @@
 <script>
     import SubscribeForm from '$lib/components/SubscribeForm.svelte';
     
-    // In SvelteKit, data is passed from the +page.server.js load function
-    export let data;
+    // SVELTE 5: $props() replaces 'export let' for defining component props
+    let { data } = $props();
 
-    // Reactive statement to ensure 't' is available even if data is slow
-    $: t = data.t || {};
+    // SVELTE 5: $derived replaces '$:' reactive statements
+    // We use optional chaining (data?.t) for safety
+    let t = $derived(data?.t || {});
 
-    // Debugging log (check your browser console or terminal)
-    console.log('Page Data:', data);
+    // Debugging (this logs to the browser console)
+    console.log('Page Data received:', data);
 </script>
 
 <svelte:head>
