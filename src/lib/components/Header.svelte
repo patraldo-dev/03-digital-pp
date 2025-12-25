@@ -103,12 +103,12 @@
 
     /* --- Base Header Styles --- */
     .header {
-        background: var(--color-bg); /* Creamy */
+        background: var(--color-bg);
         padding: 1rem 0;
         border-bottom: 1px solid rgba(45, 58, 54, 0.1);
         position: sticky;
         top: 0;
-        z-index: 1000; /* Ensure it sits on top of everything */
+        z-index: 1000;
     }
 
     .container {
@@ -134,12 +134,12 @@
         text-transform: uppercase;
         letter-spacing: -0.5px;
         position: relative;
-        z-index: 1001; /* Above menu overlay */
+        z-index: 1001;
     }
 
-    /* --- Desktop Nav (Hidden by default on Mobile) --- */
+    /* --- Desktop Nav --- */
     .nav-desktop {
-        display: none; /* Mobile First: Hide */
+        display: none; /* Mobile First: Hidden */
     }
 
     .nav-desktop a {
@@ -149,6 +149,7 @@
         font-weight: 500;
         font-size: 1.05rem;
         transition: color 0.2s;
+        margin-right: 1rem;
     }
 
     .nav-desktop a:hover {
@@ -170,11 +171,12 @@
 
     /* --- Desktop Language Switcher --- */
     .lang-switcher-desktop {
-        display: none; /* Mobile First: Hide */
+        display: none; /* Mobile First: Hidden */
         align-items: center;
         gap: 0.5rem;
         font-size: 0.9rem;
         font-weight: 600;
+        margin-left: 1.5rem;
     }
 
     .lang-btn {
@@ -198,7 +200,7 @@
         font-size: 0.8rem;
     }
 
-    /* --- Hamburger Button (Visible on Mobile) --- */
+    /* --- Hamburger Button --- */
     .hamburger {
         display: flex;
         flex-direction: column;
@@ -208,7 +210,7 @@
         background: transparent;
         border: none;
         cursor: pointer;
-        z-index: 1001; /* Above menu overlay */
+        z-index: 1001;
         padding: 0;
     }
 
@@ -221,7 +223,6 @@
         transform-origin: 1px;
     }
 
-    /* Animation to X */
     .hamburger.is-open span:nth-child(1) {
         transform: rotate(45deg);
     }
@@ -237,7 +238,7 @@
     .mobile-menu-overlay {
         position: fixed;
         inset: 0;
-        background: var(--color-text); /* Dark Green BG */
+        background: var(--color-text);
         color: var(--color-white);
         z-index: 999;
         display: flex;
@@ -257,50 +258,57 @@
         width: 100%;
         max-width: 400px;
         padding: 2rem;
+        box-sizing: border-box;
     }
 
+    /* --- FIX FOR SCRUNCHED MENU --- */
     .mobile-links {
         display: flex;
-        flex-direction: column;
-        gap: 2rem;
+        flex-direction: column; /* Force vertical stack */
+        gap: 1.5rem;          /* Add vertical spacing */
+        width: 100%;           /* Full width */
         margin-bottom: 4rem;
     }
 
     .mobile-link {
         font-family: 'Outfit', sans-serif;
-        font-size: 2rem;
+        font-size: 2.5rem;      /* Made slightly larger */
         font-weight: 700;
         color: var(--color-white);
         text-decoration: none;
+        display: block;         /* Force block to take new line */
+        padding: 0.5rem 0;    /* Add breathing room */
         border-bottom: 2px solid transparent;
-        padding-bottom: 0.5rem;
-        display: inline-block;
+        transition: all 0.2s;
+        line-height: 1.2;
     }
 
     .mobile-link:hover {
         color: var(--color-brick);
         border-bottom-color: var(--color-brick);
+        transform: translateX(10px);
     }
 
     /* Mobile Language Section inside Menu */
     .mobile-lang-section {
         background: rgba(255, 255, 255, 0.1);
-        padding: 1.5rem;
+        padding: 2rem;
         border-radius: 20px;
         border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
     }
 
     .mobile-lang-section p {
-        margin: 0 0 1rem 0;
-        font-size: 0.9rem;
+        margin: 0 0 1.2rem 0;
+        font-size: 0.85rem;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
         opacity: 0.8;
     }
 
     .mobile-lang-buttons {
         display: flex;
-        flex-direction: column;
+        flex-direction: column; /* Stack language buttons */
         gap: 0.8rem;
     }
 
@@ -308,12 +316,13 @@
         background: transparent;
         border: 2px solid var(--color-white);
         color: var(--color-white);
-        padding: 0.8rem;
+        padding: 1rem;
         border-radius: 12px;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s;
         font-family: 'Outfit', sans-serif;
+        font-size: 1rem;
     }
 
     .mobile-lang-btn:hover {
@@ -321,7 +330,7 @@
         color: var(--color-text);
     }
 
-    /* --- Desktop Query (The "Flip") --- */
+    /* --- Desktop Query --- */
     @media (min-width: 769px) {
         .nav-desktop {
             display: flex;
@@ -330,11 +339,10 @@
         
         .lang-switcher-desktop {
             display: flex;
-            margin-left: 2rem;
         }
 
         .hamburger {
-            display: none; /* Hide hamburger on desktop */
+            display: none;
         }
     }
 </style>
