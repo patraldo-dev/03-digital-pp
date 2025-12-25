@@ -23,15 +23,17 @@ function getLocaleFromRequest(request) {
 
 /**
  * Loads the translations for the current request.
+ * Uses the $lib alias to ensure paths resolve correctly in SvelteKit/Cloudflare.
  */
 export async function getTranslations(request) {
     const locale = getLocaleFromRequest(request);
     
     // Dynamic import of the JSON file
-    const translations = await import(`./locales/${locale}.json`);
+    // Note: We use || translations to handle different Vite bundling behaviors
+    const translations = await import(`$lib/i18n/locales/${locale}.json`);
     
     return {
         lang: locale,
-        t: translations.default // The flattened JSON object
+        t: translations.default || translations 
     };
 }

@@ -1,37 +1,52 @@
+<script>
+    import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+    
+    // In SvelteKit, data is passed from the +page.server.js load function
+    export let data;
+
+    // Reactive statement to ensure 't' is available even if data is slow
+    $: t = data.t || {};
+
+    // Debugging log (check your browser console or terminal)
+    console.log('Page Data:', data);
+</script>
+
 <svelte:head>
-    <title>{t.meta_title} - ¡Pinche Poutine! Digital</title>
-    <meta name="description" content={t.meta_description} />
+    <!-- Using the variable with a fallback in case t is undefined -->
+    <title>{t.meta_title || 'Home'} - ¡Pinche Poutine! Digital</title>
+    <meta name="description" content={t.meta_description || ''} />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
 </svelte:head>
 
+<!-- Background Blobs -->
 <div class="bg-wrap">
-    <!-- Soft Organic Background Shapes -->
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
 </div>
 
+<!-- Hero Section -->
 <div class="hero">
     <div class="container">
         <div class="hero-content">
             <div class="badge">🌶️ & 🍁 • North American Web & Animation</div>
             <h1>
-                <span class="gradient-text">{t.hero_title}</span>
+                <span class="gradient-text">{t.hero_title || 'Creative Fusion'}</span>
             </h1>
-            <p class="hero-subtitle">{t.hero_subtitle}</p>
+            <p class="hero-subtitle">{t.hero_subtitle || 'We build cool stuff.'}</p>
             <div class="hero-actions">
                 <a href="/services" class="btn btn-primary">
-                    {t.btn_services}
+                    {t.btn_services || 'Services'}
                     <span class="arrow">→</span>
                 </a>
-                <a href="/contact" class="btn btn-secondary">{t.btn_contact}</a>
+                <a href="/contact" class="btn btn-secondary">{t.btn_contact || 'Contact'}</a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Funky Marquee Banner - Sage & Dark Green -->
+<!-- Marquee -->
 <div class="marquee">
     <div class="marquee-content">
         <span>SVELTEKIT 5</span> • <span>CLOUDFLARE WORKERS</span> • <span>FFMPEG ANIMATION</span> • 
@@ -41,10 +56,11 @@
     </div>
 </div>
 
+<!-- Features Section -->
 <section class="features">
     <div class="container">
         <div class="section-header">
-            <h2>{t.features_title}</h2>
+            <h2>{t.features_title || 'Features'}</h2>
             <div class="line"></div>
         </div>
         
@@ -54,8 +70,8 @@
                 <div class="icon-wrapper">
                     <span class="icon">🎨</span>
                 </div>
-                <h3>{t.feature_anim_title}</h3>
-                <p>{t.feature_anim_desc}</p>
+                <h3>{t.feature_anim_title || 'Animation'}</h3>
+                <p>{t.feature_anim_desc || 'Description...'}</p>
             </div>
             
             <!-- Card 2 -->
@@ -63,8 +79,8 @@
                 <div class="icon-wrapper">
                     <span class="icon">🚀</span>
                 </div>
-                <h3>{t.feature_web_title}</h3>
-                <p>{t.feature_web_desc}</p>
+                <h3>{t.feature_web_title || 'Web'}</h3>
+                <p>{t.feature_web_desc || 'Description...'}</p>
             </div>
             
             <!-- Card 3 -->
@@ -72,25 +88,24 @@
                 <div class="icon-wrapper">
                     <span class="icon">⚡</span>
                 </div>
-                <h3>{t.feature_stack_title}</h3>
-                <p>{t.feature_stack_desc}</p>
+                <h3>{t.feature_stack_title || 'Stack'}</h3>
+                <p>{t.feature_stack_desc || 'Description...'}</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Brick Red Newsletter Section -->
+<!-- Newsletter Section -->
 <section class="newsletter-section">
     <div class="container">
         <div class="newsletter-box">
             <div class="newsletter-content">
-                <h2>{t.newsletter_title}</h2>
-                <p>{t.newsletter_subtitle}</p>
+                <h2>{t.newsletter_title || 'Newsletter'}</h2>
+                <p>{t.newsletter_subtitle || 'Subscribe for updates'}</p>
                 <div class="newsletter-form-wrapper">
                     <SubscribeForm />
                 </div>
             </div>
-            <!-- Decorative Element -->
             <div class="newsletter-decoration">
                 <div class="circle c1"></div>
                 <div class="circle c2"></div>
@@ -100,10 +115,11 @@
     </div>
 </section>
 
+<!-- Blog Section -->
 <section class="recent-posts">
     <div class="container">
         <div class="section-header">
-            <h2>{t.blog_title}</h2>
+            <h2>{t.blog_title || 'Blog'}</h2>
             <div class="line"></div>
         </div>
 
@@ -122,22 +138,15 @@
                 {/each}
             </div>
             <div class="blog-link">
-                <a href="/blog" class="btn-text">{t.blog_btn}</a>
+                <a href="/blog" class="btn-text">{t.blog_btn || 'View All Posts'}</a>
             </div>
         {:else}
             <div class="empty-state">
-                <p>{t.blog_empty}</p>
+                <p>{t.blog_empty || 'No recent posts available.'}</p>
             </div>
         {/if}
     </div>
 </section>
-
-<script>
-    import SubscribeForm from '$lib/components/SubscribeForm.svelte';
-    
-    export let data;
-    $: t = data.t || {};
-</script>
 
 <style>
     /* --- Palette Definition --- */
@@ -154,9 +163,10 @@
         background-color: var(--color-bg);
         color: var(--color-text);
         overflow-x: hidden;
+        margin: 0;
     }
 
-    /* --- Background Blobs (Sage & Light Brick) --- */
+    /* --- Background Blobs --- */
     .bg-wrap {
         position: fixed;
         top: 0;
@@ -187,7 +197,7 @@
     .blob-2 {
         width: 500px;
         height: 500px;
-        background: #E8D5C4; /* Darker cream/terracotta mix */
+        background: #E8D5C4; 
         bottom: -100px;
         left: -100px;
         animation-delay: -6s;
@@ -207,7 +217,6 @@
         z-index: 2;
     }
 
-    /* --- Hero Section --- */
     .hero {
         min-height: 90vh;
         display: flex;
@@ -239,7 +248,6 @@
         color: var(--color-text);
     }
 
-    /* Text Gradient: Brick to Sage */
     .gradient-text {
         background: linear-gradient(135deg, var(--color-brick) 0%, var(--color-sage) 100%);
         -webkit-background-clip: text;
@@ -250,7 +258,7 @@
     .hero-subtitle {
         font-size: 1.4rem;
         max-width: 650px;
-        color: #5F6E68; /* Muted text color */
+        color: #5F6E68; 
         margin-bottom: 3rem;
         line-height: 1.6;
         font-weight: 300;
@@ -261,7 +269,6 @@
         gap: 1.5rem;
     }
 
-    /* Buttons */
     .btn {
         display: inline-flex;
         align-items: center;
@@ -337,7 +344,6 @@
         100% { transform: translateX(-50%); }
     }
 
-    /* --- Section Headers --- */
     .section-header {
         text-align: center;
         margin-bottom: 4rem;
@@ -358,7 +364,6 @@
         border-radius: 10px;
     }
 
-    /* --- Features Grid --- */
     .features {
         padding: 0 0 6rem;
     }
@@ -388,7 +393,7 @@
     .icon-wrapper {
         width: 80px;
         height: 80px;
-        background: rgba(201, 76, 53, 0.1); /* Light brick bg */
+        background: rgba(201, 76, 53, 0.1); 
         border-radius: 24px;
         display: flex;
         align-items: center;
@@ -455,7 +460,6 @@
         max-width: 450px;
     }
 
-    /* Decorative Circles */
     .newsletter-decoration {
         position: absolute;
         right: -50px;
@@ -601,7 +605,6 @@
         border: 2px dashed rgba(45, 58, 54, 0.1);
     }
 
-    /* Mobile Adjustments */
     @media (max-width: 768px) {
         .hero h1 {
             font-size: 3.5rem;
