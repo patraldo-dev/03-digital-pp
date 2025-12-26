@@ -28,45 +28,56 @@
                 <h2>{t.methods_title || 'Get in Touch'}</h2>
                 <p>{t.methods_desc || 'Have a project in mind...'}</p>
 
-                <div class="contact-methods">
-                    <div class="contact-method">
-                        <div class="method-icon">📧</div>
-                        <div class="method-content">
-                            <h3>{t.method_email_title || 'Email Us'}</h3>
-                            <p>{t.method_email_addr || 'info@example.com'}</p>
-                            <small>{t.method_email_note || 'Response time'}</small>
-                        </div>
+            <!-- UPDATED CONTACT METHODS SECTION -->
+            <div class="contact-methods">
+                <!-- Email Card -->
+                <div class="contact-method">
+                    <div class="method-icon">📧</div>
+                    <div class="method-content">
+                        <h3>{t.method_email_title || 'Email Us'}</h3>
+                        <!-- Made email clickable -->
+                        <a href="mailto:info@pinchepoutine.digital" class="method-link">
+                            {t.method_email_addr || 'info@example.com'}
+                        </a>
+                        <small>{t.method_email_note || 'Response time'}</small>
                     </div>
+                </div>
 
+                <!-- Chat Card (Clickable) -->
+                <a href="#contact-form" class="contact-method-link">
                     <div class="contact-method">
                         <div class="method-icon">💬</div>
                         <div class="method-content">
                             <h3>{t.method_chat_title || 'Let\'s Chat'}</h3>
                             <p>{t.method_chat_desc || 'Schedule a consultation'}</p>
-                            <small>{t.method_chat_note || 'Free call'}</small>
+                            <small>{t.method_chat_note || 'Free 30-minute discovery call'}</small>
                         </div>
                     </div>
+                </a>
 
+                <!-- Start Project Card (Clickable) -->
+                <a href="#contact-form" class="contact-method-link">
                     <div class="contact-method">
                         <div class="method-icon">🚀</div>
                         <div class="method-content">
-                            <h3>{t.method_start_title || 'Start Project'}</h3>
+                            <h3>{t.method_start_title || 'Start Your Project'}</h3>
                             <p>{t.method_start_desc || 'Ready to begin?'}</p>
-                            <small>{t.method_start_note || 'Tell us about vision'}</small>
+                            <small>{t.method_start_note || 'Tell us about your vision'}</small>
                         </div>
                     </div>
-                </div>
+                </a>
+            </div>
+
 
                 <div class="office-hours">
-                    <h3>{t.office_hours_title || 'Office Hours'}</h3>
-                    <p>{t.office_hours_weekday || 'Mon-Fri'}</p>
-                    <p>{t.office_hours_weekend || 'Weekend'}</p>
-                    <small>{t.office_hours_note || 'Local timezone'}</small>
+                    <h3>{t.office_hours_title || 'Horas regulares'}</h3>
+                    <p>{t.office_hours_weekday || 'Lunes a Viernes'}</p>
+                    <p>{t.office_hours_weekend || 'Fin de semana'}</p>
+                    <small>{t.office_hours_note || 'Guadalajara, Jalisco'}</small>
                 </div>
             </div>
 
-            <!-- Contact Form Column -->
-            <div class="contact-form-container">
+            <div class="contact-form-container" id="contact-form">
                 <h2>{t.form_title || 'Send us a Message'}</h2>
                 <ContactForm />
             </div>
@@ -351,5 +362,36 @@
             align-items: center;
             text-align: center;
         }
+    }
+
+    /* --- NEW: Link Styles for Contact Methods --- */
+    .contact-method-link {
+        text-decoration: none;
+        color: inherit; /* Inherit colors */
+        display: block; /* Fill the container */
+        border-radius: 20px; /* Match the card radius */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .contact-method-link:hover {
+        transform: translateY(-5px); /* Lift effect on hover */
+    }
+
+    .method-link {
+        text-decoration: none;
+        color: var(--color-brick) !important; /* Use Brick Red for email */
+        font-weight: 600;
+        transition: color 0.2s;
+        cursor: pointer;
+    }
+
+    .method-link:hover {
+        text-decoration: underline;
+        opacity: 0.8;
+    }
+
+    /* Ensure pointer cursor works for clickable text */
+    .contact-method-link {
+        cursor: pointer;
     }
 </style>
