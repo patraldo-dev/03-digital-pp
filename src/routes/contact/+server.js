@@ -10,7 +10,7 @@ export const POST = async ({ request, getClientAddress, platform }) => {
   const ip = getClientAddress();
   const now = Date.now();
   const windowStart = now - WINDOW_MS;
-  const kv = platform?.env?.CONTACT_KV; // Your KV binding from wrangler.toml
+  const kv = platform?.env?.CONTACT_KV; 
   
   if (kv) {
     const key = `${RATE_LIMIT_KEY}:${ip}`;

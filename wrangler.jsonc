@@ -16,7 +16,7 @@
 	},
         "kv_namespaces": [
     {
-      "binding": "contact_form",
+      "binding": "CONTACT_KV",
       "id": "46f04b24d94c472f8e718f14562a17ae"
     }
   ],
