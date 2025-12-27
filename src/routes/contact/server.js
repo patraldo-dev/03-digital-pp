@@ -1,14 +1,18 @@
 // src/routes/contact/+server.js
+import { json, error } from '@sveltejs/kit';
+
 export async function POST({ request, getClientAddress }) {
   const formData = await request.formData();
   const subject = formData.get('subject')?.toString() || '';
   
-  // Block gibberish/random subjects
+  // Spam block: gibberish subjects
   if (/^[a-zA-Z]{10,}$/.test(subject) || subject.length < 3) {
-    return new Response('Spam detected', { status: 403 });
+    throw error(403, 'Spam detected');
   }
   
-  // Rate limit per IP (use KV or D1)
-  // Proceed to Mailgun...
+  // Add your Mailgun code here...
+  console.log('Legit form:', subject);
+  
+  return json({ success: true });
 }
 
