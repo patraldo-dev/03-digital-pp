@@ -14,6 +14,12 @@
 	"observability": {
 		"enabled": true
 	},
+        "kv_namespaces": [
+    {
+      "binding": "contact_form",
+      "id": "46f04b24d94c472f8e718f14562a17ae"
+    }
+  ],
 	"vars": {
                 "MAILGUN_DOMAIN": "pinchepoutine.digital",
 	       	"CONTACT_EMAIL": "contact@pinchepoutine.digital",
