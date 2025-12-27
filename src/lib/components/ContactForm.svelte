@@ -43,6 +43,14 @@
         ></textarea>
     </div>
 
+<input
+    type="text"
+    name="website"
+    style="display: none !important; opacity: 0; height: 0; width: 0; position: absolute;"
+    tabindex="-1"
+    autocomplete="off"
+/>
+
     {#if message}
         <div class="message" class:success={messageType === 'success'} class:error={messageType === 'error'}>
             {message}
