@@ -4,8 +4,10 @@
  * Determines the locale based on the request.
  * Checks for a 'lang' cookie first, then falls back to Accept-Language header.
  * Defaults to 'en'.
+ * @param {Request} request - The incoming request
+ * @returns {string} - The locale code (en, fr, or es)
  */
-function getLocaleFromRequest(request) {
+export function getLocaleFromRequest(request) {
     const cookieHeader = request.headers.get('cookie') || '';
     const match = cookieHeader.match(/lang=([^;]+)/);
     const cookieLang = match ? match[1] : null;

@@ -1,0 +1,22 @@
+{
+  "slug": "journal-2-choisir-jsdoc",
+  "title": "Journal #2 : Le chemin de la moindre résistance (JSDoc et Svelte 5)",
+  "date": "2024-05-23",
+  "author": "Pinche Poutine",
+  "excerpt": "Pourquoi j'ai choisi JSDoc plutôt que TypeScript pour mon projet SvelteKit 5 sur un Chromebook aux ressources limitées.",
+  "tags": ["SvelteKit", "JSDoc", "JavaScript", "Développement Web"],
+  "sections": [
+    {
+      "title": "Le moment du choix",
+      "content": "Quand t'installes SvelteKit, on te pose une question ben directe : TypeScript ou JSDoc? Ça fait des décennies que je suis devant un écran, de MS-DOS aux lignes T1, mais ça veut pas dire que les nouveaux outils me mélangent pas un peu. J'avais lu des trucs sur Reddit à propos de Rich Harris pis l'équipe de Svelte qui lâchaient TypeScript, mais ma décision était pas basée sur une analyse technique poussée. C'était juste du gros bon sens."
+    },
+    {
+      "title": "Éviter le trouble",
+      "content": "TypeScript, avec toutes ses promesses de sécurité, m'a toujours paru comme une source de bogues pis de gossages que je maîtrise pas pantoute. Rajouter TypeScript, c'était comme me chercher un problème de plus sur une liste déjà pas mal longue. J'ai choisi **JSDoc** parce que c'était le chemin qui promettait le moins de maux de tête."
+    },
+    {
+      "title": "Ce qui a fonctionné (par accident)",
+      "content": "Utiliser JSDoc sur mon Chromebook HP qui manque de jus, ça s'est avéré être une maudite bonne idée :\n\n1. **Simplicité :** Pas de fichiers de config de plus. C'est du JavaScript pur avec des commentaires qui aident l'éditeur à pas se perdre.\n2. **Moins de bruit :** J'ai l'autocomplétion sans avoir un compilateur qui me bloque avec des erreurs que je comprends pas tout le temps.\n3. **Léger :** Ma petite machine est ben contente de pas avoir à faire rouler des processus lourds en arrière-plan.\n\nAu final, le meilleur outil, c'est pas celui qui a le plus de gadgets; c'est celui qui te laisse travailler tranquille."
+    }
+  ]
+}

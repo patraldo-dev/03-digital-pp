@@ -1,8 +1,21 @@
 import { sendEmail as sendMailgunEmail } from '$lib/email.js';
+import { getLocaleFromRequest } from '$lib/i18n/server.js';
 
 /**
  * SvelteKit server hooks
  */
+
+/**
+ * Handle hook to set locale for each request
+ * @type {import('@sveltejs/kit').Handle}
+ */
+export async function handle({ event, resolve }) {
+    const lang = getLocaleFromRequest(event.request);
+    event.locals.lang = lang;
+    
+    const response = await resolve(event);
+    return response;
+}
 
 /**
  * Send weekly event updates to event subscribers
