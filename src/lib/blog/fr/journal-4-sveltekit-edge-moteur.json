@@ -1,0 +1,22 @@
+{
+  "slug": "journal-4-sveltekit-edge-moteur",
+  "title": "Journal #4 : SvelteKit 5 sur le « Edge » (Le moteur technique)",
+  "date": "2024-05-25",
+  "author": "Pinche Poutine",
+  "excerpt": "Construire antoine.patraldo.com avec SvelteKit 5, Cloudflare Workers, auth maison et FFMPEG—sans interface graphique.",
+  "tags": ["SvelteKit 5", "Cloudflare", "FFMPEG", "Web Crypto"],
+  "sections": [
+    {
+      "title": "Le Défi",
+      "content": "Bâtir [antoine.patraldo.com](https://antoine.patraldo.com), c'était pas juste une question de look. Le défi, c'était de créer une plateforme pour gérer des histoires pis des animations lourdes avec le moins de ressources possible. Ma solution? **SvelteKit 5 + Cloudflare Workers**."
+    },
+    {
+      "title": "La Recette Technique",
+      "content": "1. **Auth « Maison » :** En suivant les principes de Lucia Auth, j'ai monté mon propre système. J'utilise la **Web Crypto API** pour le hachage (PBKDF2) parce que les librairies Node standard vargent pas sur les Cloudflare Workers. Les sessions sont stockées dans une table **D1** avec rotation automatique.\n\n2. **Vidéo sans GUI :** Pour traiter les animations d'Antoine, j'utilise **FFMPEG** en ligne de commande. J'automatise le redimensionnement pis la conversion en formats web avant de les uploader. Pas d'éditeurs lourds; juste des scripts Bash.\n\n3. **Svelte 5 (Runes) :** L'utilisation de `$state` pis `$derived` m'a permis de gérer la galerie d'Antoine avec une fluidité que j'avais pas dans les versions d'avant."
+    },
+    {
+      "title": "Le mot de la fin",
+      "content": "T'as pas besoin d'une infrastructure chère ou de la machine de l'année. Avec un Chromebook, un peu de Bash pis Svelte 5, tu peux bâtir un moteur capable de faire vivre des années d'art accumulé."
+    }
+  ]
+}
