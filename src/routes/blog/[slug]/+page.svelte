@@ -5,23 +5,27 @@
 
     // Svelte 5: Get props
     let { data } = $props();
-    
+
     // Get translations from page data
     let t = $derived($page.data?.t || {});
 
-    // Initialize and render Mermaid diagrams
-    if (browser) {
-        $effect(() => {
-            mermaid.initialize({ 
-                startOnLoad: false,
-                theme: 'default',
-                securityLevel: 'loose',
-            });
+    // Initialize and render Mermaid diagrams (only in browser)
+    $effect(() => {
+        if (!browser) return;
+
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            securityLevel: 'loose',
+        });
+
+        // Wait for DOM to be ready
+        setTimeout(() => {
             mermaid.run({
                 querySelector: '.mermaid'
             });
-        });
-    }
+        }, 0);
+    });
 </script>
 
 <svelte:head>
