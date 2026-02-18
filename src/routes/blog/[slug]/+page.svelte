@@ -1,11 +1,27 @@
 <script>
     import { page } from '$app/stores';
+    import { browser } from '$app/environment';
 
     // Svelte 5: Get props
     let { data } = $props();
     
     // Get translations from page data
     let t = $derived($page.data?.t || {});
+
+    // Load Mermaid for diagram rendering
+    if (browser) {
+        import('mermaid').then(({ default: mermaid }) => {
+            mermaid.initialize({ 
+                startOnLoad: false,
+                theme: 'default',
+                securityLevel: 'loose',
+            });
+            // Render all mermaid diagrams on the page
+            mermaid.run({
+                querySelector: '.mermaid'
+            });
+        });
+    }
 </script>
 
 <svelte:head>
@@ -325,6 +341,24 @@
         background: linear-gradient(90deg, var(--color-brick), var(--color-sage));
         margin: 3rem 0;
         border-radius: 2px;
+    }
+
+    /* --- Mermaid Diagrams --- */
+    .post-content :global(.mermaid) {
+        display: flex;
+        justify-content: center;
+        margin: 2.5rem 0;
+        padding: 2rem;
+        background: var(--color-white);
+        border-radius: 16px;
+        border: 1px solid rgba(141, 163, 153, 0.2);
+        box-shadow: 0 5px 20px rgba(45, 58, 54, 0.05);
+        overflow-x: auto;
+    }
+
+    .post-content :global(.mermaid svg) {
+        max-width: 100%;
+        height: auto;
     }
 
     /* --- Post Footer --- */

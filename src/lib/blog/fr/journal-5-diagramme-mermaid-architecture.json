@@ -1,0 +1,26 @@
+{
+  "slug": "journal-5-diagramme-mermaid-architecture",
+  "title": "Journal #5 : Visualiser la stack avec Mermaid.js",
+  "date": "2024-05-26",
+  "author": "Pinche Poutine",
+  "excerpt": "Comment j'utilise Mermaid.js pour documenter l'architecture technique d'antoine.patraldo.com—des scripts Bash jusqu'au Edge Cloudflare.",
+  "tags": ["Mermaid.js", "Architecture", "Cloudflare", "Documentation"],
+  "sections": [
+    {
+      "title": "Pourquoi Mermaid?",
+      "content": "Après avoir bâti [antoine.patraldo.com](https://antoine.patraldo.com), j'ai réalisé que j'avais besoin d'une façon de documenter le flux—des fichiers bruts d'Antoine jusqu'à la galerie interactive finale. Les explications en texte, c'est correct, mais parfois t'as besoin d'un **diagramme visuel** pour comprendre comment tout se connecte.\n\nC'est là que **Mermaid.js** entre en jeu. Ça te permet d'écrire des diagrammes comme du code, ce qui signifie que je peux les garder dans le version control à côté de mes scripts Bash et composants Svelte."
+    },
+    {
+      "title": "Le Diagramme d'Architecture",
+      "content": "Voici le flux complet de la plateforme Antoine Patraldo :\n\n```mermaid\ngraph TD\n    %% Inicio del proceso manual/artístico\n    Start[Arte de Antoine] -->|Mayfly Style| Files[Archivos en Linux/Chromebook]\n\n    %% Procesamiento en la terminal (Tu fuerte)\n    subgraph \"Terminal (Bash + FFMPEG)\"\n        Files --> Script[Bash Script]\n        Script --> FF[FFMPEG Processing]\n        FF -->|Optimization| WebReady[Assets Web-Ready]\n    end\n\n    %% Despliegue al Edge\n    subgraph \"Cloudflare Infrastructure\"\n        WebReady -->|Wrangler Upload| R2[Cloudflare R2 / Assets]\n        Script -->|D1 Query| DB[(Cloudflare D1 SQL)]\n        DB ---|Metadata| R2\n    end\n\n    %% El Frontend de SvelteKit 5\n    subgraph \"SvelteKit 5 (The Engine)\"\n        DB -->|JSDoc Types| Hooks[hooks.server.js]\n        Hooks -->|Runes $state| UI[Frontend Interactivo]\n        UI -->|Secure Cookie| Auth[DIY Auth Lucia-based]\n    end\n\n    %% Estilos visuales\n    style Start fill:#f9f,stroke:#333,stroke-width:2px\n    style Script fill:#bbf,stroke:#333,stroke-width:2px\n    style DB fill:#dfd,stroke:#333,stroke-width:2px\n```\n\nCe diagramme montre tout le pipeline : depuis l'art brut d'Antoine, en passant par mon traitement Bash/FFMPEG, dans l'infrastructure edge de Cloudflare, et finalement au frontend SvelteKit 5."
+    },
+    {
+      "title": "Détails",
+      "content": "**Terminal (Bash + FFMPEG) :** C'est là que la magie opère. J'évite les GUIs entièrement—tout est scripté. FFMPEG gère le redimensionnement vidéo, la conversion de format et l'optimisation pour le web.\n\n**Cloudflare Infrastructure :** R2 stocke les assets réels (vidéos, images), tandis que D1 contient les métadonnées (titres, descriptions, données de session). Ils travaillent ensemble de façon transparente.\n\n**SvelteKit 5 (The Engine) :** Le frontend utilise JSDoc pour la sécurité des types, les Runes (`$state`, `$derived`) pour la réactivité, et un système d'auth DIY inspiré de Lucia Auth—tout ça tourne sur Cloudflare Workers."
+    },
+    {
+      "title": "Pourquoi c'est important",
+      "content": "La documentation n'a pas besoin d'être plate. Avec Mermaid, je peux :\n\n- Garder les diagrammes dans git à côté du code\n- Les mettre à jour quand l'architecture évolue\n- Les partager dans des fichiers markdown (comme ce blog post!)\n\nC'est l'outil parfait pour les devs qui préfèrent écrire du code plutôt que de glisser des boîtes dans un GUI."
+    }
+  ]
+}
