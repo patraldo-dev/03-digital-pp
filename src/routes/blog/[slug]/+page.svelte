@@ -18,13 +18,20 @@
             theme: 'default',
             securityLevel: 'loose',
         });
+    });
 
-        // Wait for DOM to be ready
-        setTimeout(() => {
+    // Render diagrams after content is in DOM
+    $effect(() => {
+        if (!browser || !data.post?.htmlContent) return;
+
+        // Wait for {@html} to inject content
+        const timer = setTimeout(() => {
             mermaid.run({
                 querySelector: '.mermaid'
             });
-        }, 0);
+        }, 100);
+
+        return () => clearTimeout(timer);
     });
 </script>
 
