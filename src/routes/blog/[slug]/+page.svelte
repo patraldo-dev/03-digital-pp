@@ -13,6 +13,7 @@
     $effect(() => {
         if (!browser) return;
 
+        console.log('[Mermaid] Initializing...');
         mermaid.initialize({
             startOnLoad: false,
             theme: 'default',
@@ -26,6 +27,10 @@
 
         // Wait for {@html} to inject content
         const timer = setTimeout(() => {
+            console.log('[Mermaid] Running...');
+            const elements = document.querySelectorAll('.mermaid');
+            console.log('[Mermaid] Found', elements.length, 'diagrams');
+            
             mermaid.run({
                 querySelector: '.mermaid'
             });
