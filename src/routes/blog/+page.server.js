@@ -5,7 +5,7 @@ const POSTS_PER_PAGE = 6;
 export async function load({ url, locals }) {
     const page = parseInt(url.searchParams.get('page') || '1');
     const offset = (page - 1) * POSTS_PER_PAGE;
-    const locale = locals.lang || 'en-us';
+    const locale = locals.lang || 'en';
 
     // Get all posts for the current locale
     const allPosts = await getBlogPosts(locale);

@@ -23,7 +23,7 @@ function parseMarkdown(content) {
 
 export async function load({ params, locals }) {
     const { slug } = params;
-    const locale = locals.lang || 'en-us';
+    const locale = locals.lang || 'en';
 
     // Get the post by slug for the current locale
     const post = await getBlogPost(slug, locale);
