@@ -1,6 +1,7 @@
 <script>
     import { page } from '$app/stores';
     import { browser } from '$app/environment';
+    import mermaid from 'mermaid';
 
     // Svelte 5: Get props
     let { data } = $props();
@@ -8,15 +9,14 @@
     // Get translations from page data
     let t = $derived($page.data?.t || {});
 
-    // Load Mermaid for diagram rendering
+    // Initialize and render Mermaid diagrams
     if (browser) {
-        import('mermaid').then(({ default: mermaid }) => {
+        $effect(() => {
             mermaid.initialize({ 
                 startOnLoad: false,
                 theme: 'default',
                 securityLevel: 'loose',
             });
-            // Render all mermaid diagrams on the page
             mermaid.run({
                 querySelector: '.mermaid'
             });
