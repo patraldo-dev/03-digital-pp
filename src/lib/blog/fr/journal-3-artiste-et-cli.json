@@ -1,0 +1,22 @@
+{
+  "slug": "journal-3-artiste-et-cli",
+  "title": "Journal #3 : Antoine Patraldo et la persistance des bits",
+  "date": "2024-05-24",
+  "author": "Pinche Poutine",
+  "excerpt": "Une collaboration avec l'illustrateur Antoine Patraldo, gérée via Bash, Vim et FFMPEG—sans interface graphique.",
+  "tags": ["FFMPEG", "Linux", "Bash", "Flux Créatif"],
+  "sections": [
+    {
+      "title": "L'artiste éphémère",
+      "content": "Mon projet actuel, [antoine.patraldo.com](https://antoine.patraldo.com), c'est une collaboration entre un illustrateur pis un fan fini de son art (moi-même). Antoine a commencé en force, comme une « éphémère » : trois ans de production intense après un départ tardif, pour finalement passer à autre chose de moins intéressant. J'espère que mes histoires pis mes scénarios vont le motiver à revenir, mais pour vrai, il a déjà créé assez de matériel pour m'alimenter pendant cent ans."
+    },
+    {
+      "title": "Workflow : Moins de souris, plus de Bash",
+      "content": "Pendant qu'il prend un break, moi je me réfugie dans la logique de la ligne de commande. Mon setup Linux, c'est du minimalisme pur : **Bash + Vim + FFMPEG**. Je fais tout ce que je peux pour pas toucher à ma souris; y'a de quoi avec le CLI qui file plus honnête, plus direct."
+    },
+    {
+      "title": "Le défi de la vidéo",
+      "content": "Gérer de la vidéo pis de l'audio pour ces histoires-là sans interface graphique (GUI), c'est tout un contrat. La plupart du monde me dirait qu'un éditeur vidéo avec des boutons pis des timelines c'est essentiel, mais je m'en tiens aux commandes **FFMPEG**. C'est plus long à apprendre, mais une fois que tu maîtrises le script, l'automatisation est imbattable. C'est ma façon de mettre de l'ordre dans le chaos créatif d'Antoine."
+    }
+  ]
+}

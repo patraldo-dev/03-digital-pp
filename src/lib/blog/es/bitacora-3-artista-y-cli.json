@@ -1,0 +1,22 @@
+{
+  "slug": "bitacora-3-artista-y-cli",
+  "title": "Bitácora #3: Antoine Patraldo y la persistencia de los bits",
+  "date": "2024-05-24",
+  "author": "Pinche Poutine",
+  "excerpt": "Una colaboración con el ilustrador Antoine Patraldo, gestionada a través de Bash, Vim y FFMPEG—sin interfaz gráfica.",
+  "tags": ["FFMPEG", "Linux", "Bash", "Flujo Creativo"],
+  "sections": [
+    {
+      "title": "El Artista Efímero",
+      "content": "Mi proyecto actual, [antoine.patraldo.com](https://antoine.patraldo.com), es una colaboración entre un ilustrador y un fanático de su arte (yo). Antoine empezó fuerte, como una \"efímera\": tres años de producción intensa tras un inicio tardío, para luego desvanecerse hacia otros rumbos menos interesantes. Aunque espero que mis historias y guiones lo motiven a volver, lo cierto es que ya dejó combustible creativo para una vida entera."
+    },
+    {
+      "title": "Flujo de trabajo: Menos ratón, más Bash",
+      "content": "Mientras él se toma un respiro, yo me refugio en la lógica de la terminal. Mi setup en Linux es un ejercicio de minimalismo forzado: **Bash + Vim + FFMPEG**. Hago todo lo posible por evitar el ratón; hay algo en la línea de comandos que se siente más honesto, más directo."
+    },
+    {
+      "title": "El reto del video",
+      "content": "Gestionar video y audio para estas historias sin una interfaz gráfica (GUI) es un desafío. Muchos dirían que un editor de video con botones y líneas de tiempo es necesario, pero yo sigo apostando por los comandos de **FFMPEG**. Es más lento aprenderlo, pero una vez que dominas el script, la automatización es imbatible. Es mi forma de darle estructura al caos artístico de Antoine."
+    }
+  ]
+}
