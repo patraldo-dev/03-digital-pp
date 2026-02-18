@@ -1,43 +1,55 @@
 <script>
+    import { page } from '$app/stores';
+    import { browser } from '$app/environment';
+
     // Svelte 5 Runes: State management
     let isOpen = $state(false);
+
+    // Get translations from page data (set in layout load function)
+    let t = $derived($page.data?.t || {});
 
     // Function to toggle mobile menu and lock body scroll
     function toggleMenu() {
         isOpen = !isOpen;
         // Prevent scrolling behind the menu
-        document.body.style.overflow = isOpen ? 'hidden' : '';
+        if (browser) {
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+        }
     }
 
     // Function to close menu (helper)
     function closeMenu() {
         isOpen = false;
-        document.body.style.overflow = '';
+        if (browser) {
+            document.body.style.overflow = '';
+        }
     }
 
     // Language Switcher Logic
     function setLanguage(lang) {
         document.cookie = `lang=${lang}; path=/; max-age=31536000`;
         // Reload is the simplest way to re-render SSR pages with new lang
-        window.location.reload();
+        if (browser) {
+            window.location.reload();
+        }
     }
 </script>
 
 <header class="header">
     <div class="container">
         <div class="nav-wrapper">
-            
+
             <!-- 1. Logo (Visible always) -->
             <a href="/" class="logo" onclick={closeMenu}>
-                ¡Pinche Poutine!
+                {t.logo_text || '¡Pinche Poutine!'}
             </a>
 
             <!-- 2. Desktop Navigation (Hidden on Mobile) -->
             <nav class="nav-desktop">
-                <a href="/about">About</a>
-                <a href="/services">Services</a>
-                <a href="/blog">Blog</a>
-                <a href="/contact" class="nav-cta">Contact</a>
+                <a href="/about">{t.nav_about || 'About'}</a>
+                <a href="/services">{t.nav_services || 'Services'}</a>
+                <a href="/blog">{t.nav_blog || 'Blog'}</a>
+                <a href="/contact" class="nav-cta">{t.nav_cta || 'Contact'}</a>
             </nav>
 
             <!-- 3. Language Switcher (Visible on Desktop) -->
@@ -50,9 +62,9 @@
             </div>
 
             <!-- 4. Hamburger Button (Visible only on Mobile) -->
-            <button 
-                class="hamburger" 
-                class:is-open={isOpen} 
+            <button
+                class="hamburger"
+                class:is-open={isOpen}
                 onclick={toggleMenu}
                 aria-label="Toggle navigation"
             >
@@ -67,22 +79,22 @@
     {#if isOpen}
         <div class="mobile-menu-overlay">
             <div class="mobile-menu-content">
-                
+
                 <!-- Mobile Menu Links -->
                 <div class="mobile-links">
-                    <a href="/about" onclick={closeMenu} class="mobile-link">About Us</a>
-                    <a href="/services" onclick={closeMenu} class="mobile-link">Services</a>
-                    <a href="/blog" onclick={closeMenu} class="mobile-link">Blog</a>
-                    <a href="/contact" onclick={closeMenu} class="mobile-link">Contact</a>
+                    <a href="/about" onclick={closeMenu} class="mobile-link">{t.nav_about || 'About Us'}</a>
+                    <a href="/services" onclick={closeMenu} class="mobile-link">{t.nav_services || 'Services'}</a>
+                    <a href="/blog" onclick={closeMenu} class="mobile-link">{t.nav_blog || 'Blog'}</a>
+                    <a href="/contact" onclick={closeMenu} class="mobile-link">{t.nav_contact || 'Contact'}</a>
                 </div>
 
                 <!-- Mobile Language Switcher (Inside menu for cleaner UI) -->
                 <div class="mobile-lang-section">
-                    <p>Choose Language:</p>
+                    <p>{t.lang_choose || 'Choose Language'}:</p>
                     <div class="mobile-lang-buttons">
-                        <button class="mobile-lang-btn" onclick={() => setLanguage('en')}>English</button>
-                        <button class="mobile-lang-btn" onclick={() => setLanguage('es')}>Español</button>
-                        <button class="mobile-lang-btn" onclick={() => setLanguage('fr')}>Français</button>
+                        <button class="mobile-lang-btn" onclick={() => setLanguage('en')}>{t.lang_english || 'English'}</button>
+                        <button class="mobile-lang-btn" onclick={() => setLanguage('es')}>{t.lang_spanish || 'Español'}</button>
+                        <button class="mobile-lang-btn" onclick={() => setLanguage('fr')}>{t.lang_french || 'Français'}</button>
                     </div>
                 </div>
 
@@ -336,7 +348,7 @@
             display: flex;
             align-items: center;
         }
-        
+
         .lang-switcher-desktop {
             display: flex;
         }

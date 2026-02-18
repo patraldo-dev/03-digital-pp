@@ -24,18 +24,18 @@
         line-height: 1.6;
         color: #333;
     }
-    
+
     main {
         min-height: calc(100vh - 200px);
         padding: 2rem 0;
     }
-    
+
     :global(.container) {
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 1rem;
     }
-    
+
     :global(.btn) {
         display: inline-block;
         padding: 0.75rem 1.5rem;
@@ -48,15 +48,15 @@
         font-size: 1rem;
         transition: background 0.3s ease;
     }
-    
+
     :global(.btn:hover) {
         background: #005a8b;
     }
-    
+
     :global(.btn-secondary) {
         background: #6c757d;
     }
-    
+
     :global(.btn-secondary:hover) {
         background: #5a6268;
     }

@@ -1,12 +1,22 @@
+<script>
+    import { page } from '$app/stores';
+
+    // Svelte 5: Get props
+    let { data } = $props();
+    
+    // Get translations from page data
+    let t = $derived($page.data?.t || {});
+</script>
+
 <svelte:head>
-    <title>{data.post?.title} - Pinche Poutine</title>
+    <title>{data.post?.title} - ¡Pinche Poutine!</title>
     <meta name="description" content={data.post?.excerpt} />
 </svelte:head>
 
 <article class="blog-post">
     <div class="container">
         <header class="post-header">
-            <a href="/blog" class="back-link">← Back to Blog</a>
+            <a href="/blog" class="back-link">← {t.blog_post_back || 'Back to Blog'}</a>
             <h1>{data.post?.title}</h1>
             <div class="post-meta">
                 <span class="post-date">{new Date(data.post?.date).toLocaleDateString()}</span>
@@ -30,13 +40,13 @@
                 <nav class="post-navigation">
                     {#if data.previousPost}
                         <a href="/blog/{data.previousPost.slug}" class="nav-link prev">
-                            <span class="nav-label">← Previous</span>
+                            <span class="nav-label">← {t.blog_post_prev || 'Previous'}</span>
                             <span class="nav-title">{data.previousPost.title}</span>
                         </a>
                     {/if}
                     {#if data.nextPost}
                         <a href="/blog/{data.nextPost.slug}" class="nav-link next">
-                            <span class="nav-label">Next →</span>
+                            <span class="nav-label">{t.blog_post_next || 'Next'} →</span>
                             <span class="nav-title">{data.nextPost.title}</span>
                         </a>
                     {/if}

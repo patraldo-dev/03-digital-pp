@@ -1,12 +1,23 @@
+<script>
+    import { page } from '$app/stores';
+    import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+
+    // Svelte 5: Get props
+    let { data } = $props();
+    
+    // Get translations from page data
+    let t = $derived($page.data?.t || {});
+</script>
+
 <svelte:head>
-    <title>Blog - YourSite</title>
-    <meta name="description" content="Read our latest insights on web development, design, and digital marketing." />
+    <title>{t.blog_page_title || 'Our Blog'} - ¡Pinche Poutine!</title>
+    <meta name="description" content={t.blog_page_subtitle || ''} />
 </svelte:head>
 
 <div class="page-header">
     <div class="container">
-        <h1>Our Blog</h1>
-        <p>Insights on web development, design, and digital marketing</p>
+        <h1>{t.blog_page_title || 'Our Blog'}</h1>
+        <p>{t.blog_page_subtitle || 'Insights on web development, design, and digital marketing'}</p>
     </div>
 </div>
 
@@ -25,7 +36,7 @@
                         </div>
                         <div class="post-content">
                             <p class="post-excerpt">{post.excerpt}</p>
-                            <a href="/blog/{post.slug}" class="read-more">Read More →</a>
+                            <a href="/blog/{post.slug}" class="read-more">{t.blog_read_more || 'Read More'} →</a>
                         </div>
                         {#if post.tags && post.tags.length > 0}
                             <div class="post-tags">
@@ -38,27 +49,27 @@
                 {/each}
             </div>
 
-            <!-- Pagination (if needed) -->
+            <!-- Pagination -->
             {#if data.pagination && data.pagination.totalPages > 1}
                 <div class="pagination">
                     {#if data.pagination.currentPage > 1}
-                        <a href="/blog?page={data.pagination.currentPage - 1}" class="pagination-link">← Previous</a>
+                        <a href="/blog?page={data.pagination.currentPage - 1}" class="pagination-link">← {t.blog_pagination_prev || 'Previous'}</a>
                     {/if}
-                    
+
                     <span class="pagination-info">
-                        Page {data.pagination.currentPage} of {data.pagination.totalPages}
+                        {t.blog_pagination_page || 'Page'} {data.pagination.currentPage} {t.blog_pagination_of || 'of'} {data.pagination.totalPages}
                     </span>
-                    
+
                     {#if data.pagination.currentPage < data.pagination.totalPages}
-                        <a href="/blog?page={data.pagination.currentPage + 1}" class="pagination-link">Next →</a>
+                        <a href="/blog?page={data.pagination.currentPage + 1}" class="pagination-link">{t.blog_pagination_next || 'Next'} →</a>
                     {/if}
                 </div>
             {/if}
         {:else}
             <div class="no-posts">
-                <h2>Coming Soon!</h2>
-                <p>We're working on some great content. Check back soon for our latest insights and articles.</p>
-                <a href="/contact" class="btn">Stay Updated</a>
+                <h2>{t.blog_no_posts_title || 'Coming Soon!'}</h2>
+                <p>{t.blog_no_posts_text || 'We\'re working on some great content. Check back soon for our latest insights and articles.'}</p>
+                <a href="/contact" class="btn">{t.blog_no_posts_btn || 'Stay Updated'}</a>
             </div>
         {/if}
     </section>
@@ -66,20 +77,14 @@
     <!-- Newsletter signup -->
     <section class="newsletter-section">
         <div class="newsletter-content">
-            <h2>Never Miss a Post</h2>
-            <p>Subscribe to our newsletter and get the latest articles delivered to your inbox.</p>
+            <h2>{t.blog_newsletter_title || 'Never Miss a Post'}</h2>
+            <p>{t.blog_newsletter_desc || 'Subscribe to our newsletter and get the latest articles delivered to your inbox.'}</p>
             <div class="newsletter-form">
                 <SubscribeForm />
             </div>
         </div>
     </section>
 </div>
-
-<script>
-    import SubscribeForm from '$lib/components/SubscribeForm.svelte';
-    
-    export let data;
-</script>
 
 <style>
     .page-header {

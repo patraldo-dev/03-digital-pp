@@ -1,198 +1,187 @@
+<script>
+    import { page } from '$app/stores';
+    
+    let t = $derived($page.data?.t || {});
+</script>
+
 <svelte:head>
-    <title>Services - YourSite</title>
-    <meta name="description" content="Discover our comprehensive web development and digital marketing services designed to help your business grow online." />
+    <title>{t.services_title || 'Our Services'} - ¡Pinche Poutine!</title>
+    <meta name="description" content={t.services_subtitle || ''} />
 </svelte:head>
 
 <div class="page-header">
     <div class="container">
-        <h1>Our Services</h1>
-        <p>Comprehensive solutions to help your business thrive online</p>
+        <h1>{t.services_title || 'Our Services'}</h1>
+        <p>{t.services_subtitle || 'Comprehensive solutions to help your business thrive online'}</p>
     </div>
 </div>
 
 <div class="container">
     <section class="services-intro">
         <div class="intro-content">
-            <h2>What We Do</h2>
-            <p>
-                We specialize in creating modern, high-performance web solutions that drive results. 
-                From custom websites to complex web applications, we have the expertise to bring 
-                your vision to life and help your business succeed in the digital world.
-            </p>
+            <h2>{t.services_intro_title || 'What We Do'}</h2>
+            <p>{t.services_intro_desc || 'We specialize in creating modern, high-performance web solutions...'}</p>
         </div>
     </section>
 
     <section class="services-grid">
+        <!-- Custom Web Development -->
         <div class="service-card featured">
             <div class="service-icon">🚀</div>
-            <h3>Custom Web Development</h3>
-            <p>
-                Build powerful, scalable web applications using cutting-edge technologies like 
-                SvelteKit, React, and Node.js. We create solutions tailored to your specific 
-                business needs.
-            </p>
+            <h3>{t.services_custom_title || 'Custom Web Development'}</h3>
+            <p>{t.services_custom_desc || 'Build powerful, scalable web applications...'}</p>
             <ul class="service-features">
-                <li>Custom web applications</li>
-                <li>E-commerce solutions</li>
-                <li>API development & integration</li>
-                <li>Database design & optimization</li>
+                <li>{t.services_custom_feat1 || 'Custom web applications'}</li>
+                <li>{t.services_custom_feat2 || 'E-commerce solutions'}</li>
+                <li>{t.services_custom_feat3 || 'API development & integration'}</li>
+                <li>{t.services_custom_feat4 || 'Database design & optimization'}</li>
             </ul>
-            <div class="service-price">Starting at $2,500</div>
+            <div class="service-price">{t.services_custom_price || 'Starting at $2,500'}</div>
         </div>
 
+        <!-- Website Design -->
         <div class="service-card">
             <div class="service-icon">🎨</div>
-            <h3>Website Design & Development</h3>
-            <p>
-                Create stunning, responsive websites that engage your audience and convert 
-                visitors into customers. Every site is optimized for performance and SEO.
-            </p>
+            <h3>{t.services_website_title || 'Website Design & Development'}</h3>
+            <p>{t.services_website_desc || 'Create stunning, responsive websites...'}</p>
             <ul class="service-features">
-                <li>Responsive web design</li>
-                <li>Content management systems</li>
-                <li>SEO optimization</li>
-                <li>Performance optimization</li>
+                <li>{t.services_website_feat1 || 'Responsive web design'}</li>
+                <li>{t.services_website_feat2 || 'Content management systems'}</li>
+                <li>{t.services_website_feat3 || 'SEO optimization'}</li>
+                <li>{t.services_website_feat4 || 'Performance optimization'}</li>
             </ul>
-            <div class="service-price">Starting at $1,500</div>
+            <div class="service-price">{t.services_website_price || 'Starting at $1,500'}</div>
         </div>
 
+        <!-- Cloud Deployment -->
         <div class="service-card">
             <div class="service-icon">☁️</div>
-            <h3>Cloud Deployment & Hosting</h3>
-            <p>
-                Deploy your applications on modern cloud platforms like Cloudflare Workers, 
-                Vercel, or AWS for maximum performance and reliability.
-            </p>
+            <h3>{t.services_cloud_title || 'Cloud Deployment & Hosting'}</h3>
+            <p>{t.services_cloud_desc || 'Deploy your applications on modern cloud platforms...'}</p>
             <ul class="service-features">
-                <li>Cloudflare Workers deployment</li>
-                <li>CDN configuration</li>
-                <li>SSL certificates</li>
-                <li>Performance monitoring</li>
+                <li>{t.services_cloud_feat1 || 'Cloudflare Workers deployment'}</li>
+                <li>{t.services_cloud_feat2 || 'CDN configuration'}</li>
+                <li>{t.services_cloud_feat3 || 'SSL certificates'}</li>
+                <li>{t.services_cloud_feat4 || 'Performance monitoring'}</li>
             </ul>
-            <div class="service-price">Starting at $500</div>
+            <div class="service-price">{t.services_cloud_price || 'Starting at $500'}</div>
         </div>
 
+        <!-- Email Marketing -->
         <div class="service-card">
             <div class="service-icon">📧</div>
-            <h3>Email Marketing Solutions</h3>
-            <p>
-                Build and manage effective email marketing campaigns with custom newsletter 
-                systems, automation workflows, and detailed analytics.
-            </p>
+            <h3>{t.services_email_title || 'Email Marketing Solutions'}</h3>
+            <p>{t.services_email_desc || 'Build and manage effective email marketing campaigns...'}</p>
             <ul class="service-features">
-                <li>Newsletter system setup</li>
-                <li>Email automation workflows</li>
-                <li>Mailgun/SendGrid integration</li>
-                <li>Analytics & reporting</li>
+                <li>{t.services_email_feat1 || 'Newsletter system setup'}</li>
+                <li>{t.services_email_feat2 || 'Email automation workflows'}</li>
+                <li>{t.services_email_feat3 || 'Mailgun/SendGrid integration'}</li>
+                <li>{t.services_email_feat4 || 'Analytics & reporting'}</li>
             </ul>
-            <div class="service-price">Starting at $800</div>
+            <div class="service-price">{t.services_email_price || 'Starting at $800'}</div>
         </div>
 
+        <!-- Mobile-First -->
         <div class="service-card">
             <div class="service-icon">📱</div>
-            <h3>Mobile-First Development</h3>
-            <p>
-                Ensure your web presence works flawlessly on all devices with our mobile-first 
-                approach to development and progressive web app solutions.
-            </p>
+            <h3>{t.services_mobile_title || 'Mobile-First Development'}</h3>
+            <p>{t.services_mobile_desc || 'Ensure your web presence works flawlessly...'}</p>
             <ul class="service-features">
-                <li>Progressive Web Apps (PWAs)</li>
-                <li>Mobile optimization</li>
-                <li>Cross-browser compatibility</li>
-                <li>Touch-friendly interfaces</li>
+                <li>{t.services_mobile_feat1 || 'Progressive Web Apps (PWAs)'}</li>
+                <li>{t.services_mobile_feat2 || 'Mobile optimization'}</li>
+                <li>{t.services_mobile_feat3 || 'Cross-browser compatibility'}</li>
+                <li>{t.services_mobile_feat4 || 'Touch-friendly interfaces'}</li>
             </ul>
-            <div class="service-price">Starting at $1,200</div>
+            <div class="service-price">{t.services_mobile_price || 'Starting at $1,200'}</div>
         </div>
 
+        <!-- Performance Optimization -->
         <div class="service-card">
             <div class="service-icon">⚡</div>
-            <h3>Performance Optimization</h3>
-            <p>
-                Speed up your existing website with our comprehensive performance optimization 
-                services. Faster sites mean better user experience and higher search rankings.
-            </p>
+            <h3>{t.services_perf_title || 'Performance Optimization'}</h3>
+            <p>{t.services_perf_desc || 'Speed up your existing website...'}</p>
             <ul class="service-features">
-                <li>Site speed optimization</li>
-                <li>Image compression & lazy loading</li>
-                <li>Code splitting & bundling</li>
-                <li>Core Web Vitals improvement</li>
+                <li>{t.services_perf_feat1 || 'Site speed optimization'}</li>
+                <li>{t.services_perf_feat2 || 'Image compression & lazy loading'}</li>
+                <li>{t.services_perf_feat3 || 'Code splitting & bundling'}</li>
+                <li>{t.services_perf_feat4 || 'Core Web Vitals improvement'}</li>
             </ul>
-            <div class="service-price">Starting at $600</div>
+            <div class="service-price">{t.services_perf_price || 'Starting at $600'}</div>
         </div>
     </section>
 
-    <section class="process-section">
-        <h2>Our Process</h2>
+    <!-- Process Section -->
+    <section class="process_section">
+        <h2>{t.services_process_title || 'Our Process'}</h2>
         <div class="process-steps">
             <div class="process-step">
-                <div class="step-number">1</div>
-                <h3>Discovery & Planning</h3>
-                <p>We start by understanding your business goals, target audience, and technical requirements.</p>
+                <div class="step-number">{t.services_process_step1_num || '1'}</div>
+                <h3>{t.services_process_step1_title || 'Discovery & Planning'}</h3>
+                <p>{t.services_process_step1_desc || 'We start by understanding your business goals...'}</p>
             </div>
             <div class="process-step">
-                <div class="step-number">2</div>
-                <h3>Design & Development</h3>
-                <p>Our team creates wireframes, designs, and develops your solution using modern best practices.</p>
+                <div class="step-number">{t.services_process_step2_num || '2'}</div>
+                <h3>{t.services_process_step2_title || 'Design & Development'}</h3>
+                <p>{t.services_process_step2_desc || 'Our team creates wireframes, designs...'}</p>
             </div>
             <div class="process-step">
-                <div class="step-number">3</div>
-                <h3>Testing & Optimization</h3>
-                <p>Rigorous testing ensures your site works perfectly across all devices and browsers.</p>
+                <div class="step-number">{t.services_process_step3_num || '3'}</div>
+                <h3>{t.services_process_step3_title || 'Testing & Optimization'}</h3>
+                <p>{t.services_process_step3_desc || 'Rigorous testing ensures your site works...'}</p>
             </div>
             <div class="process-step">
-                <div class="step-number">4</div>
-                <h3>Launch & Support</h3>
-                <p>We deploy your site and provide ongoing support to keep it running smoothly.</p>
+                <div class="step-number">{t.services_process_step4_num || '4'}</div>
+                <h3>{t.services_process_step4_title || 'Launch & Support'}</h3>
+                <p>{t.services_process_step4_desc || 'We deploy your site and provide ongoing support...'}</p>
             </div>
         </div>
     </section>
 
+    <!-- Technologies Section -->
     <section class="technologies-section">
-        <h2>Technologies We Use</h2>
+        <h2>{t.services_tech_title || 'Technologies We Use'}</h2>
         <div class="tech-grid">
             <div class="tech-category">
-                <h3>Frontend</h3>
+                <h3>{t.services_tech_frontend || 'Frontend'}</h3>
                 <div class="tech-items">
-                    <span class="tech-item">SvelteKit</span>
-                    <span class="tech-item">React</span>
-                    <span class="tech-item">Vue.js</span>
-                    <span class="tech-item">TypeScript</span>
-                    <span class="tech-item">Tailwind CSS</span>
+                    <span class="tech-item">{t.services_tech_sveltekit || 'SvelteKit'}</span>
+                    <span class="tech-item">{t.services_tech_react || 'React'}</span>
+                    <span class="tech-item">{t.services_tech_vue || 'Vue.js'}</span>
+                    <span class="tech-item">{t.services_tech_ts || 'TypeScript'}</span>
+                    <span class="tech-item">{t.services_tech_tailwind || 'Tailwind CSS'}</span>
                 </div>
             </div>
             <div class="tech-category">
-                <h3>Backend</h3>
+                <h3>{t.services_tech_backend || 'Backend'}</h3>
                 <div class="tech-items">
-                    <span class="tech-item">Node.js</span>
-                    <span class="tech-item">Cloudflare Workers</span>
-                    <span class="tech-item">Serverless Functions</span>
-                    <span class="tech-item">REST APIs</span>
-                    <span class="tech-item">GraphQL</span>
+                    <span class="tech-item">{t.services_tech_node || 'Node.js'}</span>
+                    <span class="tech-item">{t.services_tech_cf || 'Cloudflare Workers'}</span>
+                    <span class="tech-item">{t.services_tech_serverless || 'Serverless Functions'}</span>
+                    <span class="tech-item">{t.services_tech_rest || 'REST APIs'}</span>
+                    <span class="tech-item">{t.services_tech_graphql || 'GraphQL'}</span>
                 </div>
             </div>
             <div class="tech-category">
-                <h3>Deployment</h3>
+                <h3>{t.services_tech_deployment || 'Deployment'}</h3>
                 <div class="tech-items">
-                    <span class="tech-item">Cloudflare</span>
-                    <span class="tech-item">Vercel</span>
-                    <span class="tech-item">Netlify</span>
-                    <span class="tech-item">AWS</span>
-                    <span class="tech-item">Docker</span>
+                    <span class="tech-item">{t.services_tech_cloudflare || 'Cloudflare'}</span>
+                    <span class="tech-item">{t.services_tech_vercel || 'Vercel'}</span>
+                    <span class="tech-item">{t.services_tech_netlify || 'Netlify'}</span>
+                    <span class="tech-item">{t.services_tech_aws || 'AWS'}</span>
+                    <span class="tech-item">{t.services_tech_docker || 'Docker'}</span>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- CTA Section -->
     <section class="cta-section">
         <div class="cta-content">
-            <h2>Ready to Get Started?</h2>
-            <p>
-                Let's discuss your project and find the perfect solution for your business needs. 
-                Get in touch for a free consultation.
-            </p>
+            <h2>{t.services_cta_title || 'Ready to Get Started?'}</h2>
+            <p>{t.services_cta_desc || 'Let\'s discuss your project and find the perfect solution...'}</p>
             <div class="cta-buttons">
-                <a href="/contact" class="btn btn-large">Start Your Project</a>
-                <a href="/contact" class="btn btn-outline btn-large">Schedule Consultation</a>
+                <a href="/contact" class="btn btn-large">{t.services_cta_btn1 || 'Start Your Project'}</a>
+                <a href="/contact" class="btn btn-outline btn-large">{t.services_cta_btn2 || 'Schedule Consultation'}</a>
             </div>
         </div>
     </section>
@@ -263,7 +252,7 @@
     }
 
     .service-card.featured::before {
-        content: 'Popular';
+        content: attr(data-popular);
         position: absolute;
         top: -12px;
         right: 20px;
@@ -327,7 +316,7 @@
         border-top: 2px solid #f0f0f0;
     }
 
-    .process-section {
+    .process_section {
         padding: 4rem 0;
         background: #f8f9fa;
         margin: 4rem -1rem 0;
@@ -335,7 +324,7 @@
         padding-right: 1rem;
     }
 
-    .process-section h2 {
+    .process_section h2 {
         text-align: center;
         color: #2c3e50;
         margin-bottom: 3rem;
@@ -463,13 +452,40 @@
         flex-wrap: wrap;
     }
 
+    .btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: white;
+        color: #667eea;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-large {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 2px solid white;
+        color: white;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
     @media (max-width: 768px) {
         .page-header h1 {
             font-size: 2rem;
         }
 
         .intro-content h2,
-        .process-section h2,
+        .process_section h2,
         .technologies-section h2,
         .cta-content h2 {
             font-size: 2rem;
@@ -479,7 +495,7 @@
             grid-template-columns: 1fr;
         }
 
-        .process-section,
+        .process_section,
         .cta-section {
             margin-left: -1rem;
             margin-right: -1rem;
