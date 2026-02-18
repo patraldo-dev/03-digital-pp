@@ -41,7 +41,8 @@
 
             <!-- 1. Logo (Visible always) -->
             <a href="/" class="logo" onclick={closeMenu}>
-                {t.logo_text || '¡Pinche Poutine!'}
+                <span class="logo-main">{t.logo_text || '¡Pinche Poutine!'}</span>
+                <span class="logo-digital">Digital</span>
             </a>
 
             <!-- 2. Desktop Navigation (Hidden on Mobile) -->
@@ -147,6 +148,21 @@
         letter-spacing: -0.5px;
         position: relative;
         z-index: 1001;
+        display: flex;
+        align-items: baseline;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+    }
+
+    .logo-main {
+        white-space: nowrap;
+    }
+
+    .logo-digital {
+        font-weight: 700;
+        font-size: 0.85em;
+        color: var(--color-sage);
+        letter-spacing: 0.5px;
     }
 
     /* --- Desktop Nav --- */
