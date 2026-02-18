@@ -3,15 +3,29 @@ import { getBlogPosts, getBlogPost } from '$lib/blog/loader.js';
 
 // Simple markdown-like parser (in production, use a proper markdown parser like marked or remark)
 function parseMarkdown(content) {
-    return content
+    // FIRST: Extract code blocks before any other processing
+    const codeBlocks = [];
+    let index = 0;
+    
+    // Extract mermaid blocks
+    content = content.replace(/`{3}mermaid\n([\s\S]*?)\n`{3}/g, (match, code) => {
+        codeBlocks[index] = `<div class="mermaid">${code}</div>`;
+        return `%%CODE_BLOCK_${index}%%`;
+    });
+    
+    // Extract other code blocks
+    content = content.replace(/`{3}(.*?)\n([\s\S]*?)\n`{3}/g, (match, lang, code) => {
+        codeBlocks[index] = `<pre><code class="language-${lang}">${code}</code></pre>`;
+        return `%%CODE_BLOCK_${index}%%`;
+    });
+    
+    // NOW: Process remaining markdown
+    let html = content
         .replace(/^# (.*$)/gm, '<h1>$1</h1>')
         .replace(/^## (.*$)/gm, '<h2>$1</h2>')
         .replace(/^### (.*$)/gm, '<h3>$1</h3>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/`{3}mermaid\n([\s\S]*?)\n`{3}/g, '<div class="mermaid">$1</div>')
-        .replace(/`{3}bash\n([\s\S]*?)\n`{3}/g, '<pre><code class="language-bash">$1</code></pre>')
-        .replace(/`{3}(.*?)\n([\s\S]*?)\n`{3}/g, '<pre><code class="language-$1">$2</code></pre>')
         .replace(/`(.*?)`/g, '<code>$1</code>')
         .replace(/^- (.*$)/gm, '<ul><li>$1</li></ul>')
         .replace(/<\/ul>\s*<ul>/g, '')
@@ -19,6 +33,13 @@ function parseMarkdown(content) {
         .replace(/^(?!<[h|u|p])/gm, '<p>')
         .replace(/$/g, '</p>')
         .replace(/<p><\/p>/g, '');
+    
+    // FINALLY: Restore code blocks
+    codeBlocks.forEach((block, i) => {
+        html = html.replace(`%%CODE_BLOCK_${i}%%`, block);
+    });
+    
+    return html;
 }
 
 export async function load({ params, locals }) {
