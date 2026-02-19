@@ -19,8 +19,8 @@
 <div class="page-header">
     <div class="container">
         <div class="badge">Services</div>
-        <h1>Not Taking On Clients (Mostly)</h1>
-        <p class="subtitle">Semi-retired, selective, and intentionally unavailable</p>
+        <h1>Let's Collaborate</h1>
+        <p class="subtitle">If it's the right fit, I'd love to work with you</p>
     </div>
 </div>
 
@@ -29,41 +29,39 @@
     <section class="intro-section">
         <div class="content-box">
             <p class="lead">
-                I'm semi-retired and intentionally selective about what I work on. 
-                That said, if you've got an interesting problem and we get along, 
-                I'm open to consulting gigs.
+                I'm selective about what I work on, but I'm always open to 
+                interesting collaborations. If you're an artist, animator, 
+                writer, or want to build a web app—let's talk.
             </p>
-            <div class="rules">
-                <div class="rule">❌ No long-term commitments</div>
-                <div class="rule">❌ No projects I don't believe in</div>
-                <div class="rule">❌ No clients I wouldn't enjoy working with</div>
-            </div>
+            <p class="lead">
+                No long-term commitments. No projects I don't believe in. 
+                Just good work with good people.
+            </p>
         </div>
     </section>
 
     <!-- What I Actually Do -->
     <section class="services-section">
         <div class="section-header">
-            <h2>🛠️ What I Actually Do</h2>
+            <h2>🛠️ What I Can Help With</h2>
             <div class="line"></div>
         </div>
 
         <div class="service-card">
-            <h3>Technical Consulting</h3>
+            <h3>Technical Consulting & Collaboration</h3>
             <p class="service-desc">
-                Not "let's have weekly standups" consulting. More like:
+                Got an interesting problem? Let's solve it together:
             </p>
             <ul class="service-list">
-                <li>"Here's my architecture problem, help me solve it in 2 hours"</li>
-                <li>"Review my code and tell me what I'm missing"</li>
-                <li>"How would YOU build this?"</li>
+                <li>Architecture review & guidance</li>
+                <li>SvelteKit 5 + Cloudflare Workers development</li>
+                <li>Edge-native design (D1, Images, Stream)</li>
+                <li>DIY authentication (Web Crypto API)</li>
+                <li>Automating workflows with Bash + FFMPEG</li>
             </ul>
             <p class="service-desc">
                 <strong>I'm good at:</strong> SvelteKit 5, Cloudflare Workers, edge-native architecture, 
                 DIY auth, automating boring stuff with Bash.
-            </p>
-            <p class="rate-note">
-                <strong>Rate:</strong> Let's talk. (If you have to ask, we're probably not a fit.)
             </p>
         </div>
     </section>
@@ -186,18 +184,14 @@
     <section class="contact-section">
         <div class="container">
             <div class="contact-box">
-                <h2>📬 Interested?</h2>
+                <h2>📬 Let's Talk</h2>
                 <p class="contact-intro">
-                    Email me: <a href="mailto:info@pinchepoutine.digital">info@pinchepoutine.digital</a>
+                    If you're an artist, animator, writer, or want to build a web app—
+                    send me an email and we'll take it from there.
                 </p>
                 <p class="contact-intro">
-                    Tell me:
+                    <a href="mailto:info@pinchepoutine.digital">info@pinchepoutine.digital</a>
                 </p>
-                <ol class="contact-list">
-                    <li>What you're building</li>
-                    <li>Why it's interesting</li>
-                    <li>Why you think we'd work well together</li>
-                </ol>
                 <p class="contact-outro">
                     No pressure. No sales pitch. If it's a fit, great. If not, no hard feelings.
                 </p>
@@ -331,24 +325,6 @@
         line-height: 1.8;
         color: #5F6E68;
         margin-bottom: 2rem;
-    }
-
-    .rules {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-        margin-top: 2rem;
-    }
-
-    .rule {
-        background: var(--color-white);
-        padding: 0.75rem 1.5rem;
-        border-radius: 50px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: var(--color-brick);
-        border: 2px solid rgba(201, 76, 53, 0.2);
     }
 
     /* --- Services Section --- */
@@ -655,22 +631,6 @@
 
     .contact-intro a:hover {
         border-bottom-color: var(--color-white);
-    }
-
-    .contact-list {
-        text-align: left;
-        max-width: 500px;
-        margin: 0 auto 2rem;
-        padding-left: 2rem;
-        position: relative;
-        z-index: 2;
-    }
-
-    .contact-list li {
-        color: rgba(255, 255, 255, 0.95);
-        font-size: 1.05rem;
-        margin-bottom: 0.75rem;
-        line-height: 1.6;
     }
 
     .contact-outro {
