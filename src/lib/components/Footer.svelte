@@ -18,7 +18,6 @@
                 <h4>{t.footer_quick_links || 'Quick Links'}</h4>
                 <ul>
                     <li><a href="/">{t.footer_home || 'Home'}</a></li>
-                    <li><a href="/about">{t.footer_about || 'About'}</a></li>
                     <li><a href="/services">{t.footer_services || 'Services'}</a></li>
                     <li><a href="/blog">{t.footer_blog || 'Blog'}</a></li>
                     <li><a href="/contact">{t.footer_contact || 'Contact'}</a></li>

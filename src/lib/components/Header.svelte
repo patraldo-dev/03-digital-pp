@@ -47,7 +47,6 @@
 
             <!-- 2. Desktop Navigation (Hidden on Mobile) -->
             <nav class="nav-desktop">
-                <a href="/about">{t.nav_about || 'About'}</a>
                 <a href="/services">{t.nav_services || 'Services'}</a>
                 <a href="/blog">{t.nav_blog || 'Blog'}</a>
                 <a href="/contact" class="nav-cta">{t.nav_cta || 'Contact'}</a>
@@ -83,7 +82,6 @@
 
                 <!-- Mobile Menu Links -->
                 <div class="mobile-links">
-                    <a href="/about" onclick={closeMenu} class="mobile-link">{t.nav_about || 'About Us'}</a>
                     <a href="/services" onclick={closeMenu} class="mobile-link">{t.nav_services || 'Services'}</a>
                     <a href="/blog" onclick={closeMenu} class="mobile-link">{t.nav_blog || 'Blog'}</a>
                     <a href="/contact" onclick={closeMenu} class="mobile-link">{t.nav_contact || 'Contact'}</a>
