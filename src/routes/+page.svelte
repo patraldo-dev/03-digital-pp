@@ -24,9 +24,9 @@
 <div class="hero">
     <div class="container">
         <div class="hero-content">
-            <div class="badge">🌶️ & 🍁 • Guadalajara, México</div>
+            <div class="badge">{t.home_hero_badge}</div>
             <h1>
-                <span class="gradient-text">One-Person Studio</span>
+                <span class="gradient-text">{t.home_hero_title}</span>
             </h1>
             <p class="hero-subtitle">
                 I build edge-native web apps and automate creative workflows. 
@@ -34,10 +34,10 @@
             </p>
             <div class="hero-actions">
                 <a href="#projects" class="btn btn-primary">
-                    See My Work
+                    {t.home_hero_btn_projects}
                     <span class="arrow">→</span>
                 </a>
-                <a href="/services" class="btn btn-secondary">Let's Collaborate</a>
+                <a href="/services" class="btn btn-secondary">{t.home_hero_btn_services}</a>
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@
     <div class="container">
         <div class="about-box">
             <div class="about-content">
-                <h2>👋 About Me</h2>
+                <h2>{t.home_about_title}</h2>
                 <p class="about-text">
                     I live in <strong>Guadalajara, México</strong> and like in-person 
                     collaboration best—at least to start or at some point in the process.
@@ -75,14 +75,14 @@
 <section class="projects-section" id="projects">
     <div class="container">
         <div class="section-header">
-            <h2>🎨 Selected Projects</h2>
+            <h2>🎨 {t.home_projects_title}</h2>
             <div class="line"></div>
         </div>
 
         <div class="projects-grid">
             <!-- Antoine Patraldo -->
             <a href="https://antoine.patraldo.com" target="_blank" rel="noopener" class="project-card featured">
-                <div class="project-badge">Featured</div>
+                <div class="project-badge">{t.home_projects_featured_badge}</div>
                 <div class="project-header">
                     <span class="project-emoji">🎨</span>
                     <h3>antoine.patraldo.com</h3>
@@ -143,8 +143,8 @@
         </div>
 
         <div class="projects-cta">
-            <p>Want something similar?</p>
-            <a href="/services" class="btn-text">Let's Talk →</a>
+            <p>{t.home_projects_cta_text}</p>
+            <a href="/services" class="btn-text">{t.home_projects_cta_btn} →</a>
         </div>
     </div>
 </section>
@@ -153,29 +153,29 @@
 <section class="process-section">
     <div class="container">
         <div class="section-header">
-            <h2>⚙️ How I Work</h2>
+            <h2>{t.home_process_title}</h2>
             <div class="line"></div>
         </div>
 
         <div class="process-grid">
             <div class="process-item">
                 <div class="process-icon">💻</div>
-                <h3>Terminal-First</h3>
+                <h3>{t.home_process_terminal_title}</h3>
                 <p>Bash + Vim + FFMPEG. If it has a GUI, I probably don't use it.</p>
             </div>
             <div class="process-item">
                 <div class="process-icon">⚡</div>
-                <h3>SvelteKit 5</h3>
+                <h3>{t.home_process_svelte_title}</h3>
                 <p>Runes, JSDoc, no TypeScript drama. Clean, fast, edge-native.</p>
             </div>
             <div class="process-item">
                 <div class="process-icon">☁️</div>
-                <h3>Cloudflare Edge</h3>
+                <h3>{t.home_process_cloudflare_title}</h3>
                 <p>Workers, D1, Images, Stream—no traditional servers.</p>
             </div>
             <div class="process-item">
                 <div class="process-icon">🤖</div>
-                <h3>AI-Assisted</h3>
+                <h3>{t.home_process_ai_title}</h3>
                 <p>I pair-program with AI agents. They don't complain about my hours.</p>
             </div>
         </div>

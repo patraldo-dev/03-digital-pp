@@ -19,8 +19,8 @@
 <div class="page-header">
     <div class="container">
         <div class="badge">Services</div>
-        <h1>Let's Collaborate</h1>
-        <p class="subtitle">If it's the right fit, I'd love to work with you</p>
+        <h1>{t.services_page_title}</h1>
+        <p class="subtitle">{t.services_page_subtitle}</p>
     </div>
 </div>
 
@@ -43,12 +43,12 @@
     <!-- What I Actually Do -->
     <section class="services-section">
         <div class="section-header">
-            <h2>🛠️ What I Can Help With</h2>
+            <h2>{t.services_help_title}</h2>
             <div class="line"></div>
         </div>
 
         <div class="service-card">
-            <h3>Technical Consulting & Collaboration</h3>
+            <h3>{t.services_help_subtitle}</h3>
             <p class="service-desc">
                 Got an interesting problem? Let's solve it together:
             </p>
@@ -69,7 +69,7 @@
     <!-- How I Work -->
     <section class="process-section">
         <div class="section-header">
-            <h2>⚙️ How I Work</h2>
+            <h2>{t.services_process_title}</h2>
             <div class="line"></div>
         </div>
 
@@ -109,7 +109,7 @@
     <!-- Proof It Works -->
     <section class="projects-section">
         <div class="section-header">
-            <h2>🎨 See It In Action</h2>
+            <h2>{t.services_projects_title}</h2>
             <div class="line"></div>
         </div>
 
@@ -184,7 +184,7 @@
     <section class="contact-section">
         <div class="container">
             <div class="contact-box">
-                <h2>📬 Let's Talk</h2>
+                <h2>{t.services_contact_title}</h2>
                 <p class="contact-intro">
                     If you're an artist, animator, writer, or want to build a web app—
                     send me an email and we'll take it from there.
