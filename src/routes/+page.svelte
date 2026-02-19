@@ -28,7 +28,7 @@
             <h1>
                 <span class="gradient-text">{t.home_hero_title}</span>
             </h1>
-            <p class="hero-subtitle">{t.home_hero_subtitle || 'I cobble together edge-native web apps for artists and others in the creative community. One-person studio, AI-assisted, terminal-first.'}</p>
+            <p class="hero-subtitle">{t.home_hero_subtitle || 'I mostly orchestrate, if not cobble together, edge-native web apps for artists and others in the creative community. One-person studio, AI-assisted, terminal-first.'}</p>
             <div class="hero-actions">
                 <a href="#projects" class="btn btn-primary">
                     {t.home_hero_btn_projects}
