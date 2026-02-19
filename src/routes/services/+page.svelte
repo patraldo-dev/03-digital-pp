@@ -6,8 +6,8 @@
 </script>
 
 <svelte:head>
-    <title>Services - ¡Pinche Poutine! Digital</title>
-    <meta name="description" content="Technical consulting for edge-native web projects" />
+    <title>{t.services_page_title || 'Services'} - ¡Pinche Poutine! Digital</title>
+    <meta name="description" content={t.services_page_subtitle || ''} />
 </svelte:head>
 
 <!-- Background Blobs -->
@@ -28,15 +28,8 @@
     <!-- Intro Section -->
     <section class="intro-section">
         <div class="content-box">
-            <p class="lead">
-                I'm selective about what I work on, but I'm always open to 
-                interesting collaborations. If you're an artist, animator, 
-                writer, or want to build a web app—let's talk.
-            </p>
-            <p class="lead">
-                No long-term commitments. No projects I don't believe in. 
-                Just good work with good people.
-            </p>
+            <p class="lead">{t.services_intro_1}</p>
+            <p class="lead">{t.services_intro_2}</p>
         </div>
     </section>
 
@@ -49,20 +42,15 @@
 
         <div class="service-card">
             <h3>{t.services_help_subtitle}</h3>
-            <p class="service-desc">
-                Got an interesting problem? Let's solve it together:
-            </p>
+            <p class="service-desc">{t.services_help_desc}</p>
             <ul class="service-list">
-                <li>Architecture review & guidance</li>
-                <li>SvelteKit 5 + Cloudflare Workers development</li>
-                <li>Edge-native design (D1, Images, Stream)</li>
-                <li>DIY authentication (Web Crypto API)</li>
-                <li>Automating workflows with Bash + FFMPEG</li>
+                <li>{t.services_help_item1}</li>
+                <li>{t.services_help_item2}</li>
+                <li>{t.services_help_item3}</li>
+                <li>{t.services_help_item4}</li>
+                <li>{t.services_help_item5}</li>
             </ul>
-            <p class="service-desc">
-                <strong>I'm good at:</strong> SvelteKit 5, Cloudflare Workers, edge-native architecture, 
-                DIY auth, automating boring stuff with Bash.
-            </p>
+            <p class="service-desc">{@html t.services_help_skills}</p>
         </div>
     </section>
 
@@ -76,34 +64,32 @@
         <div class="process-grid">
             <div class="process-item">
                 <div class="process-icon">💻</div>
-                <h3>Terminal-First</h3>
-                <p>If it has a GUI, I probably don't use it. Bash + Vim + FFMPEG is my happy place.</p>
+                <h3>{t.services_process_terminal_title}</h3>
+                <p>{t.services_process_terminal_desc}</p>
             </div>
             <div class="process-item">
                 <div class="process-icon">🎬</div>
-                <h3>Video Without GUI</h3>
-                <p>FFMPEG from the command line. No mouse. No timeline editors. Just scripts.</p>
+                <h3>{t.services_process_video_title}</h3>
+                <p>{t.services_process_video_desc}</p>
             </div>
             <div class="process-item">
                 <div class="process-icon">⚡</div>
-                <h3>SvelteKit 5</h3>
-                <p>Runes, JSDoc, no TypeScript drama. Clean, fast, edge-native.</p>
+                <h3>{t.services_process_svelte_title}</h3>
+                <p>{t.services_process_svelte_desc}</p>
             </div>
             <div class="process-item">
                 <div class="process-icon">☁️</div>
-                <h3>Cloudflare Edge</h3>
-                <p>Workers, D1, Images, Stream—no traditional servers. Global by default.</p>
+                <h3>{t.services_process_cloudflare_title}</h3>
+                <p>{t.services_process_cloudflare_desc}</p>
             </div>
             <div class="process-item">
                 <div class="process-icon">🤖</div>
-                <h3>AI-Assisted</h3>
-                <p>I pair-program with AI agents. They don't complain about my hours.</p>
+                <h3>{t.services_process_ai_title}</h3>
+                <p>{t.services_process_ai_desc}</p>
             </div>
         </div>
 
-        <p class="process-summary">
-            This means: Fast iteration, minimal overhead, no hand-holding.
-        </p>
+        <p class="process-summary">{t.services_process_summary}</p>
     </section>
 
     <!-- Proof It Works -->
@@ -118,13 +104,9 @@
             <a href="https://antoine.patraldo.com" target="_blank" rel="noopener" class="project-card">
                 <div class="project-header">
                     <span class="project-emoji">🎨</span>
-                    <h3>antoine.patraldo.com</h3>
+                    <h3>{t.project_antoine_title}</h3>
                 </div>
-                <p class="project-desc">
-                    Digital gallery for illustrator Antoine Patraldo. Built with SvelteKit 5, 
-                    Cloudflare Workers, DIY auth (Web Crypto API), and FFMPEG + Bash for 
-                    video processing. Zero GUI, zero traditional servers.
-                </p>
+                <p class="project-desc">{t.project_antoine_desc}</p>
                 <div class="project-tech">
                     <span class="tech-tag">SvelteKit 5</span>
                     <span class="tech-tag">Cloudflare</span>
@@ -138,33 +120,25 @@
             <a href="https://pinchepoutine.digital" target="_blank" rel="noopener" class="project-card">
                 <div class="project-header">
                     <span class="project-emoji">🌶️</span>
-                    <h3>pinchepoutine.digital</h3>
+                    <h3>{t.project_pinche_title}</h3>
                 </div>
-                <p class="project-desc">
-                    This site. Creative web development and animation projects. 
-                    SvelteKit 5 on Cloudflare Workers with full i18n support 
-                    (EN/FR/ES) and DIY email subscription system.
-                </p>
+                <p class="project-desc">{t.project_pinche_desc}</p>
                 <div class="project-tech">
                     <span class="tech-tag">SvelteKit 5</span>
                     <span class="tech-tag">i18n</span>
                     <span class="tech-tag">Cloudflare D1</span>
                     <span class="tech-tag">Mailgun</span>
                 </div>
-                <span class="project-link">You're Here →</span>
+                <span class="project-link">{t.project_pinche_link} →</span>
             </a>
 
             <!-- Patrouch.ca -->
             <a href="https://patrouch.ca" target="_blank" rel="noopener" class="project-card">
                 <div class="project-header">
                     <span class="project-emoji">🍁</span>
-                    <h3>patrouch.ca</h3>
+                    <h3>{t.project_patrouch_title}</h3>
                 </div>
-                <p class="project-desc">
-                    Personal portfolio and digital presence. Clean, fast, 
-                    edge-native architecture with minimal dependencies 
-                    and maximum performance.
-                </p>
+                <p class="project-desc">{t.project_patrouch_desc}</p>
                 <div class="project-tech">
                     <span class="tech-tag">SvelteKit</span>
                     <span class="tech-tag">Edge-Native</span>
@@ -175,9 +149,7 @@
             </a>
         </div>
 
-        <p class="projects-note">
-            This is the kind of thing I enjoy building. If you want something similar, let's talk.
-        </p>
+        <p class="projects-note">{t.services_projects_note}</p>
     </section>
 
     <!-- Contact -->
@@ -185,16 +157,11 @@
         <div class="container">
             <div class="contact-box">
                 <h2>{t.services_contact_title}</h2>
-                <p class="contact-intro">
-                    If you're an artist, animator, writer, or want to build a web app—
-                    send me an email and we'll take it from there.
-                </p>
+                <p class="contact-intro">{t.services_contact_intro}</p>
                 <p class="contact-intro">
                     <a href="mailto:info@pinchepoutine.digital">info@pinchepoutine.digital</a>
                 </p>
-                <p class="contact-outro">
-                    No pressure. No sales pitch. If it's a fit, great. If not, no hard feelings.
-                </p>
+                <p class="contact-outro">{t.services_contact_outro}</p>
             </div>
         </div>
     </section>

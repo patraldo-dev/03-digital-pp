@@ -247,7 +247,7 @@
   "services_help_item3": "Edge-native design (D1, Images, Stream)",
   "services_help_item4": "DIY authentication (Web Crypto API)",
   "services_help_item5": "Automating workflows with Bash + FFMPEG",
-  "services_help_skills": "I'm good at: SvelteKit 5, Cloudflare Workers, edge-native architecture, DIY auth, automating boring stuff with Bash.",
+  "services_help_skills": "<strong>I'm good at:</strong> SvelteKit 5, Cloudflare Workers, edge-native architecture, DIY auth, automating boring stuff with Bash.",
   "services_process_terminal_title": "Terminal-First",
   "services_process_terminal_desc": "If it has a GUI, I probably don't use it. Bash + Vim + FFMPEG is my happy place.",
   "services_process_video_title": "Video Without GUI",
