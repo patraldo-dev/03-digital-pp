@@ -2,12 +2,19 @@
     import { page } from '$app/stores';
     import { browser } from '$app/environment';
     import mermaid from 'mermaid';
+    import { marked } from 'marked'; // ADD THIS
 
     // Svelte 5: Get props
     let { data } = $props();
 
     // Get translations from page data
     let t = $derived($page.data?.t || {});
+
+    // ADD THIS - Configure marked
+    marked.setOptions({
+        breaks: true,
+        gfm: true
+    });
 
     // Initialize and render Mermaid diagrams (only in browser)
     $effect(() => {
@@ -39,6 +46,73 @@
         return () => clearTimeout(timer);
     });
 </script>
+
+<svelte:head>
+    <title>{data.post?.title} - ¡Pinche Poutine! Digital</title>
+    <meta name="description" content={data.post?.excerpt} />
+</svelte:head>
+
+<!-- Background Blobs -->
+<div class="bg-wrap">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+</div>
+
+<article class="blog-post">
+    <div class="container">
+        <header class="post-header">
+            <a href="/blog" class="back-link">← {t.blog_post_back || 'Back to Blog'}</a>
+            <div class="badge">{t.blog_tag || 'Blog'}</div>
+            <h1>{data.post?.title}</h1>
+            <div class="post-meta">
+                <span class="post-date">{new Date(data.post?.date).toLocaleDateString()}</span>
+                <span class="post-author">by {data.post?.author}</span>
+            </div>
+            {#if data.post?.tags && data.post.tags.length > 0}
+                <div class="post-tags">
+                    {#each data.post.tags as tag}
+                        <span class="tag">{tag}</span>
+                    {/each}
+                </div>
+            {/if}
+        </header>
+
+        <div class="post-content">
+            <!-- REPLACE this line: {@html data.post?.htmlContent} -->
+            <!-- WITH this: -->
+            {#if data.post?.sections && data.post.sections.length > 0}
+                {#each data.post.sections as section}
+                    {#if section.title}
+                        <h2>{section.title}</h2>
+                    {/if}
+                    {@html marked(section.content)}
+                {/each}
+            {:else}
+                <!-- Fallback to htmlContent if sections don't exist -->
+                {@html data.post?.htmlContent}
+            {/if}
+        </div>
+
+        <footer class="post-footer">
+            {#if data.previousPost || data.nextPost}
+                <nav class="post-navigation">
+                    {#if data.previousPost}
+                        <a href="/blog/{data.previousPost.slug}" class="nav-link prev">
+                            <span class="nav-label">← {t.blog_post_prev || 'Previous'}</span>
+                            <span class="nav-title">{data.previousPost.title}</span>
+                        </a>
+                    {/if}
+                    {#if data.nextPost}
+                        <a href="/blog/{data.nextPost.slug}" class="nav-link next">
+                            <span class="nav-label">{t.blog_post_next || 'Next'} →</span>
+                            <span class="nav-title">{data.nextPost.title}</span>
+                        </a>
+                    {/if}
+                </nav>
+            {/if}
+        </footer>
+    </div>
+</article>
 
 <svelte:head>
     <title>{data.post?.title} - ¡Pinche Poutine! Digital</title>

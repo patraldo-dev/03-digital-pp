@@ -1,23 +1,16 @@
 <script>
     import { page } from '$app/stores';
     import SubscribeForm from '$lib/components/SubscribeForm.svelte';
-    import { marked } from 'marked';
 
     // Svelte 5: Get props
     let { data } = $props();
     
     // Get translations from page data
     let t = $derived($page.data?.t || {});
-    
-    // Configure marked if needed (optional)
-    marked.setOptions({
-        breaks: true, // Convert line breaks to <br>
-        gfm: true // Use GitHub Flavored Markdown
-    });
 </script>
 
 <svelte:head>
-    <title>{t.blog_page_title || 'Our Blog'} - ¡Pinche Poutine! Digital</title>
+    <title>{t.blog_page_title || 'The Blog'} - ¡Pinche Poutine! Digital</title>
     <meta name="description" content={t.blog_page_subtitle || ''} />
 </svelte:head>
 
