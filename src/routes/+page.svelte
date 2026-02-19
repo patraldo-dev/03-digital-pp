@@ -1,19 +1,12 @@
 <script>
     import SubscribeForm from '$lib/components/SubscribeForm.svelte';
-    
-    // SVELTE 5: $props() replaces 'export let' for defining component props
+    import { page } from '$app/stores';
+
     let { data } = $props();
-
-    // SVELTE 5: $derived replaces '$:' reactive statements
-    // We use optional chaining (data?.t) for safety
-    let t = $derived(data?.t || {});
-
-    // Debugging (this logs to the browser console)
-    console.log('Page Data received:', data);
+    let t = $derived($page.data?.t || {});
 </script>
 
 <svelte:head>
-    <!-- Using the variable with a fallback in case t is undefined -->
     <title>{t.meta_title || 'Home'} - ¡Pinche Poutine! Digital</title>
     <meta name="description" content={t.meta_description || ''} />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,66 +24,159 @@
 <div class="hero">
     <div class="container">
         <div class="hero-content">
-            <div class="badge">🌶️ & 🍁 • North American Web & Animation</div>
+            <div class="badge">🌶️ & 🍁 • Guadalajara, México</div>
             <h1>
-                <span class="gradient-text">{t.hero_title || 'Creative Fusion'}</span>
+                <span class="gradient-text">One-Person Studio</span>
             </h1>
-            <p class="hero-subtitle">{t.hero_subtitle || 'We build cool stuff.'}</p>
+            <p class="hero-subtitle">
+                I build edge-native web apps and automate creative workflows. 
+                SvelteKit 5, Cloudflare, Bash, FFMPEG—no GUI required.
+            </p>
             <div class="hero-actions">
-                <a href="/services" class="btn btn-primary">
-                    {t.btn_services || 'Services'}
+                <a href="#projects" class="btn btn-primary">
+                    See My Work
                     <span class="arrow">→</span>
                 </a>
-                <a href="/contact" class="btn btn-secondary">{t.btn_contact || 'Contact'}</a>
+                <a href="/services" class="btn btn-secondary">Let's Collaborate</a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Marquee -->
-<div class="marquee">
-    <div class="marquee-content">
-        <span>SVELTEKIT 5</span> • <span>CLOUDFLARE WORKERS</span> • <span>FFMPEG ANIMATION</span> • 
-        <span>LUCIA AUTH</span> • <span>CHROMEBOOK DEV</span> • <span>SVELTEKIT 5</span> • 
-        <span>CLOUDFLARE WORKERS</span> • <span>FFMPEG ANIMATION</span> • 
-        <span>LUCIA AUTH</span> • <span>CHROMEBOOK DEV</span>
+<!-- About Section -->
+<section class="about-section">
+    <div class="container">
+        <div class="about-box">
+            <div class="about-content">
+                <h2>👋 About Me</h2>
+                <p class="about-text">
+                    I live in <strong>Guadalajara, México</strong> and like in-person 
+                    collaboration best—at least to start or at some point in the process.
+                </p>
+                <p class="about-text">
+                    I'm semi-retired and intentionally selective about what I work on. 
+                    That said, if you've got an interesting project and we get along, 
+                    I'm open to collaborating.
+                </p>
+                <p class="about-text">
+                    <strong>My workflow:</strong> Terminal-first, AI-assisted, and 
+                    mouse-optional. If it has a GUI, I probably don't use it.
+                </p>
+            </div>
+            <div class="about-decoration">
+                <div class="circle c1"></div>
+                <div class="circle c2"></div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
-<!-- Features Section -->
-<section class="features">
+<!-- Projects Section -->
+<section class="projects-section" id="projects">
     <div class="container">
         <div class="section-header">
-            <h2>{t.features_title || 'Features'}</h2>
+            <h2>🎨 Selected Projects</h2>
             <div class="line"></div>
         </div>
-        
-        <div class="features-grid">
-            <!-- Card 1 -->
-            <div class="feature-card group">
-                <div class="icon-wrapper">
-                    <span class="icon">🎨</span>
+
+        <div class="projects-grid">
+            <!-- Antoine Patraldo -->
+            <a href="https://antoine.patraldo.com" target="_blank" rel="noopener" class="project-card featured">
+                <div class="project-badge">Featured</div>
+                <div class="project-header">
+                    <span class="project-emoji">🎨</span>
+                    <h3>antoine.patraldo.com</h3>
                 </div>
-                <h3>{t.feature_anim_title || 'Animation'}</h3>
-                <p>{t.feature_anim_desc || 'Description...'}</p>
+                <p class="project-desc">
+                    Digital gallery for illustrator Antoine Patraldo. SvelteKit 5, 
+                    Cloudflare Workers, DIY auth (Web Crypto API), FFMPEG + Bash 
+                    for video processing. Zero GUI, zero traditional servers.
+                </p>
+                <div class="project-tech">
+                    <span class="tech-tag">SvelteKit 5</span>
+                    <span class="tech-tag">Cloudflare</span>
+                    <span class="tech-tag">Web Crypto</span>
+                    <span class="tech-tag">FFMPEG</span>
+                </div>
+                <span class="project-link">Visit Site →</span>
+            </a>
+
+            <!-- Pinche Poutine -->
+            <a href="https://pinchepoutine.digital" target="_blank" rel="noopener" class="project-card">
+                <div class="project-header">
+                    <span class="project-emoji">🌶️</span>
+                    <h3>pinchepoutine.digital</h3>
+                </div>
+                <p class="project-desc">
+                    This site. Creative web development and animation projects. 
+                    SvelteKit 5 on Cloudflare with full i18n (EN/FR/ES), 
+                    DIY email subscription, and blog with Mermaid diagrams.
+                </p>
+                <div class="project-tech">
+                    <span class="tech-tag">SvelteKit 5</span>
+                    <span class="tech-tag">i18n</span>
+                    <span class="tech-tag">Cloudflare D1</span>
+                    <span class="tech-tag">Mailgun</span>
+                </div>
+                <span class="project-link">You're Here →</span>
+            </a>
+
+            <!-- Patrouch.ca -->
+            <a href="https://patrouch.ca" target="_blank" rel="noopener" class="project-card">
+                <div class="project-header">
+                    <span class="project-emoji">🍁</span>
+                    <h3>patrouch.ca</h3>
+                </div>
+                <p class="project-desc">
+                    Personal portfolio and digital presence. Clean, fast, 
+                    edge-native architecture with minimal dependencies 
+                    and maximum performance.
+                </p>
+                <div class="project-tech">
+                    <span class="tech-tag">SvelteKit</span>
+                    <span class="tech-tag">Edge-Native</span>
+                    <span class="tech-tag">Minimal</span>
+                    <span class="tech-tag">Fast</span>
+                </div>
+                <span class="project-link">Visit Site →</span>
+            </a>
+        </div>
+
+        <div class="projects-cta">
+            <p>Want something similar?</p>
+            <a href="/services" class="btn-text">Let's Talk →</a>
+        </div>
+    </div>
+</section>
+
+<!-- How I Work Section -->
+<section class="process-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>⚙️ How I Work</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="process-grid">
+            <div class="process-item">
+                <div class="process-icon">💻</div>
+                <h3>Terminal-First</h3>
+                <p>Bash + Vim + FFMPEG. If it has a GUI, I probably don't use it.</p>
             </div>
-            
-            <!-- Card 2 -->
-            <div class="feature-card group">
-                <div class="icon-wrapper">
-                    <span class="icon">🚀</span>
-                </div>
-                <h3>{t.feature_web_title || 'Web'}</h3>
-                <p>{t.feature_web_desc || 'Description...'}</p>
+            <div class="process-item">
+                <div class="process-icon">⚡</div>
+                <h3>SvelteKit 5</h3>
+                <p>Runes, JSDoc, no TypeScript drama. Clean, fast, edge-native.</p>
             </div>
-            
-            <!-- Card 3 -->
-            <div class="feature-card group">
-                <div class="icon-wrapper">
-                    <span class="icon">⚡</span>
-                </div>
-                <h3>{t.feature_stack_title || 'Stack'}</h3>
-                <p>{t.feature_stack_desc || 'Description...'}</p>
+            <div class="process-item">
+                <div class="process-icon">☁️</div>
+                <h3>Cloudflare Edge</h3>
+                <p>Workers, D1, Images, Stream—no traditional servers.</p>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">🤖</div>
+                <h3>AI-Assisted</h3>
+                <p>I pair-program with AI agents. They don't complain about my hours.</p>
             </div>
         </div>
     </div>
@@ -101,8 +187,8 @@
     <div class="container">
         <div class="newsletter-box">
             <div class="newsletter-content">
-                <h2>{t.newsletter_title || 'Newsletter'}</h2>
-                <p>{t.newsletter_subtitle || 'Subscribe for updates'}</p>
+                <h2>{t.newsletter_title || 'Stay Connected'}</h2>
+                <p>{t.newsletter_subtitle || 'Subscribe for the latest tips on animation and web development.'}</p>
                 <div class="newsletter-form-wrapper">
                     <SubscribeForm />
                 </div>
@@ -120,7 +206,7 @@
 <section class="recent-posts">
     <div class="container">
         <div class="section-header">
-            <h2>{t.blog_title || 'Blog'}</h2>
+            <h2>{t.blog_title || 'Latest Insights'}</h2>
             <div class="line"></div>
         </div>
 
@@ -129,17 +215,17 @@
                 {#each data.recentPosts as post}
                     <article class="post-card">
                         <div class="post-top">
-                            <span class="post-tag">Blog</span>
+                            <span class="post-tag">{t.blog_tag || 'Blog'}</span>
                             <span class="post-date">{new Date(post.date).toLocaleDateString()}</span>
                         </div>
                         <h3><a href="/blog/{post.slug}">{post.title}</a></h3>
                         <p class="post-excerpt">{post.excerpt}</p>
-                        <a href="/blog/{post.slug}" class="read-more">Read Story</a>
+                        <a href="/blog/{post.slug}" class="read-more">{t.blog_read_story || 'Read Story'} <span class="arrow">→</span></a>
                     </article>
                 {/each}
             </div>
             <div class="blog-link">
-                <a href="/blog" class="btn-text">{t.blog_btn || 'View All Posts'}</a>
+                <a href="/blog" class="btn-text">{t.blog_btn || 'View All Posts'} →</a>
             </div>
         {:else}
             <div class="empty-state">
@@ -164,7 +250,6 @@
         background-color: var(--color-bg);
         color: var(--color-text);
         overflow-x: hidden;
-        margin: 0;
     }
 
     /* --- Background Blobs --- */
@@ -189,7 +274,7 @@
     .blob-1 {
         width: 600px;
         height: 600px;
-        background: var(--color-sage); 
+        background: var(--color-sage);
         top: -150px;
         right: -100px;
         opacity: 0.4;
@@ -198,7 +283,7 @@
     .blob-2 {
         width: 500px;
         height: 500px;
-        background: #E8D5C4; 
+        background: #E8D5C4;
         bottom: -100px;
         left: -100px;
         animation-delay: -6s;
@@ -218,6 +303,7 @@
         z-index: 2;
     }
 
+    /* --- Hero --- */
     .hero {
         min-height: 90vh;
         display: flex;
@@ -228,9 +314,9 @@
     .badge {
         display: inline-block;
         padding: 0.6rem 1.5rem;
-        background: rgba(255, 255, 255, 0.6);
+        background: rgba(201, 76, 53, 0.2);
         backdrop-filter: blur(12px);
-        border: 1px solid rgba(45, 58, 54, 0.1);
+        border: 1px solid var(--color-brick);
         border-radius: 50px;
         font-size: 0.9rem;
         font-weight: 700;
@@ -259,7 +345,7 @@
     .hero-subtitle {
         font-size: 1.4rem;
         max-width: 650px;
-        color: #5F6E68; 
+        color: #5F6E68;
         margin-bottom: 3rem;
         line-height: 1.6;
         font-weight: 300;
@@ -273,6 +359,7 @@
     .btn {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         padding: 1rem 2.5rem;
         font-weight: 700;
         text-decoration: none;
@@ -280,6 +367,7 @@
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         font-size: 1.1rem;
         border: none;
+        cursor: pointer;
     }
 
     .btn-primary {
@@ -315,34 +403,67 @@
         color: var(--color-white);
     }
 
-    /* --- Marquee --- */
-    .marquee {
-        background: var(--color-sage);
-        color: #2F3E38;
-        padding: 1.25rem 0;
-        transform: rotate(-1deg) scale(1.02);
-        margin-bottom: 6rem;
-        overflow: hidden;
-        white-space: nowrap;
-        border-top: 4px solid var(--color-brick);
-        border-bottom: 4px solid var(--color-brick);
-        box-shadow: 0 10px 30px rgba(45, 58, 54, 0.15);
-        z-index: 5;
+    /* --- About Section --- */
+    .about-section {
+        padding: 5rem 0;
+    }
+
+    .about-box {
+        background: var(--color-white);
+        padding: 4rem;
+        border-radius: 40px;
         position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(45, 58, 54, 0.08);
     }
 
-    .marquee-content {
-        display: inline-block;
-        animation: scroll 25s linear infinite;
-        font-weight: 900;
-        font-size: 1.3rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+    .about-content {
+        max-width: 800px;
+        position: relative;
+        z-index: 2;
     }
 
-    @keyframes scroll {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
+    .about-content h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 2rem;
+        color: var(--color-text);
+    }
+
+    .about-text {
+        font-size: 1.15rem;
+        line-height: 1.8;
+        color: #5F6E68;
+        margin-bottom: 1.5rem;
+    }
+
+    .about-text strong {
+        color: var(--color-text);
+        font-weight: 700;
+    }
+
+    .about-decoration {
+        position: absolute;
+        right: -50px;
+        top: -50px;
+        bottom: -50px;
+        width: 400px;
+        z-index: 1;
+        opacity: 0.1;
+    }
+
+    .circle {
+        position: absolute;
+        border-radius: 50%;
+        background: var(--color-sage);
+    }
+
+    .c1 { width: 300px; height: 300px; top: 20%; right: 10%; }
+    .c2 { width: 200px; height: 200px; bottom: 10%; right: 40%; }
+
+    /* --- Projects Section --- */
+    .projects-section {
+        padding: 6rem 0;
     }
 
     .section-header {
@@ -365,61 +486,200 @@
         border-radius: 10px;
     }
 
-    .features {
-        padding: 0 0 6rem;
-    }
-
-    .features-grid {
+    .projects-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
         gap: 2.5rem;
+        margin-bottom: 3rem;
     }
 
-    .feature-card {
+    .project-card {
         background: var(--color-white);
-        padding: 3rem 2.5rem;
-        border-radius: 30px;
+        padding: 2.5rem;
+        border-radius: 24px;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 5px 20px rgba(45, 58, 54, 0.05);
         border: 1px solid rgba(45, 58, 54, 0.05);
         transition: all 0.4s ease;
+        display: flex;
+        flex-direction: column;
         position: relative;
-        box-shadow: 0 10px 30px rgba(45, 58, 54, 0.05);
     }
 
-    .feature-card:hover {
-        transform: translateY(-10px);
+    .project-card:hover {
+        transform: translateY(-8px);
         border-color: rgba(141, 163, 153, 0.4);
         box-shadow: 0 20px 40px rgba(141, 163, 153, 0.2);
     }
 
-    .icon-wrapper {
-        width: 80px;
-        height: 80px;
-        background: rgba(201, 76, 53, 0.1); 
-        border-radius: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 2rem;
-        font-size: 2.5rem;
-        color: var(--color-brick);
+    .project-card.featured {
+        border-color: var(--color-brick);
+        border-width: 2px;
     }
 
-    .feature-card h3 {
-        font-size: 1.6rem;
-        margin-bottom: 1rem;
+    .project-badge {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background: var(--color-brick);
+        color: var(--color-white);
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
         font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .project-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .project-emoji {
+        font-size: 2.5rem;
+    }
+
+    .project-header h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 0;
         color: var(--color-text);
     }
 
-    .feature-card p {
+    .project-desc {
         color: #6B7C76;
         line-height: 1.7;
         font-size: 1.05rem;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .project-tech {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .tech-tag {
+        background: rgba(141, 163, 153, 0.15);
+        color: var(--color-sage);
+        padding: 0.4rem 0.9rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .project-link {
+        color: var(--color-brick);
+        font-weight: 700;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .project-link:after {
+        content: '→';
+        margin-left: 0.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .project-card:hover .project-link {
+        color: #A83926;
+    }
+
+    .project-card:hover .project-link:after {
+        transform: translateX(5px);
+    }
+
+    .projects-cta {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .projects-cta p {
+        font-size: 1.15rem;
+        color: #5F6E68;
+        margin-bottom: 1rem;
+    }
+
+    .btn-text {
+        color: var(--color-text);
+        font-size: 1.1rem;
+        font-weight: 800;
+        text-decoration: none;
+        border-bottom: 3px solid var(--color-sage);
+        padding-bottom: 2px;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-text:hover {
+        color: var(--color-brick);
+        border-color: var(--color-brick);
+    }
+
+    /* --- Process Section --- */
+    .process-section {
+        padding: 6rem 0;
+        background: rgba(141, 163, 153, 0.08);
+        margin: 0 -2rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    .process-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .process-item {
+        background: var(--color-white);
+        padding: 2.5rem;
+        border-radius: 24px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(45, 58, 54, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .process-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(141, 163, 153, 0.2);
+    }
+
+    .process-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .process-item h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--color-text);
+    }
+
+    .process-item p {
+        color: #6B7C76;
+        line-height: 1.6;
+        font-size: 1rem;
     }
 
     /* --- Newsletter --- */
     .newsletter-section {
-        padding: 4rem 0;
+        padding: 6rem 0;
     }
 
     .newsletter-box {
@@ -453,12 +713,15 @@
     .newsletter-content p {
         color: rgba(255, 255, 255, 0.9);
         font-size: 1.2rem;
-        margin-bottom: 2.5rem;
+        margin-bottom: 0;
+        line-height: 1.6;
     }
 
     .newsletter-form-wrapper {
         width: 100%;
         max-width: 450px;
+        position: relative;
+        z-index: 2;
     }
 
     .newsletter-decoration {
@@ -470,13 +733,13 @@
         z-index: 1;
         opacity: 0.2;
     }
-    
+
     .circle {
         position: absolute;
         border-radius: 50%;
-        background: #fff;
+        background: var(--color-white);
     }
-    
+
     .c1 { width: 250px; height: 250px; top: 20%; right: 20%; }
     .c2 { width: 180px; height: 180px; bottom: 20%; right: 40%; }
     .c3 { width: 100px; height: 100px; top: 10%; right: 60%; }
@@ -489,24 +752,24 @@
     .posts-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 2rem;
+        gap: 2.5rem;
     }
 
     .post-card {
         background: var(--color-white);
-        border-radius: 24px;
-        padding: 2rem;
-        transition: all 0.3s ease;
+        border-radius: 30px;
+        padding: 2.5rem;
+        transition: all 0.4s ease;
+        border: 1px solid rgba(45, 58, 54, 0.05);
+        box-shadow: 0 10px 30px rgba(45, 58, 54, 0.05);
         display: flex;
         flex-direction: column;
-        border: 1px solid rgba(45, 58, 54, 0.05);
-        box-shadow: 0 5px 20px rgba(45, 58, 54, 0.03);
     }
 
     .post-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(201, 76, 53, 0.1);
-        border-color: rgba(201, 76, 53, 0.2);
+        transform: translateY(-10px);
+        border-color: rgba(141, 163, 153, 0.4);
+        box-shadow: 0 20px 40px rgba(141, 163, 153, 0.2);
     }
 
     .post-top {
@@ -520,9 +783,12 @@
 
     .post-tag {
         background: var(--color-sage);
-        color: #fff;
+        color: var(--color-white);
         padding: 6px 14px;
         border-radius: 50px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .post-date {
@@ -531,7 +797,7 @@
     }
 
     .post-card h3 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         margin-bottom: 1rem;
         font-weight: 700;
         line-height: 1.3;
@@ -551,7 +817,8 @@
     .post-excerpt {
         color: #6B7C76;
         margin-bottom: 2rem;
-        line-height: 1.6;
+        line-height: 1.7;
+        font-size: 1.05rem;
         flex-grow: 1;
     }
 
@@ -561,17 +828,21 @@
         font-weight: 700;
         display: inline-flex;
         align-items: center;
-        font-size: 0.95rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
     }
 
-    .read-more::after {
-        content: '→';
+    .read-more .arrow {
         margin-left: 0.5rem;
-        transition: margin 0.3s;
+        transition: transform 0.3s ease;
     }
 
-    .read-more:hover::after {
-        margin-left: 0.8rem;
+    .read-more:hover {
+        color: #A83926;
+    }
+
+    .read-more:hover .arrow {
+        transform: translateX(5px);
     }
 
     .blog-link {
@@ -579,49 +850,58 @@
         margin-top: 4rem;
     }
 
-    .btn-text {
-        color: var(--color-text);
-        font-size: 1.1rem;
-        font-weight: 800;
-        text-decoration: none;
-        border-bottom: 3px solid var(--color-sage);
-        padding-bottom: 2px;
-        transition: all 0.3s;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .btn-text:hover {
-        color: var(--color-brick);
-        border-color: var(--color-brick);
-    }
-
     .empty-state {
         text-align: center;
-        padding: 4rem;
-        color: #888;
-        font-size: 1.25rem;
-        background: rgba(255,255,255,0.5);
-        border-radius: 20px;
-        border: 2px dashed rgba(45, 58, 54, 0.1);
+        padding: 5rem 2rem;
+        background: var(--color-white);
+        border-radius: 30px;
+        border: 2px dashed rgba(141, 163, 153, 0.3);
+    }
+
+    .empty-state p {
+        color: #6B7C76;
+        font-size: 1.15rem;
     }
 
     @media (max-width: 768px) {
         .hero h1 {
             font-size: 3.5rem;
         }
-        
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+        }
+
         .hero-actions {
             flex-direction: column;
         }
 
         .btn {
             width: 100%;
-            justify-content: center;
+        }
+
+        .about-box {
+            padding: 2.5rem;
+        }
+
+        .about-content h2 {
+            font-size: 2rem;
+        }
+
+        .about-decoration {
+            display: none;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+        }
+
+        .projects-grid {
+            grid-template-columns: 1fr;
         }
 
         .newsletter-box {
-            padding: 2.5rem 2rem;
+            padding: 3rem 2rem;
             text-align: center;
         }
 
