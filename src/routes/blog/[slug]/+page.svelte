@@ -114,11 +114,6 @@
     </div>
 </article>
 
-<svelte:head>
-    <title>{data.post?.title} - ¡Pinche Poutine! Digital</title>
-    <meta name="description" content={data.post?.excerpt} />
-</svelte:head>
-
 <!-- Background Blobs -->
 <div class="bg-wrap">
     <div class="blob blob-1"></div>
