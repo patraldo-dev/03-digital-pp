@@ -24,6 +24,7 @@
 		"wrangler": "^4.27.0"
 	},
 	"dependencies": {
+		"marked": "^17.0.3",
 		"mermaid": "^11.12.3"
 	}
 }
