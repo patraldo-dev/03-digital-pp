@@ -1,6 +1,5 @@
 <script>
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	
 	/**
 	 * @typedef {'newsletter' | 'events'} SubscriptionType
@@ -8,21 +7,53 @@
 
 	let { 
 		type = 'newsletter', 
-		placeholder = undefined, 
-		buttonText = undefined 
+		placeholder, 
+		buttonText 
 	} = $props();
 
 	// Get translations from page context
-	let t = $derived($page.data?.t || {});
+	let t = $page.data?.t || {};
 	
-	// Fallback defaults if translations not available
-	let formPlaceholder = $derived(placeholder || t.subscribe_form_placeholder || 'Enter your email address');
-	let formButtonText = $derived(buttonText || t.subscribe_form_button || 'Subscribe');
-
 	let email = '';
 	let loading = false;
 	let message = '';
 	let success = false;
+
+	function getPlaceholder() {
+		return placeholder || t?.subscribe_form_placeholder || 'Enter your email address';
+	}
+	
+	function getButtonText() {
+		return buttonText || t?.subscribe_form_button || 'Subscribe';
+	}
+	
+	function getSubscribingText() {
+		return t?.subscribe_form_subscribing || 'Subscribing...';
+	}
+	
+	function getThanksText() {
+		return t?.subscribe_form_thanks || '🎉 Thank you!';
+	}
+	
+	function getResetHint() {
+		return t?.subscribe_form_reset_hint || 'Form will reset in a few seconds...';
+	}
+	
+	function getErrorEmpty() {
+		return t?.subscribe_form_error_empty || 'Please enter your email address';
+	}
+	
+	function getErrorNetwork() {
+		return t?.subscribe_form_error_network || 'Network error. Please try again.';
+	}
+	
+	function getErrorGeneric() {
+		return t?.subscribe_form_error_generic || 'Something went wrong. Please try again.';
+	}
+	
+	function getSuccessMessage(apiMessage) {
+		return t?.subscribe_form_success_message || apiMessage;
+	}
 
 	/**
 	 * Handle form submission
@@ -30,7 +61,7 @@
 	 */
 	async function handleSubmit() {
 		if (!email.trim()) {
-			message = t.subscribe_form_error_empty || 'Please enter your email address';
+			message = getErrorEmpty();
 			return;
 		}
 
@@ -51,13 +82,13 @@
 			if (result.success) {
 				success = true;
 				email = '';
-				message = t.subscribe_form_success_message || result.message;
+				message = getSuccessMessage(result.message);
 			} else {
-				message = result.message || (t.subscribe_form_error_generic || 'Something went wrong. Please try again.');
+				message = result.message || getErrorGeneric();
 			}
 		} catch (error) {
 			console.error('Subscription error:', error);
-			message = t.subscribe_form_error_network || 'Network error. Please try again.';
+			message = getErrorNetwork();
 		} finally {
 			loading = false;
 		}
@@ -86,9 +117,9 @@
 <div class="subscribe-form">
 	{#if success}
 		<div class="success-message">
-			<h3>{t.subscribe_form_thanks || '🎉 Thank you!'}</h3>
+			<h3>{getThanksText()}</h3>
 			<p>{message}</p>
-			<p class="reset-hint">{t.subscribe_form_reset_hint || 'Form will reset in a few seconds...'}</p>
+			<p class="reset-hint">{getResetHint()}</p>
 		</div>
 	{:else}
 		<form on:submit|preventDefault={handleSubmit}>
@@ -96,13 +127,13 @@
 				<input
 					bind:value={email}
 					type="email"
-					placeholder={formPlaceholder}
+					placeholder={getPlaceholder()}
 					required
 					disabled={loading}
 					class="email-input"
 				/>
 				<button type="submit" disabled={loading} class="submit-button">
-					{loading ? (t.subscribe_form_subscribing || 'Subscribing...') : formButtonText}
+					{loading ? getSubscribingText() : getButtonText()}
 				</button>
 			</div>
 		</form>
