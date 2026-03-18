@@ -4,7 +4,7 @@ import { sendEmail } from '$lib/email.js'; // Correct Import
 import { getTranslations } from '$lib/i18n/server.js';
 
 export async function GET({ url, platform, request }) {
-    const { 
+    const {
         MAILGUN_FROM_EMAIL,
         CONTACT_EMAIL 
     } = platform.env;
@@ -84,9 +84,8 @@ export async function GET({ url, platform, request }) {
             return json({ error: 'Confirmation successful, but welcome email failed.' }, { status: 500 });
         }
 
-        // 5. Redirect user to success page or return JSON
-        // return redirect('/confirmation-success'); 
-        return json({ success: true, message: 'Email confirmed successfully!' });
+        // 5. Redirect user to success page
+        return redirect(303, '/confirmation-success');
 
     } catch (error) {
         console.error('Confirmation API error:', error);
