@@ -1,4 +1,6 @@
 <script>
+	import { onMount } from 'svelte';
+
 	/**
 	 * @typedef {'newsletter' | 'events'} SubscriptionType
 	 */
@@ -63,6 +65,32 @@
 			loading = false;
 		}
 	}
+
+	/**
+	 * Reset form after success
+	 */
+	function resetForm() {
+		success = false;
+		message = '';
+		email = '';
+	}
+
+	onMount(() => {
+		// Auto-reset form after 5 seconds on success
+		if (success) {
+			const timer = setTimeout(() => {
+				resetForm();
+			}, 5000);
+			return () => clearTimeout(timer);
+		}
+	});
+
+	// Watch for success state and set timeout
+	$: if (success) {
+		const timer = setTimeout(() => {
+			resetForm();
+		}, 5000);
+	}
 </script>
 
 <div class="subscribe-form">
@@ -70,6 +98,7 @@
 		<div class="success-message">
 			<h3>🎉 Thank you!</h3>
 			<p>{message}</p>
+			<p class="reset-hint">Form will reset in a few seconds...</p>
 		</div>
 	{:else}
 		<form on:submit|preventDefault={handleSubmit}>
@@ -150,6 +179,13 @@
 
 	.success-message h3 {
 		margin: 0 0 0.5rem 0;
+	}
+
+	.reset-hint {
+		font-size: 0.875rem;
+		color: #16a34a;
+		margin-top: 1rem;
+		font-style: italic;
 	}
 
 	.error-message {
