@@ -1,5 +1,5 @@
 // src/routes/api/confirm/+server.js
-import { json } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { sendEmail } from '$lib/email.js';
 import { getTranslations } from '$lib/i18n/server.js';
 
@@ -13,7 +13,7 @@ export async function GET({ url, platform, request }) {
     const email = url.searchParams.get('email');
 
     if (!token || !email) {
-        return json({ error: 'Invalid confirmation link' }, { status: 400 });
+        throw redirect(303, '/confirmation-success?error=invalid');
     }
 
     try {
@@ -59,19 +59,14 @@ export async function GET({ url, platform, request }) {
 
         if (!emailSent) {
             console.error('Failed to send welcome email');
-            return json({ error: 'Confirmation successful, but welcome email failed.' }, { status: 500 });
+            throw redirect(303, '/confirmation-success?error=email_failed');
         }
 
-        // Redirect using Response for Cloudflare Workers compatibility
-        return new Response(null, {
-            status: 303,
-            headers: {
-                'Location': '/confirmation-success'
-            }
-        });
+        throw redirect(303, '/confirmation-success');
 
     } catch (error) {
+        if (error instanceof Response) throw error;
         console.error('Confirmation API error:', error);
-        return json({ error: 'Internal server error' }, { status: 500 });
+        throw redirect(303, '/confirmation-success?error=server');
     }
 }
