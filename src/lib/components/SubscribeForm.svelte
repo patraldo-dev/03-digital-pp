@@ -1,8 +1,7 @@
 <script>
-	import { page } from '$app/stores';
-	
 	let { 
-		type = 'newsletter'
+		type = 'newsletter',
+		t = {}
 	} = $props();
 
 	let email = $state('');
@@ -10,11 +9,14 @@
 	let message = $state('');
 	let success = $state(false);
 
+	// Translation helpers with fallbacks
+	const getText = (key, fallback) => t?.[key] || fallback;
+
 	async function handleSubmit(e) {
 		e.preventDefault();
 		
 		if (!email.trim()) {
-			message = 'Please enter your email address';
+			message = getText('subscribe_form_error_empty', 'Please enter your email address');
 			return;
 		}
 
@@ -33,18 +35,18 @@
 			if (result.success) {
 				success = true;
 				email = '';
-				message = 'Please check your email to confirm your subscription.';
+				message = getText('subscribe_form_success_message', 'Please check your email to confirm your subscription.');
 				
 				setTimeout(() => {
 					success = false;
 					message = '';
 				}, 5000);
 			} else {
-				message = result.message || 'Something went wrong. Please try again.';
+				message = result.message || getText('subscribe_form_error_generic', 'Something went wrong. Please try again.');
 			}
 		} catch (error) {
 			console.error('Subscription error:', error);
-			message = 'Network error. Please try again.';
+			message = getText('subscribe_form_error_network', 'Network error. Please try again.');
 		} finally {
 			loading = false;
 		}
@@ -54,9 +56,9 @@
 <div class="subscribe-form">
 	{#if success}
 		<div class="success-message">
-			<h3>🎉 Thank you!</h3>
+			<h3>{getText('subscribe_form_thanks', '🎉 Thank you!')}</h3>
 			<p>{message}</p>
-			<p class="reset-hint">Form will reset in a few seconds...</p>
+			<p class="reset-hint">{getText('subscribe_form_reset_hint', 'Form will reset in a few seconds...')}</p>
 		</div>
 	{:else}
 		<form onsubmit={handleSubmit}>
@@ -64,13 +66,13 @@
 				<input
 					bind:value={email}
 					type="email"
-					placeholder="Enter your email address"
+					placeholder={getText('subscribe_form_placeholder', 'Enter your email address')}
 					required
 					disabled={loading}
 					class="email-input"
 				/>
 				<button type="submit" disabled={loading} class="submit-button">
-					{loading ? 'Subscribing...' : 'Subscribe'}
+					{loading ? getText('subscribe_form_subscribing', 'Subscribing...') : getText('subscribe_form_button', 'Subscribe')}
 				</button>
 			</div>
 		</form>

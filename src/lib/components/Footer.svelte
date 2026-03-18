@@ -27,7 +27,7 @@
             <div class="footer-section newsletter">
                 <h4>{t.footer_stay_updated || 'Stay Updated'}</h4>
                 <p>{t.footer_newsletter_desc || 'Subscribe to our newsletter for the latest updates.'}</p>
-                <SubscribeForm />
+                <SubscribeForm {t} />
             </div>
         </div>
 

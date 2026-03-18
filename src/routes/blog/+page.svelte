@@ -79,7 +79,7 @@
                     <p>{t.blog_newsletter_desc || 'Subscribe to our newsletter and get the latest articles delivered to your inbox.'}</p>
                 </div>
                 <div class="newsletter-form-wrapper">
-                    <SubscribeForm />
+                    <SubscribeForm {t} />
                 </div>
                 <div class="newsletter-decoration">
                     <div class="circle c1"></div>

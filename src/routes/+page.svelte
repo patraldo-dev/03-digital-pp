@@ -187,7 +187,7 @@
                 <h2>{t.newsletter_title || 'Stay Connected'}</h2>
                 <p>{t.newsletter_subtitle || 'Subscribe for the latest tips on animation and web development.'}</p>
                 <div class="newsletter-form-wrapper">
-                    <SubscribeForm />
+                    <SubscribeForm {t} />
                 </div>
             </div>
             <div class="newsletter-decoration">
