@@ -1,67 +1,36 @@
 <script>
 	import { page } from '$app/stores';
 	
-	/**
-	 * @typedef {'newsletter' | 'events'} SubscriptionType
-	 */
-
 	let { 
 		type = 'newsletter', 
 		placeholder, 
 		buttonText 
 	} = $props();
 
-	// Get translations from page context
-	let t = $page.data?.t || {};
+	// Get translations from page context with fallback
+	let t = $derived($page.data?.t || {});
 	
-	let email = '';
-	let loading = false;
-	let message = '';
-	let success = false;
+	let email = $state('');
+	let loading = $state(false);
+	let message = $state('');
+	let success = $state(false);
 
-	function getPlaceholder() {
-		return placeholder || t?.subscribe_form_placeholder || 'Enter your email address';
-	}
-	
-	function getButtonText() {
-		return buttonText || t?.subscribe_form_button || 'Subscribe';
-	}
-	
-	function getSubscribingText() {
-		return t?.subscribe_form_subscribing || 'Subscribing...';
-	}
-	
-	function getThanksText() {
-		return t?.subscribe_form_thanks || '🎉 Thank you!';
-	}
-	
-	function getResetHint() {
-		return t?.subscribe_form_reset_hint || 'Form will reset in a few seconds...';
-	}
-	
-	function getErrorEmpty() {
-		return t?.subscribe_form_error_empty || 'Please enter your email address';
-	}
-	
-	function getErrorNetwork() {
-		return t?.subscribe_form_error_network || 'Network error. Please try again.';
-	}
-	
-	function getErrorGeneric() {
-		return t?.subscribe_form_error_generic || 'Something went wrong. Please try again.';
-	}
-	
-	function getSuccessMessage(apiMessage) {
-		return t?.subscribe_form_success_message || apiMessage;
-	}
+	// Translation helpers with reactive fallbacks
+	let formPlaceholder = $derived(placeholder || t?.subscribe_form_placeholder || 'Enter your email address');
+	let formButtonText = $derived(buttonText || t?.subscribe_form_button || 'Subscribe');
+	let subscribingText = $derived(t?.subscribe_form_subscribing || 'Subscribing...');
+	let thanksText = $derived(t?.subscribe_form_thanks || '🎉 Thank you!');
+	let resetHint = $derived(t?.subscribe_form_reset_hint || 'Form will reset in a few seconds...');
+	let errorEmpty = $derived(t?.subscribe_form_error_empty || 'Please enter your email address');
+	let errorNetwork = $derived(t?.subscribe_form_error_network || 'Network error. Please try again.');
+	let errorGeneric = $derived(t?.subscribe_form_error_generic || 'Something went wrong. Please try again.');
 
 	/**
 	 * Handle form submission
-	 * @returns {Promise<void>}
 	 */
 	async function handleSubmit() {
 		if (!email.trim()) {
-			message = getErrorEmpty();
+			message = errorEmpty;
 			return;
 		}
 
@@ -82,44 +51,31 @@
 			if (result.success) {
 				success = true;
 				email = '';
-				message = getSuccessMessage(result.message);
+				message = t?.subscribe_form_success_message || result.message || 'Please check your email to confirm your subscription.';
+				
+				// Auto-reset after 5 seconds
+				setTimeout(() => {
+					success = false;
+					message = '';
+				}, 5000);
 			} else {
-				message = result.message || getErrorGeneric();
+				message = result.message || errorGeneric;
 			}
 		} catch (error) {
 			console.error('Subscription error:', error);
-			message = getErrorNetwork();
+			message = errorNetwork;
 		} finally {
 			loading = false;
 		}
 	}
-
-	/**
-	 * Reset form after success
-	 */
-	function resetForm() {
-		success = false;
-		message = '';
-		email = '';
-	}
-
-	// Auto-reset form after 5 seconds on success
-	$effect(() => {
-		if (success) {
-			const timer = setTimeout(() => {
-				resetForm();
-			}, 5000);
-			return () => clearTimeout(timer);
-		}
-	});
 </script>
 
 <div class="subscribe-form">
 	{#if success}
 		<div class="success-message">
-			<h3>{getThanksText()}</h3>
+			<h3>{thanksText}</h3>
 			<p>{message}</p>
-			<p class="reset-hint">{getResetHint()}</p>
+			<p class="reset-hint">{resetHint}</p>
 		</div>
 	{:else}
 		<form on:submit|preventDefault={handleSubmit}>
@@ -127,13 +83,13 @@
 				<input
 					bind:value={email}
 					type="email"
-					placeholder={getPlaceholder()}
+					placeholder={formPlaceholder}
 					required
 					disabled={loading}
 					class="email-input"
 				/>
 				<button type="submit" disabled={loading} class="submit-button">
-					{loading ? getSubscribingText() : getButtonText()}
+					{loading ? subscribingText : formButtonText}
 				</button>
 			</div>
 		</form>
