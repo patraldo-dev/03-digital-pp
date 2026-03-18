@@ -2,35 +2,19 @@
 	import { page } from '$app/stores';
 	
 	let { 
-		type = 'newsletter', 
-		placeholder, 
-		buttonText 
+		type = 'newsletter'
 	} = $props();
 
-	// Get translations from page context with fallback
-	let t = $derived($page.data?.t || {});
-	
 	let email = $state('');
 	let loading = $state(false);
 	let message = $state('');
 	let success = $state(false);
 
-	// Translation helpers with reactive fallbacks
-	let formPlaceholder = $derived(placeholder || t?.subscribe_form_placeholder || 'Enter your email address');
-	let formButtonText = $derived(buttonText || t?.subscribe_form_button || 'Subscribe');
-	let subscribingText = $derived(t?.subscribe_form_subscribing || 'Subscribing...');
-	let thanksText = $derived(t?.subscribe_form_thanks || '🎉 Thank you!');
-	let resetHint = $derived(t?.subscribe_form_reset_hint || 'Form will reset in a few seconds...');
-	let errorEmpty = $derived(t?.subscribe_form_error_empty || 'Please enter your email address');
-	let errorNetwork = $derived(t?.subscribe_form_error_network || 'Network error. Please try again.');
-	let errorGeneric = $derived(t?.subscribe_form_error_generic || 'Something went wrong. Please try again.');
-
-	/**
-	 * Handle form submission
-	 */
-	async function handleSubmit() {
+	async function handleSubmit(e) {
+		e.preventDefault();
+		
 		if (!email.trim()) {
-			message = errorEmpty;
+			message = 'Please enter your email address';
 			return;
 		}
 
@@ -40,9 +24,7 @@
 		try {
 			const response = await fetch('/api/subscribe', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ email: email.trim(), type })
 			});
 
@@ -51,19 +33,18 @@
 			if (result.success) {
 				success = true;
 				email = '';
-				message = t?.subscribe_form_success_message || result.message || 'Please check your email to confirm your subscription.';
+				message = 'Please check your email to confirm your subscription.';
 				
-				// Auto-reset after 5 seconds
 				setTimeout(() => {
 					success = false;
 					message = '';
 				}, 5000);
 			} else {
-				message = result.message || errorGeneric;
+				message = result.message || 'Something went wrong. Please try again.';
 			}
 		} catch (error) {
 			console.error('Subscription error:', error);
-			message = errorNetwork;
+			message = 'Network error. Please try again.';
 		} finally {
 			loading = false;
 		}
@@ -73,23 +54,23 @@
 <div class="subscribe-form">
 	{#if success}
 		<div class="success-message">
-			<h3>{thanksText}</h3>
+			<h3>🎉 Thank you!</h3>
 			<p>{message}</p>
-			<p class="reset-hint">{resetHint}</p>
+			<p class="reset-hint">Form will reset in a few seconds...</p>
 		</div>
 	{:else}
-		<form on:submit|preventDefault={handleSubmit}>
+		<form onsubmit={handleSubmit}>
 			<div class="form-group">
 				<input
 					bind:value={email}
 					type="email"
-					placeholder={formPlaceholder}
+					placeholder="Enter your email address"
 					required
 					disabled={loading}
 					class="email-input"
 				/>
 				<button type="submit" disabled={loading} class="submit-button">
-					{loading ? subscribingText : formButtonText}
+					{loading ? 'Subscribing...' : 'Subscribe'}
 				</button>
 			</div>
 		</form>
