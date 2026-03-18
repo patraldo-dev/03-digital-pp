@@ -1,29 +1,27 @@
 <script>
+	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-
+	
 	/**
 	 * @typedef {'newsletter' | 'events'} SubscriptionType
 	 */
 
-	/** @type {SubscriptionType} */
-	export let type = 'newsletter';
-	
-	/** @type {string} */
-	export let placeholder = 'Enter your email address';
-	
-	/** @type {string} */
-	export let buttonText = 'Subscribe';
+	let { 
+		type = 'newsletter', 
+		placeholder = undefined, 
+		buttonText = undefined 
+	} = $props();
 
-	/** @type {string} */
+	// Get translations from page context
+	let t = $derived($page.data?.t || {});
+	
+	// Fallback defaults if translations not available
+	let formPlaceholder = $derived(placeholder || t.subscribe_form_placeholder || 'Enter your email address');
+	let formButtonText = $derived(buttonText || t.subscribe_form_button || 'Subscribe');
+
 	let email = '';
-	
-	/** @type {boolean} */
 	let loading = false;
-	
-	/** @type {string} */
 	let message = '';
-	
-	/** @type {boolean} */
 	let success = false;
 
 	/**
@@ -32,7 +30,7 @@
 	 */
 	async function handleSubmit() {
 		if (!email.trim()) {
-			message = 'Please enter your email address';
+			message = t.subscribe_form_error_empty || 'Please enter your email address';
 			return;
 		}
 
@@ -48,19 +46,18 @@
 				body: JSON.stringify({ email: email.trim(), type })
 			});
 
-			/** @type {{success: boolean, message: string}} */
 			const result = await response.json();
 			
 			if (result.success) {
 				success = true;
 				email = '';
-				message = result.message;
+				message = t.subscribe_form_success_message || result.message;
 			} else {
-				message = result.message || 'Something went wrong. Please try again.';
+				message = result.message || (t.subscribe_form_error_generic || 'Something went wrong. Please try again.');
 			}
 		} catch (error) {
 			console.error('Subscription error:', error);
-			message = 'Network error. Please try again.';
+			message = t.subscribe_form_error_network || 'Network error. Please try again.';
 		} finally {
 			loading = false;
 		}
@@ -75,8 +72,8 @@
 		email = '';
 	}
 
-	onMount(() => {
-		// Auto-reset form after 5 seconds on success
+	// Auto-reset form after 5 seconds on success
+	$effect(() => {
 		if (success) {
 			const timer = setTimeout(() => {
 				resetForm();
@@ -84,21 +81,14 @@
 			return () => clearTimeout(timer);
 		}
 	});
-
-	// Watch for success state and set timeout
-	$: if (success) {
-		const timer = setTimeout(() => {
-			resetForm();
-		}, 5000);
-	}
 </script>
 
 <div class="subscribe-form">
 	{#if success}
 		<div class="success-message">
-			<h3>🎉 Thank you!</h3>
+			<h3>{t.subscribe_form_thanks || '🎉 Thank you!'}</h3>
 			<p>{message}</p>
-			<p class="reset-hint">Form will reset in a few seconds...</p>
+			<p class="reset-hint">{t.subscribe_form_reset_hint || 'Form will reset in a few seconds...'}</p>
 		</div>
 	{:else}
 		<form on:submit|preventDefault={handleSubmit}>
@@ -106,13 +96,13 @@
 				<input
 					bind:value={email}
 					type="email"
-					{placeholder}
+					placeholder={formPlaceholder}
 					required
 					disabled={loading}
 					class="email-input"
 				/>
 				<button type="submit" disabled={loading} class="submit-button">
-					{loading ? 'Subscribing...' : buttonText}
+					{loading ? (t.subscribe_form_subscribing || 'Subscribing...') : formButtonText}
 				</button>
 			</div>
 		</form>

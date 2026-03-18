@@ -76,6 +76,14 @@
   "subscribe_body": "Thanks for signing up! To start receiving our spicy web dev tips, please confirm your email address by clicking the button below.",
   "subscribe_button": "Confirm Email",
   "subscribe_footer": "If you didn't sign up, you can safely ignore this email.",
+  "subscribe_form_placeholder": "Enter your email address",
+  "subscribe_form_button": "Subscribe",
+  "subscribe_form_thanks": "🎉 Thank you!",
+  "subscribe_form_success_message": "Please check your email to confirm your subscription.",
+  "subscribe_form_reset_hint": "Form will reset in a few seconds...",
+  "subscribe_form_error_empty": "Please enter your email address",
+  "subscribe_form_error_network": "Network error. Please try again.",
+  "subscribe_form_error_generic": "Something went wrong. Please try again.",
   "contact_title": "Contact Us",
   "contact_subtitle": "We'd love to hear from you and discuss your project",
   "methods_title": "Get in Touch",
@@ -292,5 +300,6 @@
   "project_pinche_desc": "This site. Creative web development and animation projects. SvelteKit 5 on Cloudflare with full i18n (EN/FR/ES), DIY email subscription, and blog with Mermaid diagrams.",
   "project_pinche_link": "You're Here",
   "project_patrouch_title": "patrouch.ca",
-  "project_patrouch_desc": "Personal portfolio and digital presence. Clean, fast, edge-native architecture with minimal dependencies and maximum performance."
+  "project_patrouch_desc": "Personal portfolio and digital presence. Clean, fast, edge-native architecture with minimal dependencies and maximum performance.",
+  "subscribe_form_subscribing": "Subscribing..."
 }
