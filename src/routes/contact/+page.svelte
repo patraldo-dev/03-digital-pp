@@ -50,6 +50,19 @@
     <title>{t.contact_title || 'Contact'} - ¡Pinche Poutine! Digital</title>
     <meta name="description" content={t.contact_subtitle || ''} />
 </svelte:head>
+<!-- Parallax Background -->
+<div class="parallax-wrap" aria-hidden="true">
+    <div class="parallax-bg"></div>
+    <div class="parallax-circles">
+        <span class="circle c1"></span>
+        <span class="circle c2"></span>
+        <span class="circle c3"></span>
+        <span class="circle c4"></span>
+        <span class="circle c5"></span>
+        <span class="circle c6"></span>
+    </div>
+</div>
+
 
 <!-- Parallax Background Layers (ARIA hidden) -->
 <div class="parallax-wrap" aria-hidden="true">
@@ -179,6 +192,58 @@
 </div>
 
 <style>
+    /* Parallax Background */
+    .parallax-wrap {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -2;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .parallax-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://imagedelivery.net/4bRSwPonOXfEIBVZiDXg0w/f8a136eb-363e-4a24-0f54-70bb4f4bf800/full');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.25;
+        filter: blur(6px);
+    }
+
+    .parallax-circles .circle {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(201, 76, 53, 0.15) 0%, transparent 70%);
+        animation: float 20s infinite ease-in-out;
+    }
+
+    .c1 { width: 60px; height: 60px; top: 10%; left: 10%; animation-delay: 0s; }
+    .c2 { width: 40px; height: 40px; top: 60%; left: 80%; animation-delay: -5s; }
+    .c3 { width: 80px; height: 80px; top: 70%; left: 20%; animation-delay: -10s; }
+    .c4 { width: 30px; height: 30px; top: 30%; left: 70%; animation-delay: -15s; }
+    .c5 { width: 50px; height: 50px; top: 80%; left: 50%; animation-delay: -7s; }
+    .c6 { width: 35px; height: 35px; top: 20%; left: 90%; animation-delay: -12s; }
+
+    @keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(30px, -40px) scale(1.1); }
+        50% { transform: translate(-20px, 30px) scale(0.9); }
+        75% { transform: translate(40px, 20px) scale(1.05); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .parallax-circles .circle {
+            animation: none;
+        }
+    }
+
     /* Parallax Background Layers */
     .parallax-wrap {
         position: fixed;
