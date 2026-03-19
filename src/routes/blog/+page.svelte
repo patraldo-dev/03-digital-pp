@@ -226,7 +226,7 @@
     /* --- Page Header --- */
     .page-header {
         background: transparent;
-        color: var(--color-white);
+        color: var(--color-text);
         padding: 6rem 0 4rem;
         text-align: center;
         position: relative;
@@ -254,7 +254,7 @@
         margin-bottom: 1rem;
         font-weight: 800;
         line-height: 1.1;
-        color: var(--color-white);
+        color: var(--color-text);
     }
 
     .subtitle {
@@ -306,7 +306,7 @@
 
     .post-tag {
         background: var(--color-sage);
-        color: var(--color-white);
+        color: var(--color-text);
         padding: 6px 14px;
         border-radius: 50px;
         font-weight: 600;
@@ -390,7 +390,7 @@
 
     .pagination-link:hover {
         background: var(--color-brick);
-        color: var(--color-white);
+        color: var(--color-text);
         transform: translateY(-2px);
     }
 
@@ -450,7 +450,7 @@
         max-width: 600px;
         position: relative;
         z-index: 2;
-        color: var(--color-white);
+        color: var(--color-text);
     }
 
     .newsletter-content h2 {
@@ -511,7 +511,7 @@
 
     .btn-primary {
         background: var(--color-brick);
-        color: var(--color-white);
+        color: var(--color-text);
         box-shadow: 0 10px 25px rgba(201, 76, 53, 0.3);
     }
 

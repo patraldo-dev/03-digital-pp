@@ -358,7 +358,7 @@
     /* --- Page Header --- */
     .page-header {
         background: transparent;
-        color: var(--color-white);
+        color: var(--color-text);
         padding: 6rem 0 4rem;
         text-align: center;
         position: relative;
@@ -386,7 +386,7 @@
         margin-bottom: 1rem;
         font-weight: 800;
         line-height: 1.1;
-        color: var(--color-white);
+        color: var(--color-text);
     }
 
     .subtitle {
@@ -489,7 +489,7 @@
     /* Office Hours */
     .office-hours {
         background: var(--color-sage);
-        color: var(--color-white);
+        color: var(--color-text);
         padding: 2.5rem;
         border-radius: 24px;
         margin-top: 2rem;

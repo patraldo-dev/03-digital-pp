@@ -302,7 +302,7 @@
     /* --- Page Header --- */
     .page-header {
         background: transparent;
-        color: var(--color-white);
+        color: var(--color-text);
         padding: 6rem 0 4rem;
         text-align: center;
     }
@@ -328,7 +328,7 @@
         margin-bottom: 1rem;
         font-weight: 800;
         line-height: 1.1;
-        color: var(--color-white);
+        color: var(--color-text);
     }
 
     .subtitle {
@@ -617,7 +617,7 @@
         max-width: 700px;
         margin: 0 auto;
         background: var(--color-sage);
-        color: var(--color-white);
+        color: var(--color-text);
         padding: 4rem 3rem;
         border-radius: 40px;
         text-align: center;
@@ -653,7 +653,7 @@
     }
 
     .contact-intro a {
-        color: var(--color-white);
+        color: var(--color-text);
         text-decoration: none;
         font-weight: 700;
         border-bottom: 2px solid rgba(255, 255, 255, 0.3);
@@ -661,7 +661,7 @@
     }
 
     .contact-intro a:hover {
-        border-bottom-color: var(--color-white);
+        border-bottom-color: var(--color-text);
     }
 
     .contact-outro {
