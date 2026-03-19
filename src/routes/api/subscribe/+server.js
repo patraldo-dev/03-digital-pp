@@ -1,82 +1,80 @@
 // src/routes/api/subscribe/+server.js
-import { json } from '@sveltejs/kit';
 import { sendEmail } from '$lib/email.js';
 import { getTranslations } from '$lib/i18n/server.js';
 
 export async function POST({ request, platform, url }) {
-    const { MAILGUN_FROM_EMAIL } = platform.env;
-
     try {
         const { email, type } = await request.json();
-
-        // Validation
-        if (!email || !type) {
-            return json({
-                success: false,
-                message: 'Email and type are required'
-            }, { status: 400 });
-        }
-
-        if (!['newsletter', 'events'].includes(type)) {
-            return json({
-                success: false,
-                message: 'Invalid subscription type'
-            }, { status: 400 });
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return json({
-                success: false,
-                message: 'Invalid email format'
-            }, { status: 400 });
-        }
-
-        // Load translations
         const i18n = await getTranslations(request);
         const t = i18n.t;
 
-        // Check if email already exists and is confirmed
+        // Validation
+        if (!email || !isValidEmail(email)) {
+            return new Response(
+                JSON.stringify({ 
+                    success: false,
+                    message: t.subscribe_form_error_empty || 'Please enter a valid email address' 
+                }),
+                { status: 400, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+
+        if (!type || !['newsletter', 'events'].includes(type)) {
+            return new Response(
+                JSON.stringify({ 
+                    success: false,
+                    message: t.subscribe_error_invalid_type || 'Invalid subscription type' 
+                }),
+                { status: 400, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+
+        // Check if email already exists
         const existingSubscriber = await platform.env.DB
-            .prepare('SELECT id, confirmed FROM subscribers WHERE email = ? AND type = ?')
+            .prepare('SELECT * FROM subscribers WHERE email = ? AND type = ?')
             .bind(email, type)
             .first();
 
-        if (existingSubscriber?.confirmed) {
-            return json({
-                success: false,
-                message: t.subscribe_error_already_subscribed || `Email already subscribed to ${type}`
-            }, { status: 409 });
-        }
-
-        // Generate confirmation token using Web Crypto API
-        const tokenArray = new Uint8Array(32);
-        crypto.getRandomValues(tokenArray);
-        const confirmationToken = Array.from(tokenArray, byte => byte.toString(16).padStart(2, '0')).join('');
-        
+        // Generate token and expiration
+        const token = generateToken();
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+        const confirmationUrl = `${url.origin}/api/confirm?token=${token}`;
 
-        // If user exists but not confirmed, update their token
+        // Handle different subscription states
         if (existingSubscriber) {
-            await platform.env.DB
-                .prepare('UPDATE subscribers SET confirmation_token = ?, token_expires_at = ? WHERE id = ?')
-                .bind(confirmationToken, expiresAt.toISOString(), existingSubscriber.id)
-                .run();
-        } else {
-            // Insert new unconfirmed subscriber
+            // Case 1: Already confirmed
+            if (existingSubscriber.confirmed) {
+                return new Response(
+                    JSON.stringify({ 
+                        success: false,
+                        message: t.subscribe_error_already_subscribed || 'You are already subscribed.',
+                        status: 'confirmed'
+                    }),
+                    { status: 200, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
+
+            // Case 2: Pending confirmation - update token
             await platform.env.DB
                 .prepare(`
-                    INSERT INTO subscribers (email, type, confirmation_token, token_expires_at, confirmed, created_at) 
+                    UPDATE subscribers 
+                    SET confirmation_token = ?, token_expires_at = ?
+                    WHERE email = ? AND type = ?
+                `)
+                .bind(token, expiresAt.toISOString(), email, type)
+                .run();
+        } else {
+            // Case 3: New subscriber - insert record
+            await platform.env.DB
+                .prepare(`
+                    INSERT INTO subscribers (email, type, confirmation_token, token_expires_at, confirmed, created_at)
                     VALUES (?, ?, ?, ?, false, ?)
                 `)
-                .bind(email, type, confirmationToken, expiresAt.toISOString(), new Date().toISOString())
+                .bind(email, type, token, expiresAt.toISOString(), new Date().toISOString())
                 .run();
         }
 
-        // Create confirmation URL
-        const confirmationUrl = `${url.origin}/api/confirm?token=${confirmationToken}`;
-
-        // Load email content with translations
+        // Build email content
         const emailHtml = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
                 <div style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eee;">
@@ -108,7 +106,7 @@ ${t.subscribe_footer}`;
 
         // Send confirmation email
         const emailSent = await sendEmail({
-            from: MAILGUN_FROM_EMAIL,
+            from: platform.env.MAILGUN_FROM_EMAIL,
             to: email,
             subject: t.subscribe_subject,
             text: emailText,
@@ -116,23 +114,43 @@ ${t.subscribe_footer}`;
         }, platform.env);
 
         if (!emailSent) {
-            console.error('Failed to send confirmation email to:', email);
-            return json({
-                success: false,
-                message: t.subscribe_error_email_failed || 'Failed to send confirmation email'
-            }, { status: 500 });
+            console.error('Failed to send confirmation email');
+            return new Response(
+                JSON.stringify({ 
+                    success: false,
+                    message: t.subscribe_error_email_failed || 'Failed to send confirmation email' 
+                }),
+                { status: 500, headers: { 'Content-Type': 'application/json' } }
+            );
         }
 
-        return json({
-            success: true,
-            message: t.subscribe_success_message || 'Please check your email to confirm your subscription!'
-        });
+        return new Response(
+            JSON.stringify({ 
+                success: true,
+                message: t.subscribe_success_message || 'Please check your email to confirm your subscription!',
+                status: 'pending'
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
 
     } catch (error) {
         console.error('Subscription error:', error);
-        return json({
-            success: false,
-            message: t.subscribe_error_server || 'Failed to process subscription'
-        }, { status: 500 });
+        return new Response(
+            JSON.stringify({ 
+                success: false,
+                message: t.subscribe_error_server || 'Failed to process subscription' 
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
     }
+}
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(email);
+}
+
+function generateToken() {
+    const tokenArray = new Uint8Array(32);
+    crypto.getRandomValues(tokenArray);
+    return Array.from(tokenArray, byte => byte.toString(16).padStart(2, '0')).join('');
 }

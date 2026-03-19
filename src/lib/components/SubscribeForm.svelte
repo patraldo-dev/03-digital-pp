@@ -9,7 +9,6 @@
 	let message = $state('');
 	let success = $state(false);
 
-	// Translation helpers with fallbacks
 	const getText = (key, fallback) => t?.[key] || fallback;
 
 	async function handleSubmit(e) {
@@ -33,16 +32,28 @@
 			const result = await response.json();
 			
 			if (result.success) {
+				// New subscription - pending confirmation
 				success = true;
 				email = '';
-				message = getText('subscribe_form_success_message', 'Please check your email to confirm your subscription.');
+				message = getText('subscribe_success_message', 'Please check your email to confirm your subscription.');
+				
+				setTimeout(() => {
+					success = false;
+					message = '';
+				}, 5000);
+			} else if (result.status === 'confirmed') {
+				// Already subscribed
+				success = true;
+				email = '';
+				message = result.message || getText('subscribe_error_already_subscribed', 'You are already subscribed.');
 				
 				setTimeout(() => {
 					success = false;
 					message = '';
 				}, 5000);
 			} else {
-				message = result.message || getText('subscribe_form_error_generic', 'Something went wrong. Please try again.');
+				// Other error
+				message = result.message || getText('subscribe_error_generic', 'Something went wrong. Please try again.');
 			}
 		} catch (error) {
 			console.error('Subscription error:', error);
@@ -56,7 +67,7 @@
 <div class="subscribe-form">
 	{#if success}
 		<div class="success-message">
-			<h3>{getText('subscribe_form_thanks', '🎉 Thank you!')}</h3>
+			<h3>🎉 Thank you!</h3>
 			<p>{message}</p>
 			<p class="reset-hint">{getText('subscribe_form_reset_hint', 'Form will reset in a few seconds...')}</p>
 		</div>

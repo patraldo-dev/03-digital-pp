@@ -305,5 +305,6 @@
   "subscribe_error_already_subscribed": "You are already subscribed to {type}",
   "subscribe_error_email_failed": "Failed to send confirmation email",
   "subscribe_error_server": "Failed to process subscription",
-  "subscribe_success_message": "Please check your email to confirm your subscription!"
+  "subscribe_success_message": "Please check your email to confirm your subscription!",
+  "subscribe_error_invalid_type": "Invalid subscription type"
 }

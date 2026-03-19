@@ -305,5 +305,6 @@
   "subscribe_error_already_subscribed": "Vous êtes déjà abonné(e) à {type}",
   "subscribe_error_email_failed": "Échec de l'envoi de l'e-mail de confirmation",
   "subscribe_error_server": "Échec du traitement de l'abonnement",
-  "subscribe_success_message": "Veuillez vérifier votre e-mail pour confirmer votre abonnement !"
+  "subscribe_success_message": "Veuillez vérifier votre e-mail pour confirmer votre abonnement !",
+  "subscribe_error_invalid_type": "Type d'abonnement invalide"
 }
