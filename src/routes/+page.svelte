@@ -239,7 +239,7 @@
         left: 0;
         width: 100%;
         height: 100vh;
-        background-image: url('https://imagedelivery.net/4x8jN8xF7K9xJQqGpKqKZQ/f8a136eb-363e-4a24-0f54-70bb4f4bf800/full');
+        background-image: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1920&q=80');
         background-size: cover;
         background-position: center;
         opacity: 0.15;
