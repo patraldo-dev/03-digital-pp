@@ -43,7 +43,7 @@
     <div class="container">
         <div class="badge">{t.contact_badge || 'Get in Touch'}</div>
         <h1>{t.contact_title || 'Contact Us'}</h1>
-        <p class="subtitle">{t.contact_subtitle || 'We'd love to hear from you'}</p>
+        <p class="subtitle">{t.contact_subtitle || 'We would love to hear from you'}</p>
     </div>
 </div>
 
@@ -74,7 +74,7 @@
                         <div class="contact-method">
                             <div class="method-icon">💬</div>
                             <div class="method-content">
-                                <h3>{t.method_chat_title || 'Let's Chat'}</h3>
+                                <h3>{t.method_chat_title || 'Let us Chat'}</h3>
                                 <p>{t.method_chat_desc || 'Schedule a consultation'}</p>
                                 <small>{t.method_chat_note || 'Free 30-minute discovery call'}</small>
                             </div>
