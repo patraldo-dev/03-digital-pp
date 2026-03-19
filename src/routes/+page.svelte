@@ -14,6 +14,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
 </svelte:head>
 
+<!-- Decorative Background Image (ARIA hidden) -->
+<div class="hero-bg-image" aria-hidden="true"></div>
+
 <!-- Background Blobs -->
 <div class="bg-wrap">
     <div class="blob blob-1"></div>
@@ -34,7 +37,7 @@
                     {t.home_hero_btn_projects}
                     <span class="arrow">→</span>
                 </a>
-                <a href="/services" class="btn btn-secondary">{t.home_hero_btn_services}</a>
+                <a href="/pursuits" class="btn btn-secondary">{t.home_hero_btn_services}</a>
             </div>
         </div>
     </div>
@@ -141,7 +144,7 @@
 
         <div class="projects-cta">
             <p>{t.home_projects_cta_text}</p>
-            <a href="/services" class="btn-text">{t.home_projects_cta_btn} →</a>
+            <a href="/pursuits" class="btn-text">{t.home_projects_cta_btn} →</a>
         </div>
     </div>
 </section>
@@ -233,6 +236,21 @@
 </section>
 
 <style>
+    /* Hero Background Image */
+    .hero-bg-image {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-image: url('https://imagedelivery.net/4x8jN8xF7K9xJQqGpKqKZQ/f8a136eb-363e-4a24-0f54-70bb4f4bf800/public');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.15;
+        filter: blur(8px);
+        z-index: -2;
+        pointer-events: none;
+    }
     /* --- Palette Definition --- */
     :root {
         --color-bg: #F9F6F0;        /* Creamy White */
