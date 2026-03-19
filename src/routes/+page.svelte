@@ -243,7 +243,7 @@
         left: 0;
         width: 100%;
         height: 100vh;
-        background-image: url('https://imagedelivery.net/4x8jN8xF7K9xJQqGpKqKZQ/f8a136eb-363e-4a24-0f54-70bb4f4bf800/public');
+        background-image: url('https://imagedelivery.net/4x8jN8xF7K9xJQqGpKqKZQ/f8a136eb-363e-4a24-0f54-70bb4f4bf800/full');
         background-size: cover;
         background-position: center;
         opacity: 0.15;
