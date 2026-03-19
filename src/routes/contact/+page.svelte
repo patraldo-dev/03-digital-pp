@@ -8,6 +8,24 @@
     
     // Guadalajara local time (GMT-6)
     let guadalajaraTime = $state('');
+    let parallaxLayers = $state([]);
+    
+    onMount(() => {
+        // Parallax scroll effect
+        const layers = document.querySelectorAll('.parallax-layer');
+        parallaxLayers = Array.from(layers);
+        
+        function handleScroll() {
+            const scrolled = window.scrollY;
+            layers.forEach((layer, index) => {
+                const speed = (index + 1) * 0.05;
+                layer.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        }
+        
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    });
     
     onMount(() => {
         function updateTime() {
@@ -32,6 +50,26 @@
     <title>{t.contact_title || 'Contact'} - ¡Pinche Poutine! Digital</title>
     <meta name="description" content={t.contact_subtitle || ''} />
 </svelte:head>
+
+<!-- Parallax Background Layers (ARIA hidden) -->
+<div class="parallax-wrap" aria-hidden="true">
+    <div class="parallax-layer layer-bg"></div>
+    <div class="parallax-layer layer-svg1">
+        <svg viewBox="0 0 200 200" class="parallax-svg">
+            <circle cx="100" cy="100" r="80" fill="rgba(201, 76, 53, 0.1)"/>
+        </svg>
+    </div>
+    <div class="parallax-layer layer-svg2">
+        <svg viewBox="0 0 300 300" class="parallax-svg">
+            <circle cx="150" cy="150" r="120" fill="rgba(141, 163, 153, 0.08)"/>
+        </svg>
+    </div>
+    <div class="parallax-layer layer-svg3">
+        <svg viewBox="0 0 150 150" class="parallax-svg">
+            <circle cx="75" cy="75" r="60" fill="rgba(255, 255, 255, 0.05)"/>
+        </svg>
+    </div>
+</div>
 
 <!-- Background Blobs -->
 <div class="bg-wrap">
@@ -141,6 +179,50 @@
 </div>
 
 <style>
+    /* Parallax Background Layers */
+    .parallax-wrap {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -2;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .parallax-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.1s ease-out;
+    }
+
+    .layer-bg {
+        background-image: url('https://imagedelivery.net/4bRSwPonOXfEIBVZiDXg0w/f8a136eb-363e-4a24-0f54-70bb4f4bf800/full');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.2;
+        filter: blur(10px);
+    }
+
+    .layer-svg1 { transform: translateY(0); }
+    .layer-svg2 { transform: translateY(0); }
+    .layer-svg3 { transform: translateY(0); }
+
+    .parallax-svg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .parallax-layer {
+            transition: none;
+        }
+    }
     /* --- Palette Definition --- */
     :root {
         --color-bg: #F9F6F0;        /* Creamy White */
