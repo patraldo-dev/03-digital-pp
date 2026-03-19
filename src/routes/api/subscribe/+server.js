@@ -44,10 +44,11 @@ export async function POST({ request, platform, url }) {
         if (existingSubscriber) {
             // Case 1: Already confirmed
             if (existingSubscriber.confirmed) {
+                const message = (t.subscribe_error_already_subscribed || 'You are already subscribed to {type}').replace('{type}', type);
                 return new Response(
                     JSON.stringify({ 
                         success: false,
-                        message: t.subscribe_error_already_subscribed || 'You are already subscribed.',
+                        message,
                         status: 'confirmed'
                     }),
                     { status: 200, headers: { 'Content-Type': 'application/json' } }
