@@ -1,9 +1,31 @@
 <script>
     import ContactForm from '$lib/components/ContactForm.svelte';
     import { page } from '$app/stores';
+    import { onMount } from 'svelte';
 
     let { data } = $props();
     let t = $derived(data?.t || {});
+    
+    // Guadalajara local time (GMT-6)
+    let guadalajaraTime = $state('');
+    
+    onMount(() => {
+        function updateTime() {
+            const now = new Date();
+            guadalajaraTime = now.toLocaleTimeString('en-US', {
+                timeZone: 'America/Mexico_City',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+        }
+        
+        updateTime();
+        const interval = setInterval(updateTime, 1000);
+        
+        return () => clearInterval(interval);
+    });
 </script>
 
 <svelte:head>
@@ -21,7 +43,7 @@
     <div class="container">
         <div class="badge">{t.contact_badge || 'Get in Touch'}</div>
         <h1>{t.contact_title || 'Contact Us'}</h1>
-        <p class="subtitle">{t.contact_subtitle || 'We\'d love to hear from you'}</p>
+        <p class="subtitle">{t.contact_subtitle || 'We'd love to hear from you'}</p>
     </div>
 </div>
 
@@ -52,7 +74,7 @@
                         <div class="contact-method">
                             <div class="method-icon">💬</div>
                             <div class="method-content">
-                                <h3>{t.method_chat_title || 'Let\'s Chat'}</h3>
+                                <h3>{t.method_chat_title || 'Let's Chat'}</h3>
                                 <p>{t.method_chat_desc || 'Schedule a consultation'}</p>
                                 <small>{t.method_chat_note || 'Free 30-minute discovery call'}</small>
                             </div>
@@ -74,10 +96,11 @@
 
                 <div class="office-hours">
                     <div class="office-icon">🕐</div>
-                    <h3>{t.office_hours_title || 'Office Hours'}</h3>
-                    <p>{t.office_hours_weekday || 'Monday - Friday: 9:00 AM - 6:00 PM'}</p>
-                    <p>{t.office_hours_weekend || 'Weekend: By appointment'}</p>
-                    <small>{t.office_hours_note || 'All times in your local timezone'}</small>
+                    <h3>{t.office_hours_title || 'By Appointment Only'}</h3>
+                    <p class="timezone-label">Guadalajara, México (GMT-6)</p>
+                    <p class="current-time">📍 Current time: <strong>{guadalajaraTime}</strong></p>
+                    <p>{t.office_hours_weekend || 'Flexible scheduling available'}</p>
+                    <small>{t.office_hours_note || 'Contact me to find a time that works'}</small>
                 </div>
             </div>
 
@@ -350,6 +373,30 @@
         font-weight: 700;
         position: relative;
         z-index: 2;
+    }
+
+    .timezone-label {
+        font-size: 1.1rem;
+        opacity: 0.95;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .current-time {
+        font-size: 1.2rem;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .current-time strong {
+        font-family: 'Courier New', monospace;
+        font-weight: 700;
+        color: #fff;
     }
 
     .office-hours p {
