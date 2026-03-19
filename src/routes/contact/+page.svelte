@@ -95,7 +95,7 @@
                 </div>
 
                 <div class="office-hours">
-                    <div class="office-icon">🕐</div>
+                    
                     <h3>{t.office_hours_title || 'By Appointment Only'}</h3>
                     <p class="timezone-label">Guadalajara, México (GMT-6)</p>
                     <p class="current-time">📍 Current time: <strong>{guadalajaraTime}</strong></p>
