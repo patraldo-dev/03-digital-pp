@@ -301,5 +301,9 @@
   "project_pinche_link": "You're Here",
   "project_patrouch_title": "patrouch.ca",
   "project_patrouch_desc": "Personal portfolio and digital presence. Clean, fast, edge-native architecture with minimal dependencies and maximum performance.",
-  "subscribe_form_subscribing": "Subscribing..."
+  "subscribe_form_subscribing": "Subscribing...",
+  "subscribe_error_already_subscribed": "You are already subscribed to {type}",
+  "subscribe_error_email_failed": "Failed to send confirmation email",
+  "subscribe_error_server": "Failed to process subscription",
+  "subscribe_success_message": "Please check your email to confirm your subscription!"
 }

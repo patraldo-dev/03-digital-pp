@@ -301,5 +301,9 @@
   "project_pinche_link": "Estás Aquí",
   "project_patrouch_title": "patrouch.ca",
   "project_patrouch_desc": "Portfolio personal y presencia digital. Arquitectura clean, fast, edge-native con dependencias mínimas y rendimiento máximo.",
-  "subscribe_form_subscribing": "Suscribiendo..."
+  "subscribe_form_subscribing": "Suscribiendo...",
+  "subscribe_error_already_subscribed": "Ya estás suscrito a {type}",
+  "subscribe_error_email_failed": "Error al enviar el correo de confirmación",
+  "subscribe_error_server": "Error al procesar la suscripción",
+  "subscribe_success_message": "¡Por favor revisa tu correo electrónico para confirmar tu suscripción!"
 }

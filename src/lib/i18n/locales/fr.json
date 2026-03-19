@@ -301,5 +301,9 @@
   "project_pinche_link": "Vous Êtes Ici",
   "project_patrouch_title": "patrouch.ca",
   "project_patrouch_desc": "Portfolio personnel et présence digitale. Architecture clean, fast, edge-native avec dépendances minimales et performance maximale.",
-  "subscribe_form_subscribing": "Inscription en cours..."
+  "subscribe_form_subscribing": "Inscription en cours...",
+  "subscribe_error_already_subscribed": "Vous êtes déjà abonné(e) à {type}",
+  "subscribe_error_email_failed": "Échec de l'envoi de l'e-mail de confirmation",
+  "subscribe_error_server": "Échec du traitement de l'abonnement",
+  "subscribe_success_message": "Veuillez vérifier votre e-mail pour confirmer votre abonnement !"
 }
