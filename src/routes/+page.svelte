@@ -242,8 +242,8 @@
         background-image: url('https://imagedelivery.net/4bRSwPonOXfEIBVZiDXg0w/f8a136eb-363e-4a24-0f54-70bb4f4bf800/full');
         background-size: cover;
         background-position: center;
-        opacity: 0.15;
-        filter: blur(8px);
+        opacity: 0.25;
+        filter: blur(6px);
         z-index: -2;
         pointer-events: none;
     }
