@@ -225,7 +225,7 @@
 
     /* --- Page Header --- */
     .page-header {
-        background: linear-gradient(135deg, var(--color-text) 0%, #1a201e 100%);
+        background: transparent;
         color: var(--color-white);
         padding: 6rem 0 4rem;
         text-align: center;
