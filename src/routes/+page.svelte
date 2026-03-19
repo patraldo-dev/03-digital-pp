@@ -33,7 +33,7 @@
             </h1>
             <p class="hero-subtitle">{t.home_hero_subtitle || 'I now mostly conduct, and try to cobble together, edge-native web apps for artists and others in the creative community. One-person studio, AI-assisted, terminal-first.'}</p>
             <div class="hero-actions">
-                <a href="/pursuits" class="btn btn-secondary">{t.home_hero_btn_services}</a>
+                <a href="/projects" class="btn btn-secondary">{t.home_hero_btn_services}</a>
             </div>
         </div>
     </div>
@@ -140,7 +140,7 @@
 
         <div class="projects-cta">
             <p>{t.home_projects_cta_text}</p>
-            <a href="/pursuits" class="btn-text">{t.home_projects_cta_btn} →</a>
+            <a href="/projects" class="btn-text">{t.home_projects_cta_btn} →</a>
         </div>
     </div>
 </section>
