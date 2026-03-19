@@ -32,27 +32,23 @@
 			const result = await response.json();
 			
 			if (result.success) {
-				// New subscription - pending confirmation
 				success = true;
 				email = '';
-				message = getText('subscribe_success_message', 'Please check your email to confirm your subscription.');
 				
-				setTimeout(() => {
-					success = false;
-					message = '';
-				}, 5000);
-			} else if (result.status === 'confirmed') {
-				// Already subscribed
-				success = true;
-				email = '';
-				message = result.message || getText('subscribe_error_already_subscribed', 'You are already subscribed.');
+				// Different messages based on status
+				if (result.status === 'confirmed') {
+					message = result.message || getText('subscribe_error_already_subscribed', 'You are already subscribed.');
+				} else if (result.status === 'resent') {
+					message = result.message || getText('subscribe_resend_message', 'Confirmation email resent. Please check your inbox!');
+				} else {
+					message = getText('subscribe_success_message', 'Please check your email to confirm your subscription.');
+				}
 				
 				setTimeout(() => {
 					success = false;
 					message = '';
 				}, 5000);
 			} else {
-				// Other error
 				message = result.message || getText('subscribe_error_generic', 'Something went wrong. Please try again.');
 			}
 		} catch (error) {

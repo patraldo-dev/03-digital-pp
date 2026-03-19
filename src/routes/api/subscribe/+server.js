@@ -54,7 +54,7 @@ export async function POST({ request, platform, url }) {
                 );
             }
 
-            // Case 2: Pending confirmation - update token
+            // Case 2: Pending confirmation - update token and resend email
             await platform.env.DB
                 .prepare(`
                     UPDATE subscribers 
@@ -63,16 +63,75 @@ export async function POST({ request, platform, url }) {
                 `)
                 .bind(token, expiresAt.toISOString(), email, type)
                 .run();
-        } else {
-            // Case 3: New subscriber - insert record
-            await platform.env.DB
-                .prepare(`
-                    INSERT INTO subscribers (email, type, confirmation_token, token_expires_at, confirmed, created_at)
-                    VALUES (?, ?, ?, ?, false, ?)
-                `)
-                .bind(email, type, token, expiresAt.toISOString(), new Date().toISOString())
-                .run();
+            
+            // Build resend email content
+            const emailHtml = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                    <div style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                        <h1 style="color: #C94C35; margin: 0;">${t.subscribe_title}</h1>
+                    </div>
+                    <div style="padding: 20px 0;">
+                        <p style="font-size: 16px; color: #333; line-height: 1.6;">
+                            ${t.subscribe_body}
+                        </p>
+                    </div>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="${confirmationUrl}" style="background-color: #C94C35; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                            ${t.subscribe_button}
+                        </a>
+                    </div>
+                    <div style="text-align: center; padding-top: 20px; border-top: 1px solid #eee; color: #888; font-size: 12px;">
+                        <p>${t.subscribe_footer}</p>
+                    </div>
+                </div>
+            `;
+
+            const emailText = `${t.subscribe_title}
+
+${t.subscribe_body}
+
+${t.subscribe_button}: ${confirmationUrl}
+
+${t.subscribe_footer}`;
+
+            const emailSent = await sendEmail({
+                from: platform.env.MAILGUN_FROM_EMAIL,
+                to: email,
+                subject: t.subscribe_subject,
+                text: emailText,
+                html: emailHtml
+            }, platform.env);
+
+            if (!emailSent) {
+                console.error('Failed to resend confirmation email');
+                return new Response(
+                    JSON.stringify({ 
+                        success: false,
+                        message: t.subscribe_error_email_failed || 'Failed to send confirmation email' 
+                    }),
+                    { status: 500, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
+
+            // Return different message for resend
+            return new Response(
+                JSON.stringify({ 
+                    success: true,
+                    message: t.subscribe_resend_message || 'Confirmation email resent. Please check your inbox!',
+                    status: 'resent'
+                }),
+                { status: 200, headers: { 'Content-Type': 'application/json' } }
+            );
         }
+
+        // Case 3: New subscriber - insert record
+        await platform.env.DB
+            .prepare(`
+                INSERT INTO subscribers (email, type, confirmation_token, token_expires_at, confirmed, created_at)
+                VALUES (?, ?, ?, ?, false, ?)
+            `)
+            .bind(email, type, token, expiresAt.toISOString(), new Date().toISOString())
+            .run();
 
         // Build email content
         const emailHtml = `
@@ -104,7 +163,6 @@ ${t.subscribe_button}: ${confirmationUrl}
 
 ${t.subscribe_footer}`;
 
-        // Send confirmation email
         const emailSent = await sendEmail({
             from: platform.env.MAILGUN_FROM_EMAIL,
             to: email,

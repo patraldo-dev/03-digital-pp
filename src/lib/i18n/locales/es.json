@@ -306,5 +306,6 @@
   "subscribe_error_email_failed": "Error al enviar el correo de confirmación",
   "subscribe_error_server": "Error al procesar la suscripción",
   "subscribe_success_message": "¡Por favor revisa tu correo electrónico para confirmar tu suscripción!",
-  "subscribe_error_invalid_type": "Tipo de suscripción inválido"
+  "subscribe_error_invalid_type": "Tipo de suscripción inválido",
+  "subscribe_resend_message": "Correo de confirmación reenviado. ¡Por favor revisa tu bandeja de entrada!"
 }
