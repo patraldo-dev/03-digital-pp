@@ -395,7 +395,7 @@
         max-width: 600px;
         margin: 0 auto;
         font-weight: 300;
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--color-text);
     }
 
     /* --- Contact Section --- */

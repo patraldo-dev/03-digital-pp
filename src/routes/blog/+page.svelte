@@ -263,7 +263,7 @@
         max-width: 600px;
         margin: 0 auto;
         font-weight: 300;
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--color-text);
     }
 
     /* --- Blog Content --- */
@@ -461,7 +461,7 @@
     }
 
     .newsletter-content p {
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--color-text);
         font-size: 1.2rem;
         margin-bottom: 0;
         line-height: 1.6;

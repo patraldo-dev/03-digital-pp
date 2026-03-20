@@ -31,7 +31,7 @@
 
 <div class="page-header">
     <div class="container">
-        <div class="badge">Services</div>
+        <div class="badge">Projects</div>
         <h1>{t.services_page_title}</h1>
         <p class="subtitle">{t.services_page_subtitle}</p>
     </div>
@@ -337,7 +337,7 @@
         max-width: 600px;
         margin: 0 auto;
         font-weight: 300;
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--color-text);
     }
 
     /* --- Sections --- */
