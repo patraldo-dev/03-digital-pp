@@ -104,7 +104,6 @@
 
             <!-- Contact Info Column -->
             <div class="contact-info">
-                <h2>{t.methods_title || 'Get in Touch'}</h2>
                 <p>{t.methods_desc || 'Have a project in mind...'}</p>
 
                 <div class="contact-methods">
