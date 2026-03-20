@@ -161,33 +161,6 @@
         </div>
     </section>
 
-    <section class="faq-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>{t.faq_title || 'FAQ'}</h2>
-                <div class="line"></div>
-            </div>
-
-            <div class="faq-grid">
-                <div class="faq-item">
-                    <h3>{t.faq_q1 || 'Question 1'}</h3>
-                    <p>{t.faq_a1 || 'Answer 1'}</p>
-                </div>
-                <div class="faq-item">
-                    <h3>{t.faq_q2 || 'Question 2'}</h3>
-                    <p>{t.faq_a2 || 'Answer 2'}</p>
-                </div>
-                <div class="faq-item">
-                    <h3>{t.faq_q3 || 'Question 3'}</h3>
-                    <p>{t.faq_a3 || 'Answer 3'}</p>
-                </div>
-                <div class="faq-item">
-                    <h3>{t.faq_q4 || 'Question 4'}</h3>
-                    <p>{t.faq_a4 || 'Answer 4'}</p>
-                </div>
-            </div>
-        </div>
-    </section>
 </div>
 
 <style>

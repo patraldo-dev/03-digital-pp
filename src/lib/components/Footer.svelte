@@ -10,8 +10,8 @@
     <div class="container">
         <div class="footer-content">
             <div class="footer-section">
-                <h3>¡Pinche Poutine!</h3>
-                <p>{t.footer_tagline || 'Building amazing experiences with modern web technologies.'}</p>
+                <h3>¡Pinche Poutine! <span class="digital">Digital</span></h3>
+                <p>{t.footer_tagline || 'Building amazing apps with modern web technology.'}</p>
             </div>
 
             <div class="footer-section">
@@ -63,8 +63,28 @@
     }
 
     .footer-section h3 {
-        font-size: 1.5rem;
+    .footer-section h3 .digital {
+        font-size: 0.7em;
         color: #3498db;
+        font-weight: 500;
+    }
+        font-size: 1.5rem;
+    .footer-section h3 .digital {
+        font-size: 0.7em;
+        color: #3498db;
+        font-weight: 500;
+    }
+        color: #3498db;
+    .footer-section h3 .digital {
+        font-size: 0.7em;
+        color: #3498db;
+        font-weight: 500;
+    }
+    }
+    .footer-section h3 .digital {
+        font-size: 0.7em;
+        color: #3498db;
+        font-weight: 500;
     }
 
     .footer-section p {
