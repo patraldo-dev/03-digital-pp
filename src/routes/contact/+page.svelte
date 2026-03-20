@@ -503,6 +503,8 @@
     }
 
     .current-time {
+        text-align: center;
+        display: inline-block;
         font-size: 1.2rem;
         background: rgba(255, 255, 255, 0.15);
         padding: 0.75rem 1rem;
