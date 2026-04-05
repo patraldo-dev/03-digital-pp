@@ -29,14 +29,6 @@
     </div>
 </div>
 
-<div class="page-header">
-    <div class="container">
-        <div class="badge">Projects</div>
-        <h1>{t.services_page_title}</h1>
-        <p class="subtitle">{t.services_page_subtitle}</p>
-    </div>
-</div>
-
 <div class="container">
     <!-- Intro Section -->
     <section class="intro-section">
