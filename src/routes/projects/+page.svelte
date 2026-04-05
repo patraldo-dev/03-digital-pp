@@ -30,6 +30,66 @@
 </div>
 
 <div class="container">
+    <!-- Proof It Works -->
+    <section class="projects-section">
+        <div class="section-header">
+            <h2>{t.services_projects_title}</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="projects-grid">
+            <!-- Antoine Patraldo -->
+            <a href="https://antoine.patraldo.com" target="_blank" rel="noopener" class="project-card">
+                <div class="project-header">
+                    <span class="project-emoji">🎨</span>
+                    <h3>{t.project_antoine_title}</h3>
+                </div>
+                <p class="project-desc">{t.project_antoine_desc}</p>
+                <div class="project-tech">
+                    <span class="tech-tag">SvelteKit 5</span>
+                    <span class="tech-tag">Cloudflare</span>
+                    <span class="tech-tag">Web Crypto</span>
+                    <span class="tech-tag">FFMPEG</span>
+                </div>
+                <span class="project-link">Visit Site →</span>
+            </a>
+
+            <!-- Pinche Poutine -->
+            <a href="https://pinchepoutine.digital" target="_blank" rel="noopener" class="project-card">
+                <div class="project-header">
+                    <span class="project-emoji">🌶️</span>
+                    <h3>{t.project_pinche_title}</h3>
+                </div>
+                <p class="project-desc">{t.project_pinche_desc}</p>
+                <div class="project-tech">
+                    <span class="tech-tag">SvelteKit 5</span>
+                    <span class="tech-tag">i18n</span>
+                    <span class="tech-tag">Cloudflare D1</span>
+                    <span class="tech-tag">Mailgun</span>
+                </div>
+                <span class="project-link">{t.project_pinche_link} →</span>
+            </a>
+
+            <!-- Patrouch.ca -->
+            <a href="https://patrouch.ca" target="_blank" rel="noopener" class="project-card">
+                <div class="project-header">
+                    <span class="project-emoji">🍁</span>
+                    <h3>{t.project_patrouch_title}</h3>
+                </div>
+                <p class="project-desc">{t.project_patrouch_desc}</p>
+                <div class="project-tech">
+                    <span class="tech-tag">SvelteKit</span>
+                    <span class="tech-tag">Edge-Native</span>
+                    <span class="tech-tag">Minimal</span>
+                    <span class="tech-tag">Fast</span>
+                </div>
+                <span class="project-link">Visit Site →</span>
+            </a>
+        </div>
+
+        <p class="projects-note">{t.services_projects_note}</p>
+    </section>
+
     <!-- Intro Section -->
     <section class="intro-section">
         <div class="content-box">
@@ -95,66 +155,6 @@
         </div>
 
         <p class="process-summary">{t.services_process_summary}</p>
-    </section>
-
-    <!-- Proof It Works -->
-    <section class="projects-section">
-        <div class="section-header">
-            <h2>{t.services_projects_title}</h2>
-            <div class="line"></div>
-        </div>
-
-        <div class="projects-grid">
-            <!-- Antoine Patraldo -->
-            <a href="https://antoine.patraldo.com" target="_blank" rel="noopener" class="project-card">
-                <div class="project-header">
-                    <span class="project-emoji">🎨</span>
-                    <h3>{t.project_antoine_title}</h3>
-                </div>
-                <p class="project-desc">{t.project_antoine_desc}</p>
-                <div class="project-tech">
-                    <span class="tech-tag">SvelteKit 5</span>
-                    <span class="tech-tag">Cloudflare</span>
-                    <span class="tech-tag">Web Crypto</span>
-                    <span class="tech-tag">FFMPEG</span>
-                </div>
-                <span class="project-link">Visit Site →</span>
-            </a>
-
-            <!-- Pinche Poutine -->
-            <a href="https://pinchepoutine.digital" target="_blank" rel="noopener" class="project-card">
-                <div class="project-header">
-                    <span class="project-emoji">🌶️</span>
-                    <h3>{t.project_pinche_title}</h3>
-                </div>
-                <p class="project-desc">{t.project_pinche_desc}</p>
-                <div class="project-tech">
-                    <span class="tech-tag">SvelteKit 5</span>
-                    <span class="tech-tag">i18n</span>
-                    <span class="tech-tag">Cloudflare D1</span>
-                    <span class="tech-tag">Mailgun</span>
-                </div>
-                <span class="project-link">{t.project_pinche_link} →</span>
-            </a>
-
-            <!-- Patrouch.ca -->
-            <a href="https://patrouch.ca" target="_blank" rel="noopener" class="project-card">
-                <div class="project-header">
-                    <span class="project-emoji">🍁</span>
-                    <h3>{t.project_patrouch_title}</h3>
-                </div>
-                <p class="project-desc">{t.project_patrouch_desc}</p>
-                <div class="project-tech">
-                    <span class="tech-tag">SvelteKit</span>
-                    <span class="tech-tag">Edge-Native</span>
-                    <span class="tech-tag">Minimal</span>
-                    <span class="tech-tag">Fast</span>
-                </div>
-                <span class="project-link">Visit Site →</span>
-            </a>
-        </div>
-
-        <p class="projects-note">{t.services_projects_note}</p>
     </section>
 
     <!-- Contact -->
