@@ -37,7 +37,7 @@
 
 <header class="header">
     <div class="container">
-        <div class="nav-wrapper">
+        <div class="nav-wrapper" class:menu-open={isOpen}>
 
             <!-- 1. Logo (Visible always) -->
             <a href="/" class="logo" onclick={closeMenu}>
@@ -154,6 +154,11 @@
         white-space: nowrap;
     }
 
+    .menu-open .logo,
+    .menu-open .logo-digital {
+        color: var(--color-white);
+    }
+
     .logo-digital {
         font-weight: 700;
         font-size: 0.85em;
@@ -247,6 +252,9 @@
         transform-origin: 1px;
     }
 
+    .hamburger.is-open span {
+        background: var(--color-white);
+    }
     .hamburger.is-open span:nth-child(1) {
         transform: rotate(45deg);
     }
