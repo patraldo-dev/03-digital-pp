@@ -41,7 +41,7 @@
 
             <!-- 1. Logo (Visible always) -->
             <a href="/" class="logo" onclick={closeMenu}>
-                <span class="logo-main">{t.logo_text || '¡Pinche Poutine!'}</span>
+                <span class="logo-main">¡Pinche&nbsp;Poutine!</span>
                 <span class="logo-digital">Digital</span>
             </a>
 
