@@ -19,7 +19,6 @@
                 <ul>
                     <li><a href="/">{t.footer_home || 'Home'}</a></li>
                     <li><a href="/projects">{t.footer_services || 'Services'}</a></li>
-                    <li><a href="/blog">{t.footer_blog || 'Blog'}</a></li>
                     <li><a href="/contact">{t.footer_contact || 'Contact'}</a></li>
                 </ul>
             </div>
@@ -43,8 +42,8 @@
 
 <style>
     .footer {
-        background: #2c3e50;
-        color: white;
+        background: #0a0a0b;
+        color: #e0e0e0;
         padding: 3rem 0 1rem;
         margin-top: 4rem;
     }
@@ -56,40 +55,26 @@
         margin-bottom: 2rem;
     }
 
-    .footer-section h3,
-    .footer-section h4 {
+    .footer-section h3 {
+        font-size: 1.5rem;
         margin-bottom: 1rem;
-        color: #ecf0f1;
+        color: #f0f0f0;
     }
 
-    .footer-section h3 {
     .footer-section h3 .digital {
         font-size: 0.7em;
-        color: #3498db;
+        color: #c9a87c;
         font-weight: 500;
     }
-        font-size: 1.5rem;
-    .footer-section h3 .digital {
-        font-size: 0.7em;
-        color: #3498db;
-        font-weight: 500;
-    }
-        color: #3498db;
-    .footer-section h3 .digital {
-        font-size: 0.7em;
-        color: #3498db;
-        font-weight: 500;
-    }
-    }
-    .footer-section h3 .digital {
-        font-size: 0.7em;
-        color: #3498db;
-        font-weight: 500;
+
+    .footer-section h4 {
+        margin-bottom: 1rem;
+        color: #f0f0f0;
     }
 
     .footer-section p {
         margin-bottom: 1rem;
-        color: #bdc3c7;
+        color: #888;
         line-height: 1.6;
     }
 
@@ -104,13 +89,13 @@
     }
 
     .footer-section ul li a {
-        color: #bdc3c7;
+        color: #888;
         text-decoration: none;
         transition: color 0.3s ease;
     }
 
     .footer-section ul li a:hover {
-        color: #3498db;
+        color: #c9a87c;
     }
 
     .newsletter {
@@ -118,7 +103,7 @@
     }
 
     .footer-bottom {
-        border-top: 1px solid #34495e;
+        border-top: 1px solid #1a1a1d;
         padding-top: 1rem;
         display: flex;
         justify-content: space-between;
@@ -129,7 +114,7 @@
 
     .footer-bottom p {
         margin: 0;
-        color: #bdc3c7;
+        color: #888;
     }
 
     .footer-links {
@@ -138,14 +123,14 @@
     }
 
     .footer-links a {
-        color: #bdc3c7;
+        color: #888;
         text-decoration: none;
         font-size: 0.9rem;
         transition: color 0.3s ease;
     }
 
     .footer-links a:hover {
-        color: #3498db;
+        color: #c9a87c;
     }
 
     @media (max-width: 768px) {
