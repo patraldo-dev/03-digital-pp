@@ -80,7 +80,6 @@
 
                 <!-- Mobile Menu Links -->
                 <div class="mobile-links">
-                    <a href="/projects" onclick={closeMenu} class="mobile-link">{t.nav_services || 'Services'}</a>
                 </div>
 
                 <!-- Mobile Language Switcher (Inside menu for cleaner UI) -->
