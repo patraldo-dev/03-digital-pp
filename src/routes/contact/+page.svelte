@@ -94,7 +94,6 @@
     <div class="container">
         <div class="badge">{t.contact_badge || 'Get in Touch'}</div>
         <h1>{t.contact_title || 'Contact Us'}</h1>
-        <p class="subtitle">{t.contact_subtitle || 'We would love to hear from you'}</p>
     </div>
 </div>
 
