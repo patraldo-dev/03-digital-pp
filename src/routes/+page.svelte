@@ -54,10 +54,6 @@
                     That said, if you've got an interesting project and we get along, 
                     I'm open to collaborating.
                 </p>
-                <p class="about-text">
-                    <strong>My workflow:</strong> Terminal-first, AI-assisted, and 
-                    mouse-optional. If it has a GUI, I probably don't use it.
-                </p>
             </div>
             <div class="about-decoration">
                 <div class="circle c1"></div>
@@ -157,7 +153,7 @@
             <div class="process-item">
                 <div class="process-icon">💻</div>
                 <h3>{t.home_process_terminal_title}</h3>
-                <p>Bash + Vim + FFMPEG. If it has a GUI, I probably don't use it.</p>
+                <p>Bash + Vim + FFMPEG.</p>
             </div>
             <div class="process-item">
                 <div class="process-icon">⚡</div>
