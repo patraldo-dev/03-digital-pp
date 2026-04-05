@@ -102,7 +102,6 @@
 
             <!-- Contact Info Column -->
             <div class="contact-info">
-                <p>{t.methods_desc || 'Have a project in mind...'}</p>
 
                 <div class="contact-methods">
                     <!-- Email Card -->
