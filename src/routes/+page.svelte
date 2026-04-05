@@ -36,39 +36,6 @@
 </div>
 
 
-<!-- How I Work Section -->
-<section class="process-section">
-    <div class="container">
-        <div class="section-header">
-            <h2>{t.home_process_title}</h2>
-            <div class="line"></div>
-        </div>
-
-        <div class="process-grid">
-            <div class="process-item">
-                <div class="process-icon">💻</div>
-                <h3>{t.home_process_terminal_title}</h3>
-                <p>Bash + Vim + FFMPEG.</p>
-            </div>
-            <div class="process-item">
-                <div class="process-icon">⚡</div>
-                <h3>{t.home_process_svelte_title}</h3>
-                <p>Runes, JSDoc, no TypeScript drama. Clean, fast, edge-native.</p>
-            </div>
-            <div class="process-item">
-                <div class="process-icon">☁️</div>
-                <h3>{t.home_process_cloudflare_title}</h3>
-                <p>Workers, D1, Images, Stream-no traditional servers.</p>
-            </div>
-            <div class="process-item">
-                <div class="process-icon">🤖</div>
-                <h3>{t.home_process_ai_title}</h3>
-                <p>I pair-program with AI agents. They don't complain about my hours.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Newsletter Section -->
 <section class="newsletter-section">
     <div class="container">
