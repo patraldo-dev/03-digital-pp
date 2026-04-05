@@ -31,8 +31,7 @@
             <h1>
                 <span class="gradient-text">{t.home_hero_title}</span>
             </h1>
-            <p class="hero-subtitle">{t.home_hero_subtitle || 'I now mostly conduct, and try to cobble together, edge-native web apps for artists and others in the creative community. One-person studio, AI-assisted, terminal-first.'}</p>
-        </div>
+                    </div>
     </div>
 </div>
 
@@ -59,7 +58,7 @@
             <div class="process-item">
                 <div class="process-icon">☁️</div>
                 <h3>{t.home_process_cloudflare_title}</h3>
-                <p>Workers, D1, Images, Stream—no traditional servers.</p>
+                <p>Workers, D1, Images, Stream-no traditional servers.</p>
             </div>
             <div class="process-item">
                 <div class="process-icon">🤖</div>

@@ -18,7 +18,7 @@
                 <h4>{t.footer_quick_links || 'Quick Links'}</h4>
                 <ul>
                     <li><a href="/">{t.footer_home || 'Home'}</a></li>
-                    <li><a href="/projects">{t.footer_services || 'Services'}</a></li>
+                    <li><a href="/contact">{t.footer_contact || 'Contact'}</a></li>
                     <li><a href="/contact">{t.footer_contact || 'Contact'}</a></li>
                 </ul>
             </div>
