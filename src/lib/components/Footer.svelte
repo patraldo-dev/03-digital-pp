@@ -19,7 +19,6 @@
                 <ul>
                     <li><a href="/">{t.footer_home || 'Home'}</a></li>
                     <li><a href="/contact">{t.footer_contact || 'Contact'}</a></li>
-                    <li><a href="/contact">{t.footer_contact || 'Contact'}</a></li>
                 </ul>
             </div>
 
