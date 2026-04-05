@@ -63,7 +63,7 @@
 
     .footer-section h3 .digital {
         font-size: 0.7em;
-        color: #c9a87c;
+        color: #5a6e65;
         font-weight: 500;
     }
 
@@ -95,7 +95,7 @@
     }
 
     .footer-section ul li a:hover {
-        color: #c9a87c;
+        color: #5a6e65;
     }
 
     .newsletter {
@@ -130,7 +130,7 @@
     }
 
     .footer-links a:hover {
-        color: #c9a87c;
+        color: #5a6e65;
     }
 
     @media (max-width: 768px) {

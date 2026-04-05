@@ -113,12 +113,12 @@
 
 	.email-input:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: #5a6e65;
 	}
 
 	.submit-button {
 		padding: 0.75rem 1.5rem;
-		background-color: #3b82f6;
+		background-color: #5a6e65;
 		color: white;
 		border: none;
 		border-radius: 0.5rem;
@@ -128,7 +128,7 @@
 	}
 
 	.submit-button:hover:not(:disabled) {
-		background-color: #2563eb;
+		background-color: #4a5e55;
 	}
 
 	.submit-button:disabled {
