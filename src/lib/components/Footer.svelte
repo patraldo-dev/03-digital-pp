@@ -7,7 +7,7 @@
 </script>
 
 <footer class="footer">
-    <div class="container">
+    <div class="footer-container">
         <div class="footer-content">
             <div class="footer-section">
                 <h3>¡Pinche Poutine! <span class="digital">Digital</span></h3>
@@ -41,6 +41,14 @@
 </footer>
 
 <style>
+    .footer-container {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
     .footer {
         background: #0a0a0b;
         color: #e0e0e0;
