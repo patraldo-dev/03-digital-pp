@@ -54,13 +54,9 @@
                 <div class="project-badge">{t.home_projects_featured_badge}</div>
                 <div class="project-header">
                     <span class="project-emoji">🎨</span>
-                    <h3>antoine.patraldo.com</h3>
+                    <h3>{t.project_antoine_title}</h3>
                 </div>
-                <p class="project-desc">
-                    Digital gallery for illustrator Antoine Patraldo. SvelteKit 5, 
-                    Cloudflare Workers, DIY auth (Web Crypto API), FFMPEG + Bash 
-                    for video processing. Zero GUI, zero traditional servers.
-                </p>
+                <p class="project-desc">{t.project_antoine_desc}</p>
                 <div class="project-tech">
                     <span class="tech-tag">SvelteKit 5</span>
                     <span class="tech-tag">Cloudflare</span>
@@ -74,33 +70,25 @@
             <a href="https://pinchepoutine.digital" target="_blank" rel="noopener" class="project-card">
                 <div class="project-header">
                     <span class="project-emoji">🌶️</span>
-                    <h3>pinchepoutine.digital</h3>
+                    <h3>{t.project_pinche_title}</h3>
                 </div>
-                <p class="project-desc">
-                    This site. Creative web development and animation projects. 
-                    SvelteKit 5 on Cloudflare with full i18n (EN/FR/ES), 
-                    DIY email subscription, and Mermaid diagrams.
-                </p>
+                <p class="project-desc">{t.project_pinche_desc}</p>
                 <div class="project-tech">
                     <span class="tech-tag">SvelteKit 5</span>
                     <span class="tech-tag">i18n</span>
                     <span class="tech-tag">Cloudflare D1</span>
                     <span class="tech-tag">Mailgun</span>
                 </div>
-                <span class="project-link">You're Here →</span>
+                <span class="project-link">{t.project_pinche_link} →</span>
             </a>
 
             <!-- Patrouch.ca -->
             <a href="https://patrouch.ca" target="_blank" rel="noopener" class="project-card">
                 <div class="project-header">
                     <span class="project-emoji">🍁</span>
-                    <h3>patrouch.ca</h3>
+                    <h3>{t.project_patrouch_title}</h3>
                 </div>
-                <p class="project-desc">
-                    Personal portfolio and digital presence. Clean, fast, 
-                    edge-native architecture with minimal dependencies 
-                    and maximum performance.
-                </p>
+                <p class="project-desc">{t.project_patrouch_desc}</p>
                 <div class="project-tech">
                     <span class="tech-tag">SvelteKit</span>
                     <span class="tech-tag">Edge-Native</span>
