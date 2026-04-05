@@ -73,6 +73,7 @@
 				<input
 					bind:value={email}
 					type="email"
+					aria-label="Email address"
 					placeholder={getText('subscribe_form_placeholder', 'Enter your email address')}
 					required
 					disabled={loading}

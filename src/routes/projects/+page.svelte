@@ -393,7 +393,7 @@
     }
 
     .service-desc {
-        color: #6B7C76;
+        color: #5a6b64;
         line-height: 1.7;
         font-size: 1.05rem;
         margin-bottom: 1.5rem;
@@ -478,7 +478,7 @@
     }
 
     .process-item p {
-        color: #6B7C76;
+        color: #5a6b64;
         line-height: 1.6;
         font-size: 1rem;
     }
@@ -542,7 +542,7 @@
     }
 
     .project-desc {
-        color: #6B7C76;
+        color: #5a6b64;
         line-height: 1.7;
         font-size: 1.05rem;
         margin-bottom: 1.5rem;

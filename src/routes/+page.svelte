@@ -218,7 +218,7 @@
     :root {
         --color-bg: #F9F6F0;        /* Creamy White */
         --color-text: #2D3A36;      /* Deep Dark Green/Slate */
-        --color-brick: #C94C35;     /* Vibrant Brick Red */
+        --color-brick: #b33f2a;     /* Vibrant Brick Red */
         --color-sage: #8DA399;      /* Muted Sage Green */
         --color-white: #FFFFFF;
     }

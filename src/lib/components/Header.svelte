@@ -106,7 +106,7 @@
         --color-bg: #F9F6F0;
         --color-text: #2D3A36;
         --color-brick: #C94C35;
-        --color-sage: #8DA399;
+        --color-sage: #5a6e65;
         --color-white: #FFFFFF;
     }
 
@@ -220,7 +220,7 @@
     }
 
     .divider {
-        color: #ccc;
+        color: #767676;
         font-size: 0.8rem;
     }
 
