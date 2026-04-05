@@ -92,7 +92,6 @@
 
 <div class="page-header">
     <div class="container">
-        <div class="badge">{t.contact_badge || 'Get in Touch'}</div>
         <h1>{t.contact_title || 'Contact Us'}</h1>
     </div>
 </div>
