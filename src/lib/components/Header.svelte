@@ -121,11 +121,7 @@
     }
 
     .container {
-        width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-        box-sizing: border-box;
+        /* Uses global .container from app.css */
     }
 
     .nav-wrapper {
