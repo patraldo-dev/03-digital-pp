@@ -78,11 +78,7 @@
         <div class="mobile-menu-overlay">
             <div class="mobile-menu-content">
 
-                <!-- Mobile Menu Links -->
-                <div class="mobile-links">
-                </div>
-
-                <!-- Mobile Language Switcher (Inside menu for cleaner UI) -->
+                <!-- Mobile Language Switcher -->
                 <div class="mobile-lang-section">
                     <p>{t.lang_choose || 'Choose Language'}:</p>
                     <div class="mobile-lang-buttons">
@@ -284,8 +280,10 @@
         text-align: center;
         width: 100%;
         max-width: 400px;
-        padding: 2rem;
+        padding: 4rem 2rem;
         box-sizing: border-box;
+        margin-top: auto;
+        margin-bottom: auto;
     }
 
     /* --- FIX FOR SCRUNCHED MENU --- */
