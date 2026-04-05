@@ -39,29 +39,6 @@
     </div>
 </div>
 
-<!-- About Section -->
-<section class="about-section">
-    <div class="container">
-        <div class="about-box">
-            <div class="about-content">
-                <h2>{t.home_about_title}</h2>
-                <p class="about-text">
-                    I live in <strong>Guadalajara, México</strong> and like in-person 
-                    collaboration best—at least to start or at some point in the process.
-                </p>
-                <p class="about-text">
-                    I'm semi-retired and intentionally selective about what I work on. 
-                    That said, if you've got an interesting project and we get along, 
-                    I'm open to collaborating.
-                </p>
-            </div>
-            <div class="about-decoration">
-                <div class="circle c1"></div>
-                <div class="circle c2"></div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- Projects Section -->
 <section class="projects-section" id="projects">
@@ -378,64 +355,6 @@
         border-color: var(--color-text);
         color: var(--color-white);
     }
-
-    /* --- About Section --- */
-    .about-section {
-        padding: 5rem 0;
-    }
-
-    .about-box {
-        background: var(--color-white);
-        padding: 4rem;
-        border-radius: 40px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 15px 40px rgba(45, 58, 54, 0.08);
-    }
-
-    .about-content {
-        max-width: 800px;
-        position: relative;
-        z-index: 2;
-    }
-
-    .about-content h2 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin-bottom: 2rem;
-        color: var(--color-text);
-    }
-
-    .about-text {
-        font-size: 1.15rem;
-        line-height: 1.8;
-        color: #5F6E68;
-        margin-bottom: 1.5rem;
-    }
-
-    .about-text strong {
-        color: var(--color-text);
-        font-weight: 700;
-    }
-
-    .about-decoration {
-        position: absolute;
-        right: -50px;
-        top: -50px;
-        bottom: -50px;
-        width: 400px;
-        z-index: 1;
-        opacity: 0.1;
-    }
-
-    .circle {
-        position: absolute;
-        border-radius: 50%;
-        background: var(--color-sage);
-    }
-
-    .c1 { width: 300px; height: 300px; top: 20%; right: 10%; }
-    .c2 { width: 200px; height: 200px; bottom: 10%; right: 40%; }
 
     /* --- Projects Section --- */
     .projects-section {
