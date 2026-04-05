@@ -149,7 +149,7 @@
     input:focus,
     textarea:focus {
         outline: none;
-        border-color: #007cba;
+        border-color: #5a6e65;
     }
 
     input:disabled,
@@ -187,6 +187,16 @@
         padding: 1rem;
         font-size: 1.1rem;
         font-weight: 600;
+        background: #5a6e65;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    button:hover:not(:disabled) {
+        background: #4a5e55;
     }
 
     button:disabled {
