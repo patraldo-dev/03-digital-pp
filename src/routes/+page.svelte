@@ -143,7 +143,7 @@
 
     /* --- Hero --- */
     .hero {
-        min-height: 90vh;
+        min-height: 70vh;
         display: flex;
         align-items: center;
         position: relative;

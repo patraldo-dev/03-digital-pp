@@ -27,7 +27,7 @@
 
     main {
         min-height: calc(100vh - 200px);
-        padding: 2rem 0;
+        padding: 1rem 0;
     }
 
     :global(.container) {
