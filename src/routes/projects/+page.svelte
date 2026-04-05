@@ -90,13 +90,6 @@
         <p class="projects-note">{t.services_projects_note}</p>
     </section>
 
-    <!-- Intro Section -->
-    <section class="intro-section">
-        <div class="content-box">
-            <p class="lead">{t.services_intro_1}</p>
-            <p class="lead">{t.services_intro_2}</p>
-        </div>
-    </section>
 
     <!-- What I Actually Do -->
     <section class="services-section">
