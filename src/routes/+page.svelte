@@ -524,7 +524,6 @@
     .newsletter-form-wrapper {
         width: 100%;
         flex: 1;
-        max-width: 500px;
         position: relative;
         z-index: 2;
     }

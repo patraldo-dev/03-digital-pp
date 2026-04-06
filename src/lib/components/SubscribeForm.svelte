@@ -118,6 +118,7 @@
 
 	.submit-button {
 		padding: 0.75rem 1.5rem;
+		flex: 1;
 		background-color: #5a6e65;
 		color: white;
 		border: none;
