@@ -501,7 +501,7 @@
     }
 
     .newsletter-content {
-        max-width: 600px;
+        flex: 1;
         position: relative;
         z-index: 2;
         color: var(--color-text);
@@ -523,7 +523,8 @@
 
     .newsletter-form-wrapper {
         width: 100%;
-        max-width: 450px;
+        flex: 1;
+        max-width: 500px;
         position: relative;
         z-index: 2;
     }
