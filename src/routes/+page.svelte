@@ -38,8 +38,7 @@
 
 <!-- Newsletter Section -->
 <section class="newsletter-section">
-    <div class="container">
-        <div class="newsletter-box">
+    <div class="newsletter-box">
             <div class="newsletter-content">
                 <h2>{t.newsletter_title || 'Stay Connected'}</h2>
                 <p>{t.newsletter_subtitle || 'Subscribe for the latest tips on animation and web development.'}</p>
@@ -53,7 +52,6 @@
                 <div class="circle c3"></div>
             </div>
         </div>
-    </div>
 </section>
 
 <style>
@@ -479,7 +477,7 @@
 
     /* --- Newsletter --- */
     .newsletter-section {
-        padding: 1rem 0 2rem;
+        padding: 1rem 3rem 2rem;
     }
 
     .newsletter-box {
@@ -497,6 +495,8 @@
         flex-wrap: wrap;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         gap: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
         box-shadow: 0 25px 50px -12px rgba(201, 76, 53, 0.4);
     }
 
