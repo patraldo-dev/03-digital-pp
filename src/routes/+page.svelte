@@ -243,7 +243,7 @@
 
     /* --- Projects Section --- */
     .projects-section {
-        padding: 6rem 0;
+        padding: 2rem 0;
     }
 
     .section-header {
@@ -459,13 +459,13 @@
 
     /* --- Newsletter --- */
     .newsletter-section {
-        padding: 6rem 0;
+        padding: 2rem 0 3rem;
     }
 
     .newsletter-box {
         background: var(--color-brick);
         border-radius: 40px;
-        padding: 4.5rem;
+        padding: 2.5rem;
         position: relative;
         overflow: hidden;
         display: flex;

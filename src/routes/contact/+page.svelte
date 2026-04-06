@@ -330,7 +330,7 @@
     .page-header {
         background: transparent;
         color: var(--color-text);
-        padding: 6rem 0 4rem;
+        padding: 2rem 0 1.5rem;
         text-align: center;
         position: relative;
         overflow: hidden;
@@ -371,7 +371,7 @@
 
     /* --- Contact Section --- */
     .contact-section {
-        padding: 5rem 0 6rem;
+        padding: 2rem 0 3rem;
     }
 
     .contact-content {
