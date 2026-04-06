@@ -27,8 +27,8 @@
 <div class="hero">
     <div class="container">
         <div class="hero-content">
-            <div class="badge">{t.home_hero_badge}</div>
-            <h1>
+            <div class="badge ink-reveal">{t.home_hero_badge}</div>
+            <h1 class="ink-reveal">
                 <span class="gradient-text">{t.home_hero_title}</span>
             </h1>
                     </div>
@@ -139,6 +139,26 @@
         padding: 0 2rem;
         position: relative;
         z-index: 2;
+    }
+
+    /* --- Ink Reveal Animation --- */
+    .ink-reveal {
+        animation: inkReveal 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+        clip-path: inset(0 0 100% 0);
+    }
+
+    .hero h1.ink-reveal {
+        animation-delay: 0.3s;
+    }
+
+    .hero .badge.ink-reveal {
+        animation-delay: 0s;
+    }
+
+    @keyframes inkReveal {
+        to {
+            clip-path: inset(0 0 0% 0);
+        }
     }
 
     /* --- Hero --- */
@@ -463,7 +483,10 @@
     }
 
     .newsletter-box {
-        background: var(--color-brick);
+        background: rgba(201, 76, 53, 0.15);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(201, 76, 53, 0.25);
         border-radius: 40px;
         padding: 2.5rem;
         position: relative;
@@ -472,6 +495,7 @@
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         gap: 2rem;
         box-shadow: 0 25px 50px -12px rgba(201, 76, 53, 0.4);
     }
@@ -480,7 +504,7 @@
         max-width: 600px;
         position: relative;
         z-index: 2;
-        color: var(--color-white);
+        color: var(--color-text);
     }
 
     .newsletter-content h2 {
@@ -491,7 +515,7 @@
     }
 
     .newsletter-content p {
-        color: rgba(255, 255, 255, 0.9);
+        color: #5F6E68;
         font-size: 1.2rem;
         margin-bottom: 0;
         line-height: 1.6;
@@ -511,13 +535,13 @@
         bottom: -50px;
         width: 350px;
         z-index: 1;
-        opacity: 0.2;
+        opacity: 0.15;
     }
 
     .circle {
         position: absolute;
         border-radius: 50%;
-        background: var(--color-white);
+        background: var(--color-brick);
     }
 
     .c1 { width: 250px; height: 250px; top: 20%; right: 20%; }
