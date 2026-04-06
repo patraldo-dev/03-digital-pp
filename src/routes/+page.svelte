@@ -143,7 +143,7 @@
 
     /* --- Hero --- */
     .hero {
-        min-height: 70vh;
+        min-height: 50vh;
         display: flex;
         align-items: center;
         position: relative;
@@ -459,7 +459,7 @@
 
     /* --- Newsletter --- */
     .newsletter-section {
-        padding: 2rem 0 3rem;
+        padding: 1rem 0 2rem;
     }
 
     .newsletter-box {
