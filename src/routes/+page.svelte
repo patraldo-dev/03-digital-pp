@@ -132,7 +132,7 @@
     .container {
         box-sizing: border-box;
         width: 100%;
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
         padding: 0 2rem;
         position: relative;
@@ -439,7 +439,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 2.5rem;
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
     }
 
@@ -477,7 +477,7 @@
 
     /* --- Newsletter --- */
     .newsletter-section {
-        padding: 1rem 3rem 2rem;
+        padding: 1rem 2rem 2rem;
     }
 
     .newsletter-box {
