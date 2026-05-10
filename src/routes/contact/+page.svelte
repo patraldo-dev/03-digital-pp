@@ -105,37 +105,34 @@
 
                 <div class="contact-methods">
                     <!-- Email Card -->
-                    <div class="contact-method">
+                    <div class="contact-method glass-brick">
                         <div class="method-icon">📧</div>
                         <div class="method-content">
                             <h3>{t.method_email_title || 'Email Us'}</h3>
                             <a href="mailto:info@pinchepoutine.digital" class="method-link">
                                 {t.method_email_addr || 'info@example.com'}
                             </a>
-                            <small>{t.method_email_note || 'Response time'}</small>
                         </div>
                     </div>
 
                     <!-- Chat Card -->
                     <a href="#contact-form" class="contact-method-link">
-                        <div class="contact-method">
+                        <div class="contact-method glass-yellow">
                             <div class="method-icon">💬</div>
                             <div class="method-content">
                                 <h3>{t.method_chat_title || 'Let us Chat'}</h3>
                                 <p>{t.method_chat_desc || 'Schedule a consultation'}</p>
-                                <small>{t.method_chat_note || 'Free 30-minute discovery call'}</small>
                             </div>
                         </div>
                     </a>
 
                     <!-- Start Project Card -->
                     <a href="#contact-form" class="contact-method-link">
-                        <div class="contact-method">
+                        <div class="contact-method glass-teal">
                             <div class="method-icon">🚀</div>
                             <div class="method-content">
                                 <h3>{t.method_start_title || 'Start Your Project'}</h3>
                                 <p>{t.method_start_desc || 'Ready to begin?'}</p>
-                                <small>{t.method_start_note || 'Tell us about your vision'}</small>
                             </div>
                         </div>
                     </a>
@@ -411,9 +408,34 @@
         transition: all 0.4s ease;
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    }
+
+    .glass-brick {
         border: 1px solid rgba(201, 76, 53, 0.2);
         background: rgba(201, 76, 53, 0.08);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    }
+    .glass-brick:hover {
+        background: rgba(201, 76, 53, 0.15);
+        box-shadow: 0 15px 35px rgba(201, 76, 53, 0.12);
+    }
+
+    .glass-yellow {
+        border: 1px solid rgba(218, 185, 80, 0.25);
+        background: rgba(218, 185, 80, 0.1);
+    }
+    .glass-yellow:hover {
+        background: rgba(218, 185, 80, 0.18);
+        box-shadow: 0 15px 35px rgba(218, 185, 80, 0.12);
+    }
+
+    .glass-teal {
+        border: 1px solid rgba(77, 166, 169, 0.25);
+        background: rgba(77, 166, 169, 0.1);
+    }
+    .glass-teal:hover {
+        background: rgba(77, 166, 169, 0.18);
+        box-shadow: 0 15px 35px rgba(77, 166, 169, 0.12);
     }
 
     .contact-method:hover {
