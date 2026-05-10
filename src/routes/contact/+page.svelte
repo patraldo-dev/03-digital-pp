@@ -407,11 +407,13 @@
         gap: 1.5rem;
         margin-bottom: 1.5rem;
         padding: 1.5rem;
-        background: var(--color-white);
         border-radius: 24px;
         transition: all 0.4s ease;
-        border: 1px solid rgba(45, 58, 54, 0.05);
-        box-shadow: 0 5px 20px rgba(45, 58, 54, 0.05);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(201, 76, 53, 0.2);
+        background: rgba(201, 76, 53, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
     }
 
     .contact-method:hover {

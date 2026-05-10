@@ -99,8 +99,8 @@
             <!-- Urban Inversion -->
             <a href="https://GDL.urbaninversion.com" target="_blank" rel="noopener" class="project-card glass glass-urbaninversion">
                 <div class="project-header">
-                    <span class="project-emoji">🌀</span>
-                    <h3>{t.project_urbaninversion_title}</h3>
+                    <span class="project-icon-text gdl-icon">GDL</span>
+                    <h3>urbaninversion.com</h3>
                 </div>
                 <p class="project-desc">{t.project_urbaninversion_desc}</p>
                 <div class="project-tech">
@@ -460,6 +460,25 @@
 
     .project-emoji {
         font-size: 2.5rem;
+    }
+
+    .project-icon-text {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 900;
+        font-size: 1.2rem;
+        width: 2.8rem;
+        height: 2.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        flex-shrink: 0;
+    }
+
+    .gdl-icon {
+        background: rgba(77, 166, 169, 0.2);
+        color: #4da6a9;
+        border: 1px solid rgba(77, 166, 169, 0.3);
     }
 
     .project-header h3 {
