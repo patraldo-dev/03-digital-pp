@@ -64,7 +64,7 @@
 
         <div class="projects-grid">
             <!-- Patrouch.ca -->
-            <a href="https://patrouch.ca" target="_blank" rel="noopener" class="project-card featured">
+            <a href="https://patrouch.ca" target="_blank" rel="noopener" class="project-card featured glass glass-patrouch">
                 <span class="project-badge">{t.home_projects_featured_badge || 'Featured'}</span>
                 <div class="project-header">
                     <span class="project-emoji">✍️</span>
@@ -81,7 +81,7 @@
             </a>
 
             <!-- Mexican Bold -->
-            <a href="https://mexicanbold.com" target="_blank" rel="noopener" class="project-card">
+            <a href="https://mexicanbold.com" target="_blank" rel="noopener" class="project-card glass glass-mexicanbold">
                 <div class="project-header">
                     <span class="project-emoji">🏛️</span>
                     <h3>{t.project_mexicanbold_title}</h3>
@@ -97,7 +97,7 @@
             </a>
 
             <!-- Urban Inversion -->
-            <a href="https://GDL.urbaninversion.com" target="_blank" rel="noopener" class="project-card">
+            <a href="https://GDL.urbaninversion.com" target="_blank" rel="noopener" class="project-card glass glass-urbaninversion">
                 <div class="project-header">
                     <span class="project-emoji">🌀</span>
                     <h3>{t.project_urbaninversion_title}</h3>
@@ -113,7 +113,7 @@
             </a>
 
             <!-- Antoine -->
-            <a href="https://antoine.patraldo.com" target="_blank" rel="noopener" class="project-card">
+            <a href="https://antoine.patraldo.com" target="_blank" rel="noopener" class="project-card glass glass-antoine">
                 <div class="project-header">
                     <span class="project-emoji">🎨</span>
                     <h3>{t.project_antoine_title}</h3>
@@ -373,13 +373,10 @@
     }
 
     .project-card {
-        background: var(--color-white);
         padding: 2.5rem;
         border-radius: 24px;
         text-decoration: none;
         color: inherit;
-        box-shadow: 0 5px 20px rgba(45, 58, 54, 0.05);
-        border: 1px solid rgba(45, 58, 54, 0.05);
         transition: all 0.4s ease;
         display: flex;
         flex-direction: column;
@@ -388,15 +385,56 @@
         min-width: 0;
     }
 
-    .project-card:hover {
-        transform: translateY(-8px);
-        border-color: rgba(141, 163, 153, 0.4);
-        box-shadow: 0 20px 40px rgba(141, 163, 153, 0.2);
+    /* Glassmorphism base */
+    .glass {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
     }
 
-    .project-card.featured {
-        border-color: var(--color-brick);
-        border-width: 2px;
+    /* Patrouch — cremoso/dorado */
+    .glass-patrouch {
+        background: rgba(201, 168, 124, 0.18);
+        border-color: rgba(201, 168, 124, 0.35);
+    }
+    .glass-patrouch:hover {
+        background: rgba(201, 168, 124, 0.28);
+        box-shadow: 0 20px 40px rgba(201, 168, 124, 0.15);
+        transform: translateY(-8px);
+    }
+
+    /* Mexican Bold — terracota cálido */
+    .glass-mexicanbold {
+        background: rgba(179, 107, 53, 0.15);
+        border-color: rgba(179, 107, 53, 0.3);
+    }
+    .glass-mexicanbold:hover {
+        background: rgba(179, 107, 53, 0.25);
+        box-shadow: 0 20px 40px rgba(179, 107, 53, 0.15);
+        transform: translateY(-8px);
+    }
+
+    /* Urban Inversion — teal/portal */
+    .glass-urbaninversion {
+        background: rgba(77, 166, 169, 0.15);
+        border-color: rgba(77, 166, 169, 0.3);
+    }
+    .glass-urbaninversion:hover {
+        background: rgba(77, 166, 169, 0.25);
+        box-shadow: 0 20px 40px rgba(77, 166, 169, 0.15);
+        transform: translateY(-8px);
+    }
+
+    /* Antoine — lavanda/artístico */
+    .glass-antoine {
+        background: rgba(155, 120, 180, 0.15);
+        border-color: rgba(155, 120, 180, 0.3);
+    }
+    .glass-antoine:hover {
+        background: rgba(155, 120, 180, 0.25);
+        box-shadow: 0 20px 40px rgba(155, 120, 180, 0.15);
+        transform: translateY(-8px);
     }
 
     .project-badge {
