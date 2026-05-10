@@ -68,7 +68,7 @@
                 <span class="project-badge">{t.home_projects_featured_badge || 'Featured'}</span>
                 <div class="project-header">
                     <span class="project-emoji">✍️</span>
-                    <h3>{t.project_patrouch_title}</h3>
+                    <h3>Patrouch</h3>
                 </div>
                 <p class="project-desc">{t.project_patrouch_desc}</p>
                 <div class="project-tech">
@@ -84,7 +84,7 @@
             <a href="https://mexicanbold.com" target="_blank" rel="noopener" class="project-card glass glass-mexicanbold">
                 <div class="project-header">
                     <span class="project-emoji">🏛️</span>
-                    <h3>{t.project_mexicanbold_title}</h3>
+                    <h3>Mexican Bold</h3>
                 </div>
                 <p class="project-desc">{t.project_mexicanbold_desc}</p>
                 <div class="project-tech">
@@ -116,7 +116,7 @@
             <a href="https://antoine.patraldo.com" target="_blank" rel="noopener" class="project-card glass glass-antoine">
                 <div class="project-header">
                     <span class="project-emoji">🎨</span>
-                    <h3>{t.project_antoine_title}</h3>
+                    <h3>Antoine Patraldo</h3>
                 </div>
                 <p class="project-desc">{t.project_antoine_desc}</p>
                 <div class="project-tech">
