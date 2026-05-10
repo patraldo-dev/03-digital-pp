@@ -404,14 +404,14 @@
         transform: translateY(-8px);
     }
 
-    /* Mexican Bold — terracota cálido */
+    /* Mexican Bold — amarillo cálido */
     .glass-mexicanbold {
-        background: rgba(179, 107, 53, 0.15);
-        border-color: rgba(179, 107, 53, 0.3);
+        background: rgba(218, 185, 80, 0.15);
+        border-color: rgba(218, 185, 80, 0.3);
     }
     .glass-mexicanbold:hover {
-        background: rgba(179, 107, 53, 0.25);
-        box-shadow: 0 20px 40px rgba(179, 107, 53, 0.15);
+        background: rgba(218, 185, 80, 0.25);
+        box-shadow: 0 20px 40px rgba(218, 185, 80, 0.15);
         transform: translateY(-8px);
     }
 
