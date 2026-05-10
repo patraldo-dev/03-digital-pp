@@ -262,7 +262,7 @@
   "home_process_ai_title": "Asistido por IA",
   "home_process_ai_desc": "Pair-programo con agentes IA.",
   "project_antoine_title": "antoine.patraldo.com",
-  "project_antoine_desc": "Galería digital para el ilustrador Antoine Patraldo. SvelteKit 5, Cloudflare Workers, auth DIY (Web Crypto API), FFMPEG + Bash para procesamiento de video. Cero GUI, cero servidores tradicionales.",
+  "project_antoine_desc": "Galería digital para el ilustrador Antoine Patraldo. SvelteKit 5, Cloudflare Workers, Better Auth, FFMPEG + Bash para procesamiento de video. Cero GUI, cero servidores tradicionales.",
   "project_pinche_title": "pinchepoutine.digital",
   "project_pinche_desc": "Este sitio. Desarrollo web creativo y proyectos de animación. SvelteKit 5 en Cloudflare con i18n completo (EN/FR/ES), sistema de email subscription DIY, y blog con diagramas Mermaid.",
   "project_pinche_link": "Estás Aquí",
