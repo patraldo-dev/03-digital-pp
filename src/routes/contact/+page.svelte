@@ -105,15 +105,17 @@
 
                 <div class="contact-methods">
                     <!-- Email Card -->
-                    <div class="contact-method glass-brick">
-                        <div class="method-icon">📧</div>
-                        <div class="method-content">
-                            <h3>{t.method_email_title || 'Email Us'}</h3>
-                            <a href="mailto:info@pinchepoutine.digital" class="method-link">
-                                {t.method_email_addr || 'info@example.com'}
-                            </a>
+                    <a href="mailto:info@pinchepoutine.digital" class="contact-method-link">
+                        <div class="contact-method glass-brick">
+                            <div class="method-icon">📧</div>
+                            <div class="method-content">
+                                <h3>{t.method_email_title || 'Email Us'}</h3>
+                                <span class="method-link">
+                                    {t.method_email_addr || 'info@example.com'}
+                                </span>
+                            </div>
                         </div>
-                    </div>
+                    </a>
 
                     <!-- Chat Card -->
                     <a href="#contact-form" class="contact-method-link">
