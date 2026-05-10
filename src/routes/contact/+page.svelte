@@ -518,11 +518,12 @@
     }
 
     .timezone-label {
-        font-size: 1.1rem;
+        font-size: 1.4rem;
         opacity: 0.95;
         margin-bottom: 1rem;
         position: relative;
         z-index: 2;
+        font-weight: 600;
     }
 
     .current-time {
