@@ -467,6 +467,8 @@
         font-weight: 700;
         margin: 0;
         color: var(--color-text);
+        word-break: break-all;
+        overflow-wrap: break-word;
     }
 
     .project-desc {
