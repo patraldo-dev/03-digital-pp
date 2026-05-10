@@ -267,12 +267,18 @@
   "project_pinche_desc": "Este sitio. Desarrollo web creativo y proyectos de animación. SvelteKit 5 en Cloudflare con i18n completo (EN/FR/ES), sistema de email subscription DIY, y blog con diagramas Mermaid.",
   "project_pinche_link": "Estás Aquí",
   "project_patrouch_title": "patrouch.ca",
-  "project_patrouch_desc": "Portfolio personal y presencia digital. Arquitectura clean, fast, edge-native con dependencias mínimas y rendimiento máximo.",
+  "project_patrouch_desc": "Plataforma de escritura creativa con estímulos de IA, rachas diarias, ágora comunitaria y aventuras de audio espacial. SvelteKit 5, Cloudflare Workers, Workers AI, base de datos D1.",
   "subscribe_form_subscribing": "Suscribiendo...",
   "subscribe_error_already_subscribed": "Ya estás suscrito a {type}",
   "subscribe_error_email_failed": "Error al enviar el correo de confirmación",
   "subscribe_error_server": "Error al procesar la suscripción",
   "subscribe_success_message": "¡Por favor revisa tu correo electrónico para confirmar tu suscripción!",
   "subscribe_error_invalid_type": "Tipo de suscripción inválido",
-  "subscribe_resend_message": "Correo de confirmación reenviado. ¡Por favor revisa tu bandeja de entrada!"
+  "subscribe_resend_message": "Correo de confirmación reenviado. ¡Por favor revisa tu bandeja de entrada!",
+  "project_mexicanbold_title": "mexicanbold.com",
+  "project_mexicanbold_desc": "Recorrido AR por el corredor Chapultepec y Avenida México en Guadalajara. Monumentos históricos cobran vida con narración IA, audio espacial y WebXR. SvelteKit 5, Cloudflare Workers, Workers AI TTS.",
+  "project_mexicanbold_link": "Camina el Corredor",
+  "project_urbaninversion_title": "GDL.urbaninversion.com",
+  "project_urbaninversion_desc": "Experiencia WebXR con portal inmersivo que explora los paisajes urbanos de Guadalajara. Navegación espacial 3D con overlay AR en tiempo real. SvelteKit 5, Three.js, WebXR, Cloudflare Workers.",
+  "project_urbaninversion_link": "Entra al Portal"
 }

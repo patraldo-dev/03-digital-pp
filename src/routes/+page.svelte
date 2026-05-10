@@ -54,6 +54,87 @@
         </div>
 </section>
 
+<!-- Projects Section -->
+<section class="projects-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>{t.home_projects_title || 'Selected Projects'}</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="projects-grid">
+            <!-- Patrouch.ca -->
+            <a href="https://patrouch.ca" target="_blank" rel="noopener" class="project-card featured">
+                <span class="project-badge">{t.home_projects_featured_badge || 'Featured'}</span>
+                <div class="project-header">
+                    <span class="project-emoji">✍️</span>
+                    <h3>{t.project_patrouch_title}</h3>
+                </div>
+                <p class="project-desc">{t.project_patrouch_desc}</p>
+                <div class="project-tech">
+                    <span class="tech-tag">SvelteKit 5</span>
+                    <span class="tech-tag">Workers AI</span>
+                    <span class="tech-tag">D1</span>
+                    <span class="tech-tag">Cloudflare</span>
+                </div>
+                <span class="project-link">patrouch.ca</span>
+            </a>
+
+            <!-- Mexican Bold -->
+            <a href="https://mexicanbold.com" target="_blank" rel="noopener" class="project-card">
+                <div class="project-header">
+                    <span class="project-emoji">🏛️</span>
+                    <h3>{t.project_mexicanbold_title}</h3>
+                </div>
+                <p class="project-desc">{t.project_mexicanbold_desc}</p>
+                <div class="project-tech">
+                    <span class="tech-tag">AR</span>
+                    <span class="tech-tag">WebXR</span>
+                    <span class="tech-tag">Workers AI TTS</span>
+                    <span class="tech-tag">Cloudflare</span>
+                </div>
+                <span class="project-link">{t.project_mexicanbold_link}</span>
+            </a>
+
+            <!-- Urban Inversion -->
+            <a href="https://GDL.urbaninversion.com" target="_blank" rel="noopener" class="project-card">
+                <div class="project-header">
+                    <span class="project-emoji">🌀</span>
+                    <h3>{t.project_urbaninversion_title}</h3>
+                </div>
+                <p class="project-desc">{t.project_urbaninversion_desc}</p>
+                <div class="project-tech">
+                    <span class="tech-tag">WebXR</span>
+                    <span class="tech-tag">Three.js</span>
+                    <span class="tech-tag">AR</span>
+                    <span class="tech-tag">Cloudflare</span>
+                </div>
+                <span class="project-link">{t.project_urbaninversion_link}</span>
+            </a>
+
+            <!-- Antoine -->
+            <a href="https://antoine.patraldo.com" target="_blank" rel="noopener" class="project-card">
+                <div class="project-header">
+                    <span class="project-emoji">🎨</span>
+                    <h3>{t.project_antoine_title}</h3>
+                </div>
+                <p class="project-desc">{t.project_antoine_desc}</p>
+                <div class="project-tech">
+                    <span class="tech-tag">SvelteKit 5</span>
+                    <span class="tech-tag">Cloudflare Workers</span>
+                    <span class="tech-tag">FFMPEG</span>
+                </div>
+                <span class="project-link">antoine.patraldo.com</span>
+            </a>
+        </div>
+
+        <div class="projects-cta">
+            <p>{t.home_projects_cta_text || 'Want something similar?'}</p>
+            <a href="/contact" class="btn-text">{t.home_projects_cta_btn || "Let's Talk"}</a>
+        </div>
+    </div>
+</section>
+
 <style>
     /* Hero Background Image */
     .hero-bg-image {

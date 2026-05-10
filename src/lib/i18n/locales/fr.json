@@ -267,12 +267,18 @@
   "project_pinche_desc": "Ce site. Développement web créatif et projets d'animation. SvelteKit 5 sur Cloudflare avec i18n complet (EN/FR/ES), système d'email subscription DIY, et blog avec diagrammes Mermaid.",
   "project_pinche_link": "Vous Êtes Ici",
   "project_patrouch_title": "patrouch.ca",
-  "project_patrouch_desc": "Portfolio personnel et présence digitale. Architecture clean, fast, edge-native avec dépendances minimales et performance maximale.",
+  "project_patrouch_desc": "Plateforme d'écriture créative avec prompts IA, séries quotidiennes, agora communautaire et aventures audio spatiales. SvelteKit 5, Cloudflare Workers, Workers AI, base de données D1.",
   "subscribe_form_subscribing": "Inscription en cours...",
   "subscribe_error_already_subscribed": "Vous êtes déjà abonné(e) à {type}",
   "subscribe_error_email_failed": "Échec de l'envoi de l'e-mail de confirmation",
   "subscribe_error_server": "Échec du traitement de l'abonnement",
   "subscribe_success_message": "Veuillez vérifier votre e-mail pour confirmer votre abonnement !",
   "subscribe_error_invalid_type": "Type d'abonnement invalide",
-  "subscribe_resend_message": "E-mail de confirmation renvoyé. Veuillez vérifier votre boîte de réception !"
+  "subscribe_resend_message": "E-mail de confirmation renvoyé. Veuillez vérifier votre boîte de réception !",
+  "project_mexicanbold_title": "mexicanbold.com",
+  "project_mexicanbold_desc": "Visite AR le long du corridor Chapultepec et Avenida México à Guadalajara. Les monuments historiques prennent vie avec narration IA, audio spatial et WebXR. SvelteKit 5, Cloudflare Workers, Workers AI TTS.",
+  "project_mexicanbold_link": "Parcourir le Couloir",
+  "project_urbaninversion_title": "GDL.urbaninversion.com",
+  "project_urbaninversion_desc": "Expérience WebXR avec portail immersif explorant les paysages urbains de Guadalajara. Navigation spatiale 3D avec overlay AR en temps réel. SvelteKit 5, Three.js, WebXR, Cloudflare Workers.",
+  "project_urbaninversion_link": "Entrer dans le Portail"
 }
