@@ -437,9 +437,8 @@
     }
 
     .contact-method:hover {
-        transform: translateX(10px);
-        border-color: rgba(141, 163, 153, 0.4);
-        box-shadow: 0 15px 35px rgba(141, 163, 153, 0.2);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
     }
 
     .method-icon {
