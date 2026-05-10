@@ -448,7 +448,7 @@
     .method-content h3 {
         margin: 0 0 0.5rem 0;
         color: var(--color-text);
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         font-weight: 700;
     }
 
@@ -456,7 +456,7 @@
         margin: 0 0 0.25rem 0;
         color: var(--color-brick);
         font-weight: 600;
-        font-size: 0.95rem;
+        font-size: 1.1rem;
     }
 
     .method-content small {
