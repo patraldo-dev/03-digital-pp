@@ -437,7 +437,6 @@
     }
 
     .contact-method:hover {
-        transform: translateY(-4px);
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
     }
 
@@ -489,7 +488,6 @@
     }
 
     .contact-method-link:hover .contact-method {
-        transform: translateY(-4px);
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
     }
 
@@ -671,11 +669,6 @@
         color: inherit;
         display: block;
         border-radius: 24px;
-        transition: transform 0.4s ease;
-    }
-
-    .contact-method-link:hover {
-        transform: translateY(-5px);
     }
 
     @media (max-width: 900px) {
