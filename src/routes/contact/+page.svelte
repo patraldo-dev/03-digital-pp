@@ -139,12 +139,8 @@
                 </div>
 
                 <div class="office-hours">
-                    
-                    <h3>{t.office_hours_title || 'By Appointment Only'}</h3>
                     <p class="timezone-label">Guadalajara, México (GMT-6)</p>
                     <p class="current-time"><strong>{guadalajaraTime}</strong></p>
-                    <p>{t.office_hours_weekend || 'Flexible scheduling available'}</p>
-                    <small>{t.office_hours_note || 'Contact me to find a time that works'}</small>
                 </div>
             </div>
 
