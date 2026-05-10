@@ -478,6 +478,21 @@
         color: var(--color-sage) !important;
     }
 
+    .contact-method-link {
+        text-decoration: none;
+        outline: none;
+    }
+
+    .contact-method-link:focus,
+    .contact-method-link:focus-visible {
+        outline: none;
+    }
+
+    .contact-method-link:hover .contact-method {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    }
+
     /* Office Hours */
     .office-hours {
         padding: 2.5rem;
