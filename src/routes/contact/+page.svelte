@@ -479,13 +479,17 @@
 
     /* Office Hours */
     .office-hours {
-        background: var(--color-sage);
-        color: var(--color-text);
         padding: 2.5rem;
         border-radius: 24px;
         margin-top: 2rem;
         position: relative;
         overflow: hidden;
+        text-align: center;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(141, 163, 153, 0.25);
+        background: rgba(141, 163, 153, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
     }
 
     .office-hours::before {
@@ -524,10 +528,10 @@
     .current-time {
         text-align: center;
         display: inline-block;
-        font-size: 1.2rem;
-        background: rgba(255, 255, 255, 0.15);
-        padding: 0.75rem 1rem;
-        border-radius: 12px;
+        font-size: 2.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem 2rem;
+        border-radius: 16px;
         margin: 1rem 0;
         position: relative;
         z-index: 2;
@@ -536,7 +540,8 @@
     .current-time strong {
         font-family: 'Courier New', monospace;
         font-weight: 700;
-        color: #fff;
+        color: var(--color-text);
+        letter-spacing: 0.1em;
     }
 
     .office-hours p {
@@ -558,11 +563,13 @@
 
     /* Contact Form */
     .contact-form-container {
-        background: var(--color-white);
         padding: 3rem;
         border-radius: 30px;
-        box-shadow: 0 15px 40px rgba(45, 58, 54, 0.08);
-        border: 1px solid rgba(45, 58, 54, 0.05);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(201, 76, 53, 0.15);
+        background: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
     }
 
     /* FAQ Section */
