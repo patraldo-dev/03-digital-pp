@@ -1,0 +1,22 @@
+{
+  "slug": "logbook-3-artist-and-cli",
+  "title": "Logbook #3: Antoine Patraldo and the Persistence of Bits",
+  "date": "2024-05-24",
+  "author": "Pinche Poutine",
+  "excerpt": "A collaboration with illustrator Antoine Patraldo, managed through Bash, Vim, and FFMPEG—no GUI required.",
+  "tags": ["FFMPEG", "Linux", "Bash", "Creative Workflow"],
+  "sections": [
+    {
+      "title": "The Mayfly Artist",
+      "content": "My latest project, [antoine.patraldo.com](https://antoine.patraldo.com), is a collaboration between an illustrator and a fanatic of his art (myself). Antoine started strong, like a \"mayfly\": three years of intense production after a late start in life, only to seemingly move on to less interesting pursuits. While I hope my stories and screenplays motivate him to return, the truth is he's already generated enough creative fuel to last me forever."
+    },
+    {
+      "title": "Workflow: Less Mouse, More Bash",
+      "content": "While he takes a break, I find refuge in the logic of the command line. My Linux setup is an exercise in forced minimalism: **Bash + Vim + FFMPEG**. I do everything I can to avoid the mouse; there's something about the CLI that feels more honest, more direct."
+    },
+    {
+      "title": "The Video Challenge",
+      "content": "Managing video and audio for these stories without a GUI is a hurdle. Most would say a video editor with buttons and timelines is essential, but I'm sticking with **FFMPEG** commands. The learning curve is steep, but once you master the script, the automation is unbeatable. It's my way of bringing structure to Antoine's artistic chaos."
+    }
+  ]
+}

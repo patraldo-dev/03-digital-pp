@@ -1,0 +1,34 @@
+{
+  "slug": "from-primitives-to-glb-the-flowerbed-revelation",
+  "title": "From Primitives to GLB: The Flowerbed Revelation",
+  "date": "2026-07-16",
+  "author": "Patrouch & ZCode",
+  "excerpt": "A conversation about why our WebXR portals look nothing like Meta's Project Flowerbed — and what that gap reveals about the path to compelling 3D worlds.",
+  "tags": ["WebXR", "Three.js", "Cloudflare Workers", "3D Assets", "Portals"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "So this is a proof of some concept, and maybe it's fine, but we're still a far cry from what I see in game development using, for example, Unreal Engine or Unity. The Meta Project Flowerbed — does that use Unreal Engine or Unity or simply WebXR?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "**Project Flowerbed is pure WebXR — Three.js + an ECS library (ECSY).** Not Unreal. Not Unity. The exact same technology stack we're using. And it looks gorgeous.\n\nThat's the most important finding, and it's honest: **the quality gap isn't an engine problem. It's an asset problem.**\n\nHere's what Flowerbed does differently — all achievable within Three.js/WebXR, which we already have:\n\n| | Project Flowerbed | Our portals |\n|---|---|---|\n| **Engine** | Three.js + ECSY | Three.js + elics (same) |\n| **3D objects** | Hand-authored GLBs from Blender | Procedural primitives (boxes, cones, spheres) |\n| **Textures** | KTX2 compressed, PBR materials, normal maps | Solid colors, basic materials |\n| **Lighting** | Real-time shadows, PBR reflections | Basic point lights |\n| **Plants/animals** | GLB models with morph-target animation, instanced | `ConeGeometry` + `CylinderGeometry` |\n\n**The key insight:** Flowerbed proves that Three.js can produce beautiful, immersive worlds. But every single plant, animal, building, and terrain feature is a **professionally authored 3D model**. We're assembling the same engine but trying to build worlds from code-generated primitives instead of real models."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Great take on the Flowerbed project, thank you. Very inspiring. Let's figure out a way to organize, architect, and construct a library of GLBs (is that the only or best asset file type?). I can't use Blender because my Chromebook is too weak, but I created the spirit-view.glb in a free open-source experimental test site (I can't remember its name, but it inflates the 2D image to 3D — very simple — and then allows motion through creating points, etc. Can you find that site?)\n\nAs far as the engine being ready, hmm, not so sure: I'm glad we're doing this test of writing and immediately creating a scene. It could be cool. Maybe we should brainstorm ways to make it cool without reverting to the more obvious mp4 or other tried-and-true ways. Materialize scene doesn't match. *Three big unleashed dogs were walking on a street in a big city. It was getting dark, that time of the day when it's hard to distinguish between a dog and a wolf. Dusk. The French have a saying for it, 'entre chien et loup.' The city wasn't Paris but it might as well have been. All it lacked was the river.*"
+    },
+    {
+      "title": "ZCode:",
+      "content": "The tool you're describing is **[Monster Mash](https://monstermash.zone/)** — a free research tool from Adobe Research, ETH Zurich, and Google Research. You draw or import a 2D shape, it **inflates** it into a soft 3D model, and you animate it by placing **control points** (red and green dots) and dragging them. That's exactly how spirit-view.glb was born — and it runs in your browser, perfect for a Chromebook.\n\nNow, about the dogs at dusk. I tested the materialize endpoint with your exact text, and here's the honest finding: **Mistral understood your writing perfectly.** Look at what it extracted:\n\n```json\n\"scene_elements\": [\n  {\"kind\": \"quadruped\", \"label\": \"dog\", \"count\": 3, \"scale\": 1.2, \"position\": \"foreground\"},\n  {\"kind\": \"light_source\", \"label\": \"dusk lamp\", \"count\": 2, \"position\": \"midground\"},\n  {\"kind\": \"structure\", \"label\": \"street\", \"count\": 1, \"scale\": 2, \"position\": \"background\"}\n]\n```\n\nThree dogs, dusk lamps, a street. The mood is nostalgic, the palette is dusty amber and brown, dust particles drift. The crystal fragments carry \"entre chien et loup.\" **The data is right.**\n\nThe problem isn't the brain — it's the body. A `BoxGeometry` body with four `CylinderGeometry` legs doesn't read as \"dog\" to your eye, even positioned correctly in the right light. That's the gap Flowerbed exposed: we need real models, not primitives."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "It's a bit of a shame that there isn't an automatic way for your output to go to my inbox so I can re-read or read calmly your output in an email, or is there a way?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "There is now — and you're reading it. This blog post *is* the inbox. Every conversation worth keeping becomes a published entry here, rendered as readable prose with the speakers distinguished. No rebuild headaches, no email clutter — just a calm reading space under the Pinche Poutine Digital masthead.\n\nWhich brings us back to the GLB library. Now that we know Flowerbed proves the engine is ready and Monster Mash can author models on a Chromebook, the architecture question is clear: **how do we organize a growing library of GLB assets so the portals can draw from them?** That's the next conversation."
+    }
+  ]
+}

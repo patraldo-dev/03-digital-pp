@@ -1,0 +1,22 @@
+{
+  "slug": "logbook-2-choosing-jsdoc",
+  "title": "Logbook #2: The Path of Least Resistance (JSDoc & Svelte 5)",
+  "date": "2024-05-23",
+  "author": "Pinche Poutine",
+  "excerpt": "Why I chose JSDoc over TypeScript for my SvelteKit 5 project on a resource-limited Chromebook.",
+  "tags": ["SvelteKit", "JSDoc", "JavaScript", "Web Development"],
+  "sections": [
+    {
+      "title": "The Moment of Choice",
+      "content": "When you set up SvelteKit, the installer asks a blunt question: TypeScript or JSDoc? I've spent decades in front of terminals, from MS-DOS to T1 lines, but that doesn't mean modern tools don't bring their own layer of confusion. I'd seen the buzz on Reddit about Rich Harris and the Svelte team moving away from TypeScript, but my choice wasn't based on deep technical analysis. It was pure pragmatism."
+    },
+    {
+      "title": "Avoiding the Headaches",
+      "content": "TypeScript, for all its promises of safety, has always felt like a source of quirks and errors that I just haven't mastered. Adding TypeScript felt like looking for one more problem on an already long list. I chose **JSDoc** because it was the path that promised the fewest complications."
+    },
+    {
+      "title": "What worked out (by accident)",
+      "content": "Using JSDoc on a resource-strapped HP Chromebook turned out to be a solid move:\n\n1. **Simplicity:** No extra config files. Just pure JavaScript with comments that keep the editor on track.\n2. **Less Noise:** I get the autocomplete I need without the compiler blocking me with errors I sometimes don't even understand.\n3. **Lightweight:** My machine is grateful not to be running heavy type-checking processes in the background.\n\nIn the end, the best tool isn't the one with the most features; it's the one that stays out of your way."
+    }
+  ]
+}

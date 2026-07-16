@@ -47,6 +47,7 @@
 
             <!-- 2. Desktop Navigation (Hidden on Mobile) -->
             <nav class="nav-desktop">
+                <a href="/blog">{t.nav_blog || 'Blog'}</a>
                 <a href="/contact" class="nav-cta">{t.nav_cta || 'Contact'}</a>
             </nav>
 
@@ -77,6 +78,12 @@
     {#if isOpen}
         <div class="mobile-menu-overlay">
             <div class="mobile-menu-content">
+
+                <!-- Mobile Nav Links -->
+                <div class="mobile-links">
+                    <a href="/blog" class="mobile-link" onclick={closeMenu}>{t.nav_blog || 'Blog'}</a>
+                    <a href="/contact" class="mobile-link" onclick={closeMenu}>{t.nav_contact || 'Contact'}</a>
+                </div>
 
                 <!-- Mobile Language Switcher -->
                 <div class="mobile-lang-section">
