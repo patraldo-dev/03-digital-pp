@@ -1,0 +1,52 @@
+{
+  "slug": "portals-popcorn-and-the-quality-gap",
+  "original_lang": "en",
+  "title": "Portails, popcorn et l'écart de qualité",
+  "date": "2026-07-15",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Une conversation sur la création de portails littéraires WebXR convaincants — pourquoi les mondes devraient être comme du pop-corn, pourquoi le test de matérialisation en premier lieu est important, et la vérité honnête sur l'écart entre nos primitives et les graphismes des moteurs de jeu.",
+  "tags": [
+    "WebXR",
+    "Portals",
+    "SvelteKit",
+    "Cloudflare Workers",
+    "Game Design"
+  ],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "La raison pour laquelle j'ai suggéré de ne garder qu'un ou deux royaumes est qu'ils devraient être faciles à reconstruire automatiquement, non ? La création et la destruction des mondes devraient être comme du popcorn que nous mangeons."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Cette image — des mondes comme du popcorn — est en fait le bon principe de conception, et elle redéfinit toute l'architecture. Si les mondes sont peu coûteux à créer et à détruire, alors :\n\n1. **Write-first materialize** n'est pas un gadget ; c'est la *caractéristique principale*. Écrire des mots → un royaume se génère à partir d'eux → l'explorer → il disparaît quand vous partez (ou il est sauvegardé si vous le souhaitez).\n2. **Le catalogue statique des royaumes** (arboleda, cosmos, fiesta...) devient une *bibliothèque de graines*, pas le produit. Ils existent pour montrer ce qui est possible et pour naviguer entre eux, mais l'action réelle est la génération éphémère.\n3. **La qualité par royaume importe moins que le cycle.** Si un royaume prend 8 secondes à générer et que vous pouvez immédiatement le réécrire, un monde légèrement primitif est pardonnable — parce que vous n'y avez pas investi. C'est un croquis, pas une peinture.\n\nLe point de terminaison materialize fait déjà cela de bout en bout : texte → Mistral → configuration de scène → royaume 3D. La question n'est pas de savoir si cela fonctionne (c'est le cas), mais si c'est *suffisamment convaincant pour sembler magique* plutôt qu'une démonstration technologique."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Attaquons-nous à cela maintenant que nous n'avons utilisé que 8 % de la limite de 5 heures. L'introduction write-first est la caractéristique la plus convaincante — elle vaut la peine d'être polie. De plus, j'ai obtenu le résumé puis l'invitation à entrer dans mon monde et, décevant, nous sommes entrés dans le monde /portals/fiesta. Puis-je récupérer ce que j'ai écrit ?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Oui — et ce bug (entrer dans le mauvais portail) avait une cause claire. PortalScene ne chargeait les configurations que pour les 11 `PORTAL_IDS` codés en dur. Lorsque votre configuration matérialisée est revenue avec son propre ID, il n'était pas dans cette liste — donc le code est revenu à un portail aléatoire, qui s'est avéré être fiesta. Corrigé en chargeant également toutes les configurations SSR qui ne sont pas dans la liste statique, afin que le royaume matérialisé obtienne sa propre identité.\n\nEn ce qui concerne la récupération de ce que vous avez écrit : le texte persiste désormais dans `sessionStorage` lorsque vous matérialisez, donc `rewriteFromScene()` peut le restaurer. Vous pouvez quitter la scène pour revenir à la forme d'écriture avec votre texte intact. Ce cycle — écrire → voir → réécrire → voir à nouveau — est le cycle popcorn. Chaque itération est bon marché."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Je ne vois pas les fresques et les fleurs sont trop subtiles, et nous sommes encore loin de graphismes convaincants. Mais qu'en est-il des D.O. ? [Durable Objects]"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Deux problèmes distincts, et ils méritent d'être nommés clairement :\n\n**Les Durable Objects** — 93 erreurs sur 93 sur le tableau de bord. Mais voici la nuance : PortalRoom (la synchronisation des avatars) *fonctionne*. Je l'ai confirmé avec un test WebSocket direct. Les erreurs proviennent toutes de BootyChatRoom, un DO séparé pour une fonctionnalité différente. Cela n'empêche pas l'expérience du portail, mais c'est du bruit sur le tableau de bord qui doit être nettoyé. La cause profonde était l'edge worker créant un `new Request()` qui supprimait le statut de mise à niveau WebSocket — PortalRoom a reçu une simple requête GET et a planté. Corrigé en passant la `request` originale à `stub.fetch()`.\n\n**Le fossé graphique** — c'est le problème honnête. Le bloom à une intensité de 0,6 avec un seuil de 0,85 est à peine perceptible. Les fresques (les œuvres d'art d'Antoine en tant que plans de texture) utilisaient un mélange additif sur un fond sombre, ce qui ajoute presque rien visuellement. Ceux-ci sont réglables. Mais le problème fondamental est ce que nous confirmerions plus tard avec la recherche Flowerbed : nous rendons des primitives là où nous avons besoin de modèles. Aucun réglage de bloom ne comble ce fossé."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Donc, c'est une preuve de concept, et peut-être que c'est bien..."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Et c'est exactement le bon cadre. C'*est* une preuve de concept, et la concept qu'elle prouve est la plus importante : **écrire → Mistral distille → configuration de scène → royaume 3D, de bout en bout, en secondes, sur Cloudflare Workers, sans travail manuel sur les actifs.** Ce cycle fonctionne. Les primitives sont des placeholders pour de vrais modèles. Le système de portails — avatars de co-présence, vol vers les pairs, cristaux de révélation, boussole de navigation — est tout fonctionnel.\n\nCe qui manque n'est pas l'architecture ou l'ingénierie. Ce sont les *actifs*. Et cette réalisation est ce qui nous mènerait, le lendemain, au Projet Flowerbed — et à la découverte que le fossé n'est pas notre moteur. C'est notre bibliothèque."
+    }
+  ],
+  "translated": true,
+  "translated_from": "en",
+  "translated_to": "fr"
+}

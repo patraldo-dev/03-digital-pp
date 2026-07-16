@@ -1,0 +1,52 @@
+{
+  "slug": "portals-popcorn-and-the-quality-gap",
+  "original_lang": "en",
+  "title": "Portales, palomitas de maíz y la brecha de calidad",
+  "date": "2026-07-15",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Una conversación sobre cómo hacer que los portales literarios WebXR sean atractivos — por qué los mundos deberían ser como el popcorn, por qué importa la prueba de materialización primero escribir y la verdad honesta sobre la brecha entre nuestros primitivos y la gráfica de los motores de juego.",
+  "tags": [
+    "WebXR",
+    "Portals",
+    "SvelteKit",
+    "Cloudflare Workers",
+    "Game Design"
+  ],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "La razón por la que sugerí perder todos los reinos excepto uno o dos es que deberían ser fáciles de reconstruir automáticamente, ¿verdad? La creación y destrucción de mundos debería ser como el popcorn que comemos."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Esa imagen — mundos como palomitas de maíz — es en realidad el principio de diseño correcto, y reenmarca toda la arquitectura. Si los mundos son baratos de crear y destruir, entonces:\n\n1. **Escribir primero y materializar después** no es un truco; es la *característica principal*. Escribir palabras → un reino se genera a partir de ellas → explorarlo → desaparece cuando te vas (o se guarda si quieres).\n2. **El catálogo estático de reinos** (arboleda, cosmos, fiesta...) se convierte en una *biblioteca de semillas*, no en el producto. Existen para mostrar lo que es posible y para navegar entre ellos, pero la acción real es la generación efímera.\n3. **La calidad por reino importa menos que el bucle.** Si un reino tarda 8 segundos en generarse y puedes reescribirlo inmediatamente, un mundo con un aspecto ligeramente primitivo es perdonable — porque no invertiste en él. Es un boceto, no una pintura.\n\nEl punto final de materialización ya lo hace de principio a fin: texto → Mistral → configuración de escena → reino 3D. La pregunta no es si funciona (lo hace), sino si es *lo suficientemente convincente como para sentirse mágico* en lugar de una demostración técnica."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Aprovechemos esto ahora que solo hemos usado el 8% del límite de 5 horas. La introducción de escribir primero es la característica más convincente — vale la pena pulirla. Además, obtuve el resumen y luego la invitación para entrar en mi mundo y decepcionantemente entramos en el mundo /portals/fiesta. ¿Puedo recuperar lo que escribí?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Sí — y ese error (entrar en el portal equivocado) tuvo una causa raíz clara. PortalScene solo estaba cargando configuraciones para los 11 `PORTAL_IDS` codificados en el sistema. Cuando tu configuración materializada regresó con su propio ID, no estaba en esa lista — así que el código recurrió a un portal aleatorio, que resultó ser fiesta. Solucionado cargando también cualquier configuración SSR que no esté en la lista estática, para que el reino materializado tenga su propia identidad.\n\nEn cuanto a recuperar lo que escribiste: el texto ahora persiste en `sessionStorage` cuando se materializa, así que `rewriteFromScene()` puede restaurarlo. Puedes salir de la escena y volver al formulario de escritura con tu texto intacto. Ese bucle — escribir → ver → reescribir → ver de nuevo — es el bucle de palomitas de maíz. Cada iteración es barata."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "No veo los murales y los brotes son demasiado sutiles, y aún estamos muy lejos de gráficos convincentes. Pero, ¿qué hay del D.O.? [Durable Objects]"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Dos problemas separados, y vale la pena nombrarlos claramente:\n\n**Los Durable Objects** — 93 errores de 93 en el tablero. Pero aquí está la sutileza: PortalRoom (la sincronización de avatares) *funciona*. Lo confirmé con una prueba directa de WebSocket. Los errores son todos de BootyChatRoom, un DO separado para una característica diferente. No está bloqueando la experiencia del portal, pero es ruido en el tablero que debe limpiarse. La causa raíz fue el trabajador de borde creando un `new Request()` que eliminó el estado de actualización de WebSocket — PortalRoom recibió una solicitud GET simple y se estrelló. Solucionado pasando la `request` original a `stub.fetch()`.\n\n**La brecha gráfica** — esta es la honesta. El brillo a fuerza 0.6 con umbral 0.85 es apenas perceptible. Los murales (el arte de Antoine como planos de textura) estaban usando mezcla aditiva en un fondo oscuro, lo que añade casi nada visualmente. Esos son ajustables. Pero el problema fundamental es lo que más tarde confirmaríamos con la investigación de Flowerbed: estamos renderizando primitivas donde necesitamos modelos. Ningún ajuste de brillo cierra esa brecha."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Entonces, esto es una prueba de algún concepto, y tal vez está bien..."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Y esa es exactamente la forma correcta de enmarcarlo. *Es* una prueba de concepto, y el concepto que prueba es el más importante: **escribir → Mistral destila → configuración de escena → reino 3D, de principio a fin, en segundos, en Cloudflare Workers, sin trabajo manual de activos.** Ese bucle funciona. Las primitivas son placeholders para modelos reales. El sistema de portales — avatares de co-presencia, volar al par, cristales de revelación, brújula de navegación — todo es funcional.\n\nLo que falta no es arquitectura ni ingeniería. Son *activos*. Y esa realización es lo que nos llevaría, al día siguiente, al Proyecto Flowerbed — y al descubrimiento de que la brecha no está en nuestro motor. Está en nuestra biblioteca."
+    }
+  ],
+  "translated": true,
+  "translated_from": "en",
+  "translated_to": "es"
+}

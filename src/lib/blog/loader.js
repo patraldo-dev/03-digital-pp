@@ -39,6 +39,8 @@ function buildPost(mod, path) {
         source_lang: sourceLang,
         // Explicit frontmatter field if present, else the folder
         original_lang: post.original_lang || sourceLang,
+        // Machine-translation flag (set by publish-time translation)
+        translated: post.translated || false,
         // Flat content for legacy/preview consumers
         content: post.sections
             ? post.sections.map((s) => `## ${s.title}\n\n${s.content}`).join('\n\n')

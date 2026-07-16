@@ -1,0 +1,44 @@
+{
+  "slug": "from-primitives-to-glb-the-flowerbed-revelation",
+  "original_lang": "en",
+  "title": "De Primitivos a GLB: La Revelación de Flowerbed",
+  "date": "2026-07-16",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Una conversación sobre por qué nuestros portales WebXR no se parecen en nada al Proyecto Flowerbed de Meta — y qué revela esa brecha sobre el camino hacia mundos 3D convincentes.",
+  "tags": [
+    "WebXR",
+    "Three.js",
+    "Cloudflare Workers",
+    "3D Assets",
+    "Portals"
+  ],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Así que esto es una prueba de concepto, y quizás esté bien, pero aún estamos muy lejos de lo que veo en el desarrollo de juegos utilizando, por ejemplo, Unreal Engine o Unity. ¿El Proyecto Meta Flowerbed usa Unreal Engine o Unity o simplemente WebXR?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "**El Proyecto Flowerbed es puro WebXR — Three.js + una biblioteca ECS (ECSY).** No Unreal. No Unity. Exactamente el mismo conjunto de tecnologías que estamos utilizando. Y se ve hermoso.\n\nEse es el hallazgo más importante, y es honesto: **la brecha de calidad no es un problema del motor. Es un problema de activos.**\n\nAquí está lo que hace diferente Flowerbed — todo alcanzable dentro de Three.js/WebXR, que ya tenemos:\n\n| | Proyecto Flowerbed | Nuestros portales |\n|---|---|---|\n| **Motor** | Three.js + ECSY | Three.js + elics (igual) |\n| **Objetos 3D** | GLBs hechos a mano desde Blender | Primitivas procedimentales (cajas, conos, esferas) |\n| **Texturas** | Comprimidas KTX2, materiales PBR, mapas normales | Colores sólidos, materiales básicos |\n| **Iluminación** | Sombras en tiempo real, reflejos PBR | Luces puntuales básicas |\n| **Plantas/animales** | Modelos GLB con animación de morfología objetivo, instanciados | `ConeGeometry` + `CylinderGeometry` |\n\n**La clave:** Flowerbed demuestra que Three.js puede producir mundos hermosos e inmersivos. Pero cada planta, animal, edificio y característica del terreno es un **modelo 3D profesionalmente autorizado**. Estamos ensamblando el mismo motor pero tratando de construir mundos a partir de primitivas generadas por código en lugar de modelos reales."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Excelente análisis del proyecto Flowerbed, gracias. Muy inspirador. Vamos a encontrar una manera de organizar, arquitectar y construir una biblioteca de GLBs (¿es ese el único o mejor tipo de archivo de activos?). No puedo usar Blender porque mi Chromebook es demasiado débil, pero creé el spirit-view.glb en un sitio experimental de prueba gratuito y de código abierto (no recuerdo su nombre, pero infla la imagen 2D a 3D — muy simple — y luego permite el movimiento creando puntos, etc. ¿Puedes encontrar ese sitio?)\n\nEn cuanto al motor listo, hmm, no estoy tan seguro: me alegra que estemos haciendo esta prueba de escribir y crear inmediatamente una escena. Podría ser genial. Quizás deberíamos idear maneras de hacerlo genial sin recurrir a los métodos más obvios como mp4 u otros métodos probados y verdaderos. Materializar la escena no coincide. *Tres grandes perros sueltos caminaban por una calle en una gran ciudad. Se estaba haciendo de noche, esa hora del día en que es difícil distinguir entre un perro y un lobo. Crepúsculo. Los franceses tienen un dicho para eso, 'entre chien et loup.' La ciudad no era París pero bien podría haberlo sido. Lo único que le faltaba era el río.*"
+    },
+    {
+      "title": "ZCode:",
+      "content": "La herramienta que describes es **[Monster Mash](https://monstermash.zone/)** — una herramienta de investigación gratuita de Adobe Research, ETH Zurich y Google Research. Dibujas o importas una forma 2D, la **infla** en un modelo 3D suave, y lo animas colocando **puntos de control** (puntos rojos y verdes) y arrastrándolos. Así es como nació spirit-view.glb — y funciona en tu navegador, perfecto para un Chromebook.\n\nAhora, sobre los perros al atardecer. Probé el punto final de materialización con tu texto exacto, y aquí está el hallazgo honesto: **Mistral entendió tu escritura perfectamente.** Mira lo que extrajo:\n\n```json\n\"scene_elements\": [\n  {\"kind\": \"quadruped\", \"label\": \"dog\", \"count\": 3, \"scale\": 1.2, \"position\": \"foreground\"},\n  {\"kind\": \"light_source\", \"label\": \"dusk lamp\", \"count\": 2, \"position\": \"midground\"},\n  {\"kind\": \"structure\", \"label\": \"street\", \"count\": 1, \"scale\": 2, \"position\": \"background\"}\n]\n```\n\nTres perros, lámparas de atardecer, una calle. El ambiente es nostálgico, la paleta es ámbar y marrón polvoriento, partículas de polvo flotan. Los fragmentos de cristal llevan \"entre chien et loup.\" **Los datos son correctos.**\n\nEl problema no es el cerebro — es el cuerpo. Un cuerpo de `BoxGeometry` con cuatro patas de `CylinderGeometry` no se lee como \"perro\" a tus ojos, incluso posicionado correctamente en la luz adecuada. Esa es la brecha que expuso Flowerbed: necesitamos modelos reales, no primitivas."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Es un poco triste que no haya una manera automática para que tu salida vaya a mi bandeja de entrada para que pueda releer o leer tranquilamente tu salida en un correo electrónico, ¿o hay alguna manera?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Ahora sí — y lo estás leyendo. Esta entrada del blog *es* la bandeja de entrada. Cada conversación que vale la pena guardar se convierte en una entrada publicada aquí, renderizada como prosa legible con los hablantes distinguidos. Sin dolores de cabeza de reconstrucción, sin desorden en el correo electrónico — solo un espacio de lectura tranquilo bajo el encabezado Pinche Poutine Digital.\n\nLo que nos lleva de nuevo a la biblioteca de GLB. Ahora que sabemos que Flowerbed demuestra que el motor está listo y Monster Mash puede autorizar modelos en un Chromebook, la pregunta de la arquitectura es clara: **¿cómo organizamos una biblioteca en crecimiento de activos GLB para que los portales puedan acceder a ellos?** Esa es la próxima conversación."
+    }
+  ],
+  "translated": true,
+  "translated_from": "en",
+  "translated_to": "es"
+}

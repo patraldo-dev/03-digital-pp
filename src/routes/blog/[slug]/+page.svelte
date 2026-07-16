@@ -40,6 +40,9 @@
     /** Whether this post is being shown in a language other than the reader's. */
     let isForeignToReader = $derived(postLang !== readerLang);
 
+    /** Whether this version is a machine translation. */
+    let isTranslated = $derived(!!data.post?.translated);
+
     /** Strip markdown/HTML to approximate visible length. */
     function plainLength(md) {
         return (md || '')
@@ -154,6 +157,15 @@
                     </div>
                 {/if}
             </div>
+            {#if isTranslated}
+                <div class="translation-notice">
+                    {t.blog_machine_translation || 'Machine translation'} · {LANG_NAMES[postLang] || postLang}
+                    &nbsp;·&nbsp;
+                    <a href="/blog/{data.post?.slug}?lang={data.post?.original_lang || 'en'}">
+                        {t.blog_view_original || 'View original'}
+                    </a>
+                </div>
+            {/if}
             <h1>{data.post?.title}</h1>
             <div class="post-meta">
                 <span class="post-date">{new Date(data.post?.date).toLocaleDateString()}</span>
@@ -345,6 +357,28 @@
         letter-spacing: 0.3px;
         color: var(--color-sage);
         cursor: help;
+    }
+
+    /* Machine-translation notice. Subtle, honest, not intrusive. */
+    .translation-notice {
+        font-size: 0.82rem;
+        color: #8a8a8a;
+        margin-bottom: 1.5rem;
+        padding: 0.6rem 1rem;
+        background: rgba(184, 160, 106, 0.08);
+        border-left: 3px solid #B8A06A;
+        border-radius: 0 8px 8px 0;
+        line-height: 1.5;
+    }
+
+    .translation-notice a {
+        color: var(--color-brick);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .translation-notice a:hover {
+        text-decoration: underline;
     }
 
     /* --- Blog Post --- */

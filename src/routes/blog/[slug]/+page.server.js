@@ -9,9 +9,12 @@ import { getBlogPosts, getBlogPost } from '$lib/blog/loader.js';
  * `htmlContent` fallback for legacy posts that carry a single `content`
  * string instead of a sections[] array.
  */
-export async function load({ params, locals }) {
+export async function load({ params, locals, url }) {
     const { slug } = params;
-    const locale = locals.lang || 'en';
+    // Allow ?lang= override so the "View original" link can force the
+    // original-language version regardless of the reader's locale cookie.
+    const queryLang = url.searchParams.get('lang');
+    const locale = queryLang || locals.lang || 'en';
 
     const post = await getBlogPost(slug, locale);
 
