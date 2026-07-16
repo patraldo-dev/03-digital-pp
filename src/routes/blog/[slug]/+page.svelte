@@ -28,6 +28,18 @@
 
     const SPEAKER_RE = /^(Patrouch|ZCode|Chef Tech|Pinche Poutine):\s*$/i;
 
+    /** Display names for language codes, for badges/chips. */
+    const LANG_NAMES = { en: 'English', es: 'Español', fr: 'Français' };
+
+    /** The reader's UI locale (from cookie via layout). */
+    let readerLang = $derived($page.data?.lang || 'en');
+
+    /** The language the post was actually written in. */
+    let postLang = $derived(data.post?.original_lang || data.post?.source_lang || 'en');
+
+    /** Whether this post is being shown in a language other than the reader's. */
+    let isForeignToReader = $derived(postLang !== readerLang);
+
     /** Strip markdown/HTML to approximate visible length. */
     function plainLength(md) {
         return (md || '')
@@ -49,6 +61,9 @@
             : null;
         const len = plainLength(section.content || '');
         const isLong = isSpeaker && len > PREVIEW_CHARS;
+        // A turn may carry its own `lang` field when the speaker
+        // switched languages (e.g. a Spanish reply in an English thread).
+        const turnLang = section.lang || null;
         return {
             ...section,
             _idx: idx,
@@ -56,7 +71,8 @@
             _isSpeaker: isSpeaker,
             _speaker: speakerName,
             _isLong: isLong,
-            _expanded: false
+            _expanded: false,
+            _turnLang: turnLang
         };
     }
 
@@ -130,7 +146,14 @@
     <div class="container">
         <header class="post-header">
             <a href="/blog" class="back-link">← {t.blog_post_back || 'Back to Blog'}</a>
-            <div class="badge">{t.blog_tag || 'Blog'}</div>
+            <div class="badges-row">
+                <div class="badge">{t.blog_tag || 'Blog'}</div>
+                {#if isForeignToReader}
+                    <div class="lang-badge" title={t.blog_original_lang_tip || 'This text is shown in its original language'}>
+                        {t.blog_original_lang || 'Originally in'} {LANG_NAMES[postLang] || postLang}
+                    </div>
+                {/if}
+            </div>
             <h1>{data.post?.title}</h1>
             <div class="post-meta">
                 <span class="post-date">{new Date(data.post?.date).toLocaleDateString()}</span>
@@ -168,7 +191,12 @@
                             class="conversation-turn {section._speaker.toLowerCase().replace(/\s+/g, '-')}"
                             class:collapsed={section._isLong && !isExpanded(section)}
                         >
-                            <span class="speaker-badge">{section._speaker}</span>
+                            <div class="turn-header">
+                                <span class="speaker-badge">{section._speaker}</span>
+                                {#if section._turnLang}
+                                    <span class="turn-lang-chip lang-{section._turnLang}">{LANG_NAMES[section._turnLang] || section._turnLang}</span>
+                                {/if}
+                            </div>
                             <div class="turn-body">{@html section._html}</div>
                             {#if section._isLong}
                                 <button class="turn-expand-btn" onclick={() => toggleTurn(section)}>
@@ -282,6 +310,14 @@
     }
 
     /* --- Badge --- */
+    .badges-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
     .badge {
         display: inline-block;
         padding: 0.6rem 1.5rem;
@@ -291,11 +327,24 @@
         border-radius: 50px;
         font-size: 0.9rem;
         font-weight: 700;
-        margin-bottom: 2rem;
         letter-spacing: 0.5px;
         text-transform: uppercase;
         color: var(--color-brick);
         box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+
+    /* Original-language indicator. Subdued but clear. */
+    .lang-badge {
+        display: inline-block;
+        padding: 0.45rem 1.1rem;
+        background: rgba(141, 163, 153, 0.14);
+        border: 1px solid rgba(141, 163, 153, 0.4);
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        color: var(--color-sage);
+        cursor: help;
     }
 
     /* --- Blog Post --- */
@@ -539,6 +588,48 @@
     .post-content :global(.conversation-turn.patrouch .speaker-badge) {
         background: rgba(201, 76, 53, 0.14);
         color: var(--color-brick);
+    }
+
+    /* Per-turn language switch: header row holds speaker + lang chip */
+    .post-content :global(.turn-header) {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+    }
+
+    .post-content :global(.turn-header .speaker-badge) {
+        margin-bottom: 0;
+    }
+
+    .post-content :global(.turn-lang-chip) {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 0.18rem 0.55rem;
+        border-radius: 50px;
+        background: rgba(45, 58, 54, 0.08);
+        color: #6B7C76;
+        border: 1px solid rgba(45, 58, 54, 0.12);
+    }
+
+    .post-content :global(.turn-lang-chip.lang-es) {
+        background: rgba(201, 76, 53, 0.1);
+        color: var(--color-brick);
+        border-color: rgba(201, 76, 53, 0.25);
+    }
+
+    .post-content :global(.turn-lang-chip.lang-fr) {
+        background: rgba(141, 163, 153, 0.14);
+        color: var(--color-sage);
+        border-color: rgba(141, 163, 153, 0.3);
+    }
+
+    .post-content :global(.turn-lang-chip.lang-en) {
+        background: rgba(184, 160, 106, 0.14);
+        color: #8a7548;
+        border-color: rgba(184, 160, 106, 0.3);
     }
 
     /* Collapsed preview: clamp the turn body to a few lines and fade

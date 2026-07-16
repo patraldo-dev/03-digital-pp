@@ -16,69 +16,96 @@ function resolveLocale(locale) {
     return 'en';
 }
 
-/**
- * Get all blog posts for a given locale
- * @param {string} locale - The locale code (en, fr, es)
- * @returns {Promise<Array>} - Array of blog post objects
- */
-export async function getBlogPosts(locale = 'en') {
-    const resolvedLocale = resolveLocale(locale);
-    
-    // Import all posts for this locale
-    const modules = import.meta.glob('./**/*.json', { eager: true });
-    
-    const posts = [];
-    for (const [path, mod] of Object.entries(modules)) {
-        // Only include posts from the correct locale folder
-        if (!path.includes(`/${resolvedLocale}/`)) continue;
-        
-        const post = mod.default || mod;
-        if (post && post.slug) {
-            posts.push({
-                ...post,
-                // Build the content from sections if available
-                content: post.sections 
-                    ? post.sections.map(s => `## ${s.title}\n\n${s.content}`).join('\n\n')
-                    : post.content || ''
-            });
-        }
+/** Derive a locale code from a glob path like './en/foo.json' → 'en' */
+function localeFromPath(path) {
+    for (const loc of SUPPORTED_LOCALES) {
+        if (path.includes(`/${loc}/`)) return loc;
     }
-    
-    return posts;
+    return 'en';
 }
 
 /**
- * Get a single blog post by slug for a given locale
+ * Build the internal content string from a raw post object.
+ * Preserves sections for the client renderer; also provides a flat
+ * `content` fallback for legacy consumers.
+ */
+function buildPost(mod, path) {
+    const post = mod.default || mod;
+    if (!post || !post.slug) return null;
+    const sourceLang = localeFromPath(path);
+    return {
+        ...post,
+        // The folder the file lives in (en/fr/es)
+        source_lang: sourceLang,
+        // Explicit frontmatter field if present, else the folder
+        original_lang: post.original_lang || sourceLang,
+        // Flat content for legacy/preview consumers
+        content: post.sections
+            ? post.sections.map((s) => `## ${s.title}\n\n${s.content}`).join('\n\n')
+            : post.content || ''
+    };
+}
+
+/**
+ * Get all blog posts across all locales. The reader's locale only
+ * affects UI chrome (labels), not which posts are visible — a post
+ * written in English is shown to Spanish and French readers too,
+ * with its original language surfaced via the `original_lang` field.
+ *
+ * If the same slug exists in the reader's locale, that version wins
+ * (genuine translations). Otherwise the first copy found is used.
+ *
+ * @param {string} locale - The reader's locale (affects dedupe priority only)
+ * @returns {Promise<Array>} - Blog post objects
+ */
+export async function getBlogPosts(locale = 'en') {
+    const resolvedLocale = resolveLocale(locale);
+    const modules = import.meta.glob('./**/*.json', { eager: true });
+
+    const bySlug = new Map();
+    for (const [path, mod] of Object.entries(modules)) {
+        const post = buildPost(mod, path);
+        if (!post) continue;
+        const existing = bySlug.get(post.slug);
+        if (!existing) {
+            bySlug.set(post.slug, post);
+        } else {
+            // Prefer the reader's locale when a genuine translation exists.
+            if (post.source_lang === resolvedLocale) {
+                bySlug.set(post.slug, post);
+            }
+        }
+    }
+
+    return Array.from(bySlug.values());
+}
+
+/**
+ * Get a single blog post by slug for a given locale. Falls back across
+ * locales if the requested locale doesn't have a copy.
+ *
  * @param {string} slug - The post slug
- * @param {string} locale - The locale code (en, fr, es)
- * @returns {Promise<Object|null>} - Blog post object or null if not found
+ * @param {string} locale - The reader's locale (preferred, then fallback)
+ * @returns {Promise<object|null>}
  */
 export async function getBlogPost(slug, locale = 'en') {
     const resolvedLocale = resolveLocale(locale);
-    
-    // Try to import the specific post file
-    try {
-        const modules = import.meta.glob('./**/*.json', { eager: true });
-        
-        for (const [path, mod] of Object.entries(modules)) {
-            if (!path.includes(`/${resolvedLocale}/`)) continue;
-            
-            const post = mod.default || mod;
-            if (post && post.slug === slug) {
-                return {
-                    ...post,
-                    // Build the content from sections if available
-                    content: post.sections 
-                        ? post.sections.map(s => `## ${s.title}\n\n${s.content}`).join('\n\n')
-                        : post.content || ''
-                };
-            }
+    const modules = import.meta.glob('./**/*.json', { eager: true });
+
+    let fallback = null;
+    for (const [path, mod] of Object.entries(modules)) {
+        const post = buildPost(mod, path);
+        if (!post || post.slug !== slug) continue;
+
+        if (post.source_lang === resolvedLocale) {
+            return post; // exact locale match wins
         }
-    } catch (error) {
-        console.error('Error loading blog post:', error);
+        if (!fallback) {
+            fallback = post; // keep first cross-locale copy as fallback
+        }
     }
-    
-    return null;
+
+    return fallback;
 }
 
 export { SUPPORTED_LOCALES, resolveLocale };
