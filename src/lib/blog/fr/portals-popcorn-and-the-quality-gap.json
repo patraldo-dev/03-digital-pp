@@ -1,0 +1,42 @@
+{
+  "slug": "portals-popcorn-and-the-quality-gap",
+  "title": "Portails, Popcorn et l'Écart de Qualité",
+  "date": "2026-07-15",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Une conversation sur comment rendre les portails littéraires WebXR captivants — pourquoi les mondes devraient être comme du popcorn, pourquoi le test de matérialisation write-first compte, et la vérité honnête sur l'écart entre nos primitives et les graphismes des moteurs de jeu.",
+  "tags": ["WebXR", "Portails", "SvelteKit", "Cloudflare Workers", "Game Design"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "La raison pour laquelle j'ai suggéré de perdre tous les royaumes sauf un ou deux, c'est qu'ils devraient être faciles à reconstruire automatiquement, non ? La création et la destruction de mondes devraient être comme le popcorn que nous mangeons."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Cette image — les mondes comme du popcorn — est en fait le bon principe de conception, et elle recadre toute l'architecture. Si les mondes sont peu coûteux à créer et détruire, alors :\n\n1. **La matérialisation write-first** n'est pas un gadget ; c'est la fonctionnalité *principale*. Taper des mots → un royaume se génère à partir d'eux → l'explorer → il disparaît quand tu pars (ou il est sauvegardé si tu veux).\n2. **Le catalogue statique de royaumes** (arboleda, cosmos, fiesta...) devient une *bibliothèque de graines*, pas le produit. Ils existent pour montrer ce qui est possible et pour naviguer entre eux, mais l'action réelle est la génération éphémère.\n3. **La qualité par royaume importe moins que la boucle.** Si un royaume prend 8 secondes à se générer et que tu peux le réécrire immédiatement, un monde un peu primitif est pardonnable — parce que tu n'y as pas investi. C'est une esquisse, pas une peinture.\n\nL'endpoint de matérialisation fait déjà tout cela de bout en bout : texte → Mistral → configuration de scène → royaume 3D. La question n'est pas de savoir si ça marche (ça marche), c'est si c'est *suffisamment captivant pour ressembler à de la magie* plutôt qu'à une démo technique."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Attaquons ça maintenant alors que nous n'avons utilisé que 8% de la limite de 5 heures. L'intro write-first est la fonctionnalité la plus captivante — ça vaut la peine de la polir. Aussi, j'ai reçu le résumé puis l'invitation à entrer dans mon monde et décevamment nous sommes entrés dans le monde /portals/fiesta. Est-ce que je peux récupérer ce que j'ai écrit ?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Oui — et ce bug (entrer dans le mauvais portail) avait une cause racine claire. PortalScene ne chargeait les configurations que pour les 11 `PORTAL_IDS` codés en dur. Quand ta configuration matérialisée est revenue avec son propre ID, il n'était pas dans cette liste — donc le code est retombé sur un portail aléatoire, qui s'est avéré être fiesta. Corrigé en chargeant aussi toutes les configurations SSR qui ne sont pas dans la liste statique, pour que le royaume matérialisé obtienne sa propre identité.\n\nQuant à récupérer ce que tu as écrit : le texte persiste maintenant dans `sessionStorage` quand tu matérialises, donc `rewriteFromScene()` peut le restaurer. Tu peux quitter la scène et revenir au formulaire d'écriture avec ton texte intact. Cette boucle — écrire → voir → réécrire → voir encore — c'est la boucle popcorn. Chaque itération est peu coûteuse."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Je ne vois pas les fresques et les blooms sont trop subtils, et nous sommes encore bien loin de graphismes captivants. Mais qu'en est-il des D.O. ? [Durable Objects]"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Deux problèmes distincts, et ils méritent d'être nommés clairement :\n\n**Les Durable Objects** — 93 erreurs sur 93 sur le tableau de bord. Mais voici la nuance : PortalRoom (la synchronisation d'avatars) *fonctionne*. Je l'ai confirmé avec un test WebSocket direct. Les erreurs viennent toutes de BootyChatRoom, un DO séparé pour une fonctionnalité différente. Ça ne bloque pas l'expérience du portail, mais c'est du bruit sur le tableau de bord qui devrait être nettoyé. La cause racine là-bas était le worker edge créant un `new Request()` qui supprimait le statut d'amélioration WebSocket — PortalRoom recevait un GET simple et plantait. Corrigé en passant la `request` originale à `stub.fetch()`.\n\n**L'écart graphique** — c'est le problème honnête. Bloom à force 0.6 avec seuil 0.85 est à peine perceptible. Les fresques (l'art d'Antoine comme plans de texture) utilisaient une fusion additive sur fond sombre, ce qui n'ajoute presque rien visuellement. C'est réglable. Mais le problème fondamental est ce que nous confirmerions plus tard avec la recherche Flowerbed : nous rendons des primitives là où nous avons besoin de modèles. Aucune quantité de réglage de bloom ne comble cet écart."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Alors c'est une preuve de concept, et peut-être que c'est bien..."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Et c'est exactement la bonne façon de le formuler. C'*est* une preuve de concept, et le concept qu'elle prouve est le plus important : **écrire → Mistral distille → configuration de scène → royaume 3D, de bout en bout, en quelques secondes, sur Cloudflare Workers, sans travail manuel d'assets.** Cette boucle fonctionne. Les primitives sont des placeholders pour de vrais modèles. Le système de portails — avatars de coprésence, vol-vers-pair, cristaux de révélation, boussole de navigation — fonctionne tout.\n\nCe qui manque n'est pas l'architecture ni l'ingénierie. Ce sont des *assets*. Et cette réalisation est ce qui nous mènerait, le lendemain, à Project Flowerbed — et à la découverte que l'écart n'est pas notre moteur. C'est notre bibliothèque."
+    }
+  ]
+}

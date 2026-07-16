@@ -19,39 +19,70 @@
     });
 
     /**
-     * Render a section's markdown content to sanitized HTML.
-     * We render + sanitize eagerly so the markup is ready before
-     * the {#each} paints. marked is sync with { async: false } (default
-     * unless a tokenizer extension returns a Promise), so this is safe
-     * during component init on both server and client.
-     *
-     * Conversation convention: a section whose title is exactly a speaker
-     * label ("Patrouch:" or "ZCode:") gets a CSS class so it can be
-     * styled as a dialogue turn. The title is rendered as a badge rather
-     * than a heading so the visual rhythm stays calm.
+     * Turns longer than this many characters (plain text) start
+     * collapsed with a preview + fade, so the reader can scan a
+     * whole conversation quickly and expand what interests them.
+     * Below the threshold the turn renders in full.
      */
+    const PREVIEW_CHARS = 240;
+
     const SPEAKER_RE = /^(Patrouch|ZCode|Chef Tech|Pinche Poutine):\s*$/i;
 
-    function renderSection(section) {
+    /** Strip markdown/HTML to approximate visible length. */
+    function plainLength(md) {
+        return (md || '')
+            .replace(/```[\s\S]*?```/g, ' ')   // code fences
+            .replace(/`[^`]*`/g, ' ')          // inline code
+            .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // images
+            .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // links → text
+            .replace(/[#>*_~|-]/g, ' ')        // markdown punctuation
+            .replace(/\s+/g, ' ')
+            .trim().length;
+    }
+
+    function renderSection(section, idx) {
         const html = marked.parse(section.content || '', { async: false });
-        // DOMPurify only runs in the browser (needs a DOM). On the server
-        // we trust first-party authored content; on the client we strip
-        // anything marked might let through.
         const clean = browser ? DOMPurify.sanitize(html) : html;
         const isSpeaker = SPEAKER_RE.test((section.title || '').trim());
         const speakerName = isSpeaker
             ? (section.title || '').trim().replace(/:\s*$/, '')
             : null;
-        return { ...section, _html: clean, _isSpeaker: isSpeaker, _speaker: speakerName };
+        const len = plainLength(section.content || '');
+        const isLong = isSpeaker && len > PREVIEW_CHARS;
+        return {
+            ...section,
+            _idx: idx,
+            _html: clean,
+            _isSpeaker: isSpeaker,
+            _speaker: speakerName,
+            _isLong: isLong,
+            _expanded: false
+        };
     }
 
-    // Pre-render sections once per post. untrack so this doesn't
-    // re-run on unrelated reactive changes.
+    // Pre-render sections once per post.
     let renderedSections = $derived.by(() => {
         const sections = data.post?.sections;
         if (!sections || !sections.length) return [];
-        return sections.map(renderSection);
+        return sections.map((s, i) => renderSection(s, i));
     });
+
+    // Global expand-all override: null = each turn uses its own state,
+    // true = force all open, false = force all collapsed.
+    let forceExpand = $state(null);
+
+    // Whether any turn is long enough to warrant the toolbar at all.
+    let hasLongTurns = $derived(renderedSections.some((s) => s._isLong));
+
+    function isExpanded(section) {
+        if (forceExpand !== null) return forceExpand;
+        return section._expanded || !section._isLong;
+    }
+
+    function toggleTurn(section) {
+        // Only meaningful in per-turn mode (forceExpand === null)
+        section._expanded = !section._expanded;
+    }
 
     // Fallback htmlContent (legacy posts without sections) — sanitize on client.
     let safeHtmlContent = $derived.by(() => {
@@ -116,11 +147,38 @@
 
         <div class="post-content">
             {#if renderedSections.length > 0}
-                {#each renderedSections as section (section.title + section._html)}
+                {#if hasLongTurns}
+                    <div class="turn-toolbar">
+                        <button
+                            class="turn-toggle"
+                            onclick={() => (forceExpand = forceExpand === true ? null : true)}
+                            class:active={forceExpand === true}
+                        >{t.blog_expand_all || 'Expand all'}</button>
+                        <button
+                            class="turn-toggle"
+                            onclick={() => (forceExpand = forceExpand === false ? null : false)}
+                            class:active={forceExpand === false}
+                        >{t.blog_collapse_all || 'Collapse all'}</button>
+                    </div>
+                {/if}
+
+                {#each renderedSections as section (section._idx)}
                     {#if section._isSpeaker}
-                        <div class="conversation-turn {section._speaker.toLowerCase().replace(/\s+/g, '-')}">
+                        <div
+                            class="conversation-turn {section._speaker.toLowerCase().replace(/\s+/g, '-')}"
+                            class:collapsed={section._isLong && !isExpanded(section)}
+                        >
                             <span class="speaker-badge">{section._speaker}</span>
                             <div class="turn-body">{@html section._html}</div>
+                            {#if section._isLong}
+                                <button class="turn-expand-btn" onclick={() => toggleTurn(section)}>
+                                    {#if isExpanded(section)}
+                                        {t.blog_collapse || 'Show less'} ▲
+                                    {:else}
+                                        {t.blog_expand || 'Read more'} ▼
+                                    {/if}
+                                </button>
+                            {/if}
                         </div>
                     {:else}
                         {#if section.title}
@@ -439,9 +497,10 @@
 
     /* --- Conversation Turns (sections-as-turns) ---
        A section whose title is "Patrouch:" or "ZCode:" renders as a
-       dialogue block instead of a heading. Easy upgrade path later:
-       swap sections[] for an explicit turns[] array and only the loader
-       changes — this CSS keeps working. */
+       dialogue block instead of a heading. Long turns collapse to a
+       preview so the reader can scan the whole exchange, then expand
+       what interests them. Easy upgrade path later: swap sections[]
+       for an explicit turns[] array and only the loader changes. */
     .post-content :global(.conversation-turn) {
         margin: 2.5rem 0;
         padding: 1.5rem 1.75rem;
@@ -480,6 +539,81 @@
     .post-content :global(.conversation-turn.patrouch .speaker-badge) {
         background: rgba(201, 76, 53, 0.14);
         color: var(--color-brick);
+    }
+
+    /* Collapsed preview: clamp the turn body to a few lines and fade
+       the bottom edge into the card. The "Read more" button sits below. */
+    .post-content :global(.conversation-turn.collapsed .turn-body) {
+        max-height: 7.5em;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .post-content :global(.conversation-turn.collapsed .turn-body)::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3em;
+        background: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.85) 100%
+        );
+        pointer-events: none;
+    }
+
+    .post-content :global(.turn-expand-btn) {
+        display: block;
+        margin: 1rem 0 0;
+        padding: 0.35rem 1rem;
+        background: transparent;
+        border: 1px solid rgba(141, 163, 153, 0.4);
+        border-radius: 50px;
+        color: var(--color-sage);
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .post-content :global(.turn-expand-btn:hover) {
+        background: rgba(141, 163, 153, 0.12);
+        border-color: var(--color-sage);
+    }
+
+    /* Toolbar: Expand all / Collapse all */
+    .turn-toolbar {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        margin-bottom: 2rem;
+    }
+
+    .turn-toggle {
+        padding: 0.4rem 1rem;
+        background: transparent;
+        border: 1px solid rgba(141, 163, 153, 0.35);
+        border-radius: 50px;
+        color: #6B7C76;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .turn-toggle:hover {
+        border-color: var(--color-sage);
+        color: var(--color-sage);
+    }
+
+    .turn-toggle.active {
+        background: rgba(141, 163, 153, 0.16);
+        border-color: var(--color-sage);
+        color: var(--color-sage);
     }
 
     .post-content :global(.conversation-turn .turn-body p:last-child) {
