@@ -1,0 +1,51 @@
+{
+  "slug": "the-16-megabyte-morph-target",
+  "title": "The 16-Megabyte Morph Target",
+  "date": "2026-07-16",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "A Monster Mash export ballooned to 16.7 MB. The culprit wasn't the model — it was 199 hidden copies of it. A practical lesson in GLB optimization for WebXR.",
+  "tags": ["GLB", "Three.js", "Monster Mash", "WebXR", "Optimization", "R2"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "When using Monster Mash the export to GLB settings offer several options — animation length, pre-roll frames, full quality, per-frame normals. What do you suggest?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "These settings directly affect what loads well in the portals. After checking how the existing spirit.glb is loaded and rendered, here's the recommendation:\n\n| Setting | Value | Why |\n|---|---|---|\n| **Animation length** | 200 frames (default) | ~6.5 seconds at 30fps — enough for a looping idle. More frames = bigger file. |\n| **Pre-roll frames** | 0 (default) | Monster Mash's inflate creates a neutral rest pose, so there's nothing to settle. Only increase if you see a visible \"jump\" when the animation loops. |\n| **Full quality** | ✅ Enable | Resolves depth during export to prevent self-intersection (mesh passing through itself). For an avatar viewed from all angles in 3D, interpenetrations look broken. |\n| **Per-frame normals** | ❌ Disable | This doubles file size. Per-frame normals only matter for complex deforming surfaces under dynamic lighting. The portal avatars use `MeshBasicMaterial` (unlit — no lighting calculations at all), so normals have essentially zero visual effect. |\n\nThe key principle: **don't pay for what you can't see.** Unlit materials make normals irrelevant. Full quality prevents ugly geometry errors. Keep animation loops short."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Is it necessary to animate them in Monster Mash, or just inflate them and export them? Or can we animate them in IWER or IWSDK?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "**No — you do not need to animate in Monster Mash.** And there are good reasons not to, depending on what the model is for. But the key insight: **IWER and IWSDK cannot bake animation into a model.** They're a runtime emulator and a WebXR SDK — they play back animation and let you trigger it, but they don't author it.\n\nThere are **three places animation can happen**, and they're not interchangeable:\n\n1. **Baked into the GLB** — the animation lives inside the file as keyframe tracks. Any Three.js `AnimationMixer` plays it automatically. That's how spirit.glb works: Monster Mash baked the float/breathe motion, and the code just calls `mixer.clipAction(clip).play()`.\n\n2. **Procedural in code** — the GLB is exported static, and motion is added in JavaScript at runtime: `mesh.position.y += Math.sin(t) * 0.002`. The model is dumb geometry; the code makes it move.\n\n3. **IWER/IWSDK** — runtime only. IWER emulates the headset for desktop testing. IWSDK provides the WebXR session hooks. Neither creates keyframes or edits a model.\n\nWhen to use which:\n\n| Model type | Recommendation |\n|---|---|\n| **Avatars** (co-presence) | Animate in Monster Mash — organic, character-specific motion travels with the model |\n| **Scene elements** (dogs, trees, lamps) | Export static, animate in code — placed by the dozen, want uniform motion from one code loop |\n| **Hero objects** (one centerpiece per realm) | Animate in Monster Mash — distinctive motion, one model, plays everywhere |"
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Let's add the latest GLB to the project. Only thing is — it's 16.7 MB!"
+    },
+    {
+      "title": "ZCode:",
+      "content": "16.7 MB is 15× the existing spirit.glb. Before adding it, I inspected the file structure. The culprit was immediately clear:\n\n```\nanimations: 1\nmeshes: 1, 6,612 vertices, 199 morph targets\nbinary chunk: 16.6 MB\n```\n\n**199 morph targets × 6,612 vertices = 16.6 MB of binary data.**\n\nMonster Mash had exported every animation frame as a separate morph target. At 200 frames, that's 199 morph targets (one per frame, minus the base pose). Each morph target stores a *full copy* of all 6,612 vertex positions. So the file contained the same mesh, duplicated 199 times.\n\nThis is the same class of problem as per-frame normals: invisible data inflating the file. Except worse — normals are per-vertex attributes (3 floats). Morph targets are full position arrays (3 floats × every vertex × every frame).\n\n**The fix:** re-export from Monster Mash without animation. The static mesh — the exact same geometry, just without 199 copies of it — would be a fraction of the size."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "I exported it without animation and now it is 1.4 MB."
+    },
+    {
+      "title": "ZCode:",
+      "content": "A **92% size reduction**, from 16.7 MB to 1.4 MB, by dropping the morph targets. The inspection confirmed it was clean:\n\n```\nanimations: 0\nmorph targets: 0\nvertices: 6,612\nbinary: 1.4 MB (mostly the PNG texture)\n```\n\nThe model — HombreAmarillo (Yellow Man) — was uploaded to R2 and wired in as the `figure` scene element. Now when Mistral extracts a \"figure\" from someone's writing, the realm renders this actual textured 3D person instead of the old cylinder-and-sphere stick figure. The GLB loads once, clones cheaply per instance, and animates with a gentle rotation driven by the existing code loop.\n\nThe fallback is built in: the primitive renders first as a placeholder, then the GLB swaps in asynchronously when loaded. If the GLB ever fails, the primitive stays — no broken scene."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So what's the takeaway?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Five lessons, hard-won from one 16.7 MB file:\n\n1. **Monster Mash morph targets explode file size.** Each animation frame becomes a full copy of the mesh. 200 frames ≈ 200× the vertex data. Export static unless the animation is the point.\n2. **Three animation paths, not interchangeable:** baked in GLB, procedural in code, or IWER/IWSDK (runtime only, never authors).\n3. **Per-frame normals are waste for unlit materials.** `MeshBasicMaterial` doesn't compute lighting. Normals do nothing visible.\n4. **Inspect before you upload.** A 30-second Python script reading the GLB header revealed the morph target count instantly. Size is a symptom; structure is the cause.\n5. **The R2 pipeline just works.** `wrangler r2 object put --remote` → served via `/api/assets/models/<key>` with correct content-type, CORS, and immutable cache. Adding a new model requires zero code changes to the asset endpoint.\n\nThe 16.7 MB file is gone. The 1.4 MB version is live. And the figure element — the most common content type Mistral extracts from writing — just got a massive visual upgrade. Not bad for a day's work."
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "slug": "the-16-megabyte-morph-target",
+  "title": "Le Morph Target de 16 Mégaoctets",
+  "date": "2026-07-16",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Une exportation de Monster Mash a gonflé à 16,7 Mo. Le coupable n'était pas le modèle — c'était 199 copies cachées de celui-ci. Une leçon pratique d'optimisation GLB pour WebXR.",
+  "tags": [
+    "GLB",
+    "Three.js",
+    "Monster Mash",
+    "WebXR",
+    "Optimization",
+    "R2"
+  ],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Lorsque vous utilisez Monster Mash, les paramètres d'exportation vers GLB offrent plusieurs options — longueur de l'animation, trames de pré-roll, qualité complète, normales par trame. Que suggérez-vous ?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Ces paramètres affectent directement ce qui se charge bien dans les portails. Après avoir vérifié comment le fichier spirit.glb existant est chargé et rendu, voici la recommandation :\n\n| Paramètre | Valeur | Pourquoi |\n|---|---|---|\n| **Longueur de l'animation** | 200 trames (par défaut) | ~6,5 secondes à 30 images par seconde — suffisant pour une boucle d'attente. Plus de trames = fichier plus volumineux. |\n| **Trames de pré-roll** | 0 (par défaut) | L'inflation de Monster Mash crée une pose de repos neutre, donc il n'y a rien à régler. N'augmentez que si vous voyez un \"saut\" visible lorsque l'animation boucle. |\n| **Qualité complète** | ✅ Activer | Résout la profondeur lors de l'exportation pour prévenir l'auto-intersection (le maillage passant à travers lui-même). Pour un avatar vu sous tous les angles en 3D, les interpénétrations semblent cassées. |\n| **Normales par trame** | ❌ Désactiver | Cela double la taille du fichier. Les normales par trame n'ont d'importance que pour les surfaces déformées complexes sous un éclairage dynamique. Les avatars des portails utilisent `MeshBasicMaterial` (non éclairé — aucun calcul d'éclairage), donc les normales ont essentiellement zéro effet visuel. |\n\nLe principe clé : **ne payez pas pour ce que vous ne pouvez pas voir.** Les matériaux non éclairés rendent les normales irrecevables. La qualité complète prévient les erreurs géométriques laides. Gardez les boucles d'animation courtes."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Est-il nécessaire de les animer dans Monster Mash, ou simplement de les gonfler et de les exporter ? Ou pouvons-nous les animer dans IWER ou IWSDK ?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "**Non — vous n'avez pas besoin d'animer dans Monster Mash.** Et il y a de bonnes raisons de ne pas le faire, selon ce à quoi sert le modèle. Mais l'idée clé : **IWER et IWSDK ne peuvent pas intégrer l'animation dans un modèle.** Ce sont un émulateur de runtime et un SDK WebXR — ils lisent l'animation et vous permettent de la déclencher, mais ils ne l'autorisent pas.\n\nIl y a **trois endroits où l'animation peut se produire**, et ils ne sont pas interchangeables :\n\n1. **Intégrée dans le GLB** — l'animation vit à l'intérieur du fichier sous forme de pistes de clés. Tout `AnimationMixer` Three.js la joue automatiquement. C'est ainsi que fonctionne spirit.glb : Monster Mash a intégré le mouvement de flottement/respiration, et le code appelle simplement `mixer.clipAction(clip).play()`.\n\n2. **Procédurale dans le code** — le GLB est exporté statique, et le mouvement est ajouté en JavaScript au runtime : `mesh.position.y += Math.sin(t) * 0.002`. Le modèle est une géométrie brute ; le code le fait bouger.\n\n3. **IWER/IWSDK** — uniquement en temps réel. IWER émule le casque pour les tests sur bureau. IWSDK fournit les crochets de session WebXR. Aucun ne crée de clés ou n'édite un modèle.\n\nQuand utiliser lequel :\n\n| Type de modèle | Recommandation |\n|---|---|\n| **Avatars** (co-présence) | Animez dans Monster Mash — le mouvement organique, spécifique au personnage, voyage avec le modèle |\n| **Éléments de scène** (chiens, arbres, lampes) | Exportez statique, animez dans le code — placés par douzaines, veulent un mouvement uniforme à partir d'une boucle de code |\n| **Objets héros** (un centrepiece par royaume) | Animez dans Monster Mash — mouvement distinctif, un modèle, joue partout |"
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Ajoutons le dernier GLB au projet. Le seul problème, c'est qu'il fait 16,7 Mo !"
+    },
+    {
+      "title": "ZCode:",
+      "content": "16,7 Mo, c'est 15 fois la taille du spirit.glb existant. Avant de l'ajouter, j'ai inspecté la structure du fichier. Le coupable était immédiatement clair :\n\n```\nanimations: 1\nmeshes: 1, 6 612 sommets, 199 cibles de morphing\nchunk binaire: 16,6 Mo\n```\n\n**199 cibles de morphing × 6 612 sommets = 16,6 Mo de données binaires.**\n\nMonster Mash avait exporté chaque trame d'animation comme une cible de morphing séparée. À 200 trames, cela fait 199 cibles de morphing (une par trame, moins la pose de base). Chaque cible de morphing stocke une *copie complète* de toutes les positions des 6 612 sommets. Donc le fichier contenait le même maillage, dupliqué 199 fois.\n\nC'est le même type de problème que les normales par trame : des données invisibles gonflent le fichier. Sauf pire — les normales sont des attributs par sommet (3 flottants). Les cibles de morphing sont des tableaux de positions complets (3 flottants × chaque sommet × chaque trame).\n\n**La solution :** réexporter depuis Monster Mash sans animation. Le maillage statique — la même géométrie exacte, juste sans 199 copies d'elle-même — serait une fraction de la taille."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Je l'ai exporté sans animation et maintenant il fait 1,4 Mo."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Une **réduction de taille de 92 %**, de 16,7 Mo à 1,4 Mo, en supprimant les cibles de morphing. L'inspection a confirmé qu'il était propre :\n\n```\nanimations: 0\ncibles de morphing: 0\nsommets: 6 612\nbinaire: 1,4 Mo (principalement la texture PNG)\n```\n\nLe modèle — HombreAmarillo (Homme Jaune) — a été téléchargé sur R2 et connecté comme l'élément de scène `figure`. Maintenant, lorsque Mistral extrait une \"figure\" de l'écriture de quelqu'un, le royaume rend cette personne 3D texturée réelle au lieu de l'ancienne figure en bâton de cylindre et de sphère. Le GLB se charge une fois, se clone bon marché par instance, et s'anime avec une rotation douce pilotée par la boucle de code existante.\n\nLa solution de repli est intégrée : le primitif se rend d'abord comme un substitut, puis le GLB se substitue de manière asynchrone lorsqu'il est chargé. Si le GLB échoue un jour, le primitif reste — aucun scène cassée."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Alors, quel est le point à retenir ?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Cinq leçons, durement acquises à partir d'un fichier de 16,7 Mo :\n\n1. **Les cibles de morphing de Monster Mash font exploser la taille du fichier.** Chaque trame d'animation devient une copie complète du maillage. 200 trames ≈ 200× les données des sommets. Exportez statique à moins que l'animation ne soit le point central.\n2. **Trois chemins d'animation, non interchangeables :** intégrés dans le GLB, procéduraux dans le code, ou IWER/IWSDK (temps réel uniquement, jamais auteur).\n3. **Les normales par trame sont un gaspillage pour les matériaux non éclairés.** `MeshBasicMaterial` ne calcule pas l'éclairage. Les normales ne font rien de visible.\n4. **Inspectez avant de télécharger.** Un script Python de 30 secondes lisant l'en-tête GLB a révélé le nombre de cibles de morphing instantanément. La taille est un symptôme ; la structure est la cause.\n5. **Le pipeline R2 fonctionne simplement.** `wrangler r2 object put --remote` → servi via `/api/assets/models/<key>` avec le bon type de contenu, CORS et cache immuable. Ajouter un nouveau modèle nécessite zéro modification de code à l'extrémité de l'actif.\n\nLe fichier de 16,7 Mo a disparu. La version de 1,4 Mo est en ligne. Et l'élément figure — le type de contenu le plus courant que Mistral extrait de l'écriture — vient de recevoir une mise à niveau visuelle massive. Pas mal pour une journée de travail."
+    }
+  ],
+  "translated": true,
+  "translated_from": "en",
+  "translated_to": "fr"
+}

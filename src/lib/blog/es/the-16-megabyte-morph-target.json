@@ -1,0 +1,61 @@
+{
+  "slug": "the-16-megabyte-morph-target",
+  "title": "El objetivo de morfología de 16 megabytes",
+  "date": "2026-07-16",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Una exportación de Monster Mash se hinchó hasta los 16.7 MB. El culpable no era el modelo; eran 199 copias ocultas de él. Una lección práctica sobre la optimización de GLB para WebXR.",
+  "tags": [
+    "GLB",
+    "Three.js",
+    "Monster Mash",
+    "WebXR",
+    "Optimization",
+    "R2"
+  ],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Al usar Monster Mash, las opciones de exportación a GLB ofrecen varias configuraciones — longitud de la animación, fotogramas de pre-roll, calidad completa, normales por fotograma. ¿Qué sugieres?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Estas configuraciones afectan directamente lo que se carga bien en los portales. Después de verificar cómo se carga y renderiza el archivo spirit.glb existente, aquí tienes la recomendación:\n\n| Configuración | Valor | ¿Por qué? |\n|---|---|---|\n| **Longitud de la animación** | 200 fotogramas (por defecto) | ~6.5 segundos a 30fps — suficiente para un bucle de espera. Más fotogramas = archivo más grande. |\n| **Fotogramas de pre-roll** | 0 (por defecto) | La inflación de Monster Mash crea una pose de reposo neutral, así que no hay nada que asentar. Solo aumenta si ves un \"salto\" visible cuando la animación se repite. |\n| **Calidad completa** | ✅ Habilitar | Resuelve la profundidad durante la exportación para evitar la auto-intersección (la malla pasando a través de sí misma). Para un avatar visto desde todos los ángulos en 3D, las interpenetraciones se ven rotas. |\n| **Normales por fotograma** | ❌ Deshabilitar | Esto duplica el tamaño del archivo. Las normales por fotograma solo importan para superficies complejas deformadas bajo iluminación dinámica. Los avatares del portal usan `MeshBasicMaterial` (sin iluminación — sin cálculos de iluminación en absoluto), así que las normales tienen esencialmente cero efecto visual. |\n\nEl principio clave: **no pagues por lo que no puedes ver.** Los materiales sin iluminación hacen que las normales sean irrelevantes. La calidad completa previene errores de geometría feos. Mantén los bucles de animación cortos."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "¿Es necesario animarlos en Monster Mash, o solo inflarlos y exportarlos? ¿O podemos animarlos en IWER o IWSDK?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "**No — no necesitas animar en Monster Mash.** Y hay buenas razones para no hacerlo, dependiendo de lo que sea el modelo. Pero la idea clave: **IWER e IWSDK no pueden hornear la animación en un modelo.** Son un emulador de tiempo de ejecución y un SDK de WebXR — reproducen la animación y te permiten activarla, pero no la crean.\n\nHay **tres lugares donde puede ocurrir la animación**, y no son intercambiables:\n\n1. **Horneada en el GLB** — la animación vive dentro del archivo como pistas de fotogramas clave. Cualquier `AnimationMixer` de Three.js la reproduce automáticamente. Así es como funciona spirit.glb: Monster Mash horneó el movimiento de flotación/respiración, y el código simplemente llama a `mixer.clipAction(clip).play()`.\n\n2. **Procedimental en código** — el GLB se exporta estático, y el movimiento se agrega en JavaScript en tiempo de ejecución: `mesh.position.y += Math.sin(t) * 0.002`. El modelo es geometría tonta; el código lo hace moverse.\n\n3. **IWER/IWSDK** — solo en tiempo de ejecución. IWER emula el casco para pruebas en escritorio. IWSDK proporciona los ganchos de sesión WebXR. Ninguno crea fotogramas clave ni edita un modelo.\n\nCuándo usar cuál:\n\n| Tipo de modelo | Recomendación |\n|---|---|\n| **Avatares** (co-presencia) | Anima en Monster Mash — el movimiento orgánico y específico del personaje viaja con el modelo |\n| **Elementos de escena** (perros, árboles, lámparas) | Exporta estático, anima en código — colocados por docenas, quieres movimiento uniforme de un bucle de código |\n| **Objetos principales** (un centro de atención por reino) | Anima en Monster Mash — movimiento distintivo, un modelo, se reproduce en todas partes |"
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Vamos a agregar el último GLB al proyecto. Solo que — ¡es de 16.7 MB!"
+    },
+    {
+      "title": "ZCode:",
+      "content": "16.7 MB es 15 veces el tamaño del spirit.glb existente. Antes de agregarlo, inspeccioné la estructura del archivo. El culpable fue inmediatamente claro:\n\n```\nanimations: 1\nmeshes: 1, 6,612 vértices, 199 objetivos de deformación\nbinary chunk: 16.6 MB\n```\n\n**199 objetivos de deformación × 6,612 vértices = 16.6 MB de datos binarios.**\n\nMonster Mash había exportado cada fotograma de animación como un objetivo de deformación separado. Con 200 fotogramas, eso son 199 objetivos de deformación (uno por fotograma, menos la pose base). Cada objetivo de deformación almacena una *copia completa* de todas las posiciones de los 6,612 vértices. Así que el archivo contenía la misma malla, duplicada 199 veces.\n\nEste es el mismo tipo de problema que las normales por fotograma: datos invisibles inflan el archivo. Excepto que es peor — las normales son atributos por vértice (3 flotes). Los objetivos de deformación son matrices de posición completas (3 flotes × cada vértice × cada fotograma).\n\n**La solución:** vuelve a exportar desde Monster Mash sin animación. La malla estática — la misma geometría exacta, solo sin 199 copias de ella — sería una fracción del tamaño."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Lo exporté sin animación y ahora es de 1.4 MB."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Una **reducción de tamaño del 92%**, de 16.7 MB a 1.4 MB, eliminando los objetivos de deformación. La inspección confirmó que estaba limpio:\n\n```\nanimations: 0\nmorph targets: 0\nvertices: 6,612\nbinary: 1.4 MB (mayormente la textura PNG)\n```\n\nEl modelo — HombreAmarillo (Hombre Amarillo) — fue subido a R2 y conectado como el elemento de escena `figure`. Ahora, cuando Mistral extrae una \"figura\" del escrito de alguien, el reino renderiza esta persona texturizada en 3D real en lugar de la antigua figura de cilindro y esfera. El GLB se carga una vez, se clona barato por instancia y se anima con una rotación suave impulsada por el bucle de código existente.\n\nLa solución de respaldo está integrada: el primitivo se renderiza primero como un marcador de posición, luego el GLB se intercambia de manera asincrónica cuando se carga. Si el GLB alguna vez falla, el primitivo se queda — no hay escena rota."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Entonces, ¿cuál es la conclusión?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Cinco lecciones, duramente ganadas de un archivo de 16.7 MB:\n\n1. **Los objetivos de deformación de Monster Mash hacen explotar el tamaño del archivo.** Cada fotograma de animación se convierte en una copia completa de la malla. 200 fotogramas ≈ 200× los datos de vértices. Exporta estático a menos que la animación sea el punto.\n2. **Tres caminos de animación, no intercambiables:** horneados en GLB, procedimentales en código, o IWER/IWSDK (solo en tiempo de ejecución, nunca autoriza).\n3. **Las normales por fotograma son un desperdicio para materiales sin iluminación.** `MeshBasicMaterial` no calcula la iluminación. Las normales no hacen nada visible.\n4. **Inspecciona antes de subir.** Un script de Python de 30 segundos leyendo el encabezado del GLB reveló la cantidad de objetivos de deformación instantáneamente. El tamaño es un síntoma; la estructura es la causa.\n5. **El pipeline de R2 simplemente funciona.** `wrangler r2 object put --remote` → servido a través de `/api/assets/models/<key>` con el tipo de contenido correcto, CORS e inmutable cache. Agregar un nuevo modelo no requiere cambios de código en el punto final de activos.\n\nEl archivo de 16.7 MB se ha ido. La versión de 1.4 MB está en vivo. Y el elemento de figura — el tipo de contenido más común que Mistral extrae de la escritura — acaba de recibir una gran mejora visual. No está nada mal para un día de trabajo."
+    }
+  ],
+  "translated": true,
+  "translated_from": "en",
+  "translated_to": "es"
+}
