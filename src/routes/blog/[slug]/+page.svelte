@@ -64,8 +64,6 @@
             : null;
         const len = plainLength(section.content || '');
         const isLong = isSpeaker && len > PREVIEW_CHARS;
-        // A turn may carry its own `lang` field when the speaker
-        // switched languages (e.g. a Spanish reply in an English thread).
         const turnLang = section.lang || null;
         return {
             ...section,
@@ -74,16 +72,28 @@
             _isSpeaker: isSpeaker,
             _speaker: speakerName,
             _isLong: isLong,
-            _expanded: false,
             _turnLang: turnLang
         };
     }
 
-    // Pre-render sections once per post.
+    // Pre-render sections once per post. This is $derived so it
+    // recomputes when the post data changes (navigation). It does
+    // NOT hold expansion state — that lives in expandedTurns below.
     let renderedSections = $derived.by(() => {
         const sections = data.post?.sections;
         if (!sections || !sections.length) return [];
         return sections.map((s, i) => renderSection(s, i));
+    });
+
+    // Per-turn expansion state, keyed by section index. Lives in
+    // $state so Svelte tracks mutations and re-renders on toggle.
+    // Reset when the post changes.
+    let expandedTurns = $state({});
+
+    // Reset expansion state when navigating to a different post.
+    $effect(() => {
+        data.post?.slug;
+        expandedTurns = {};
     });
 
     // Global expand-all override: null = each turn uses its own state,
@@ -95,12 +105,12 @@
 
     function isExpanded(section) {
         if (forceExpand !== null) return forceExpand;
-        return section._expanded || !section._isLong;
+        if (!section._isLong) return true;
+        return !!expandedTurns[section._idx];
     }
 
     function toggleTurn(section) {
-        // Only meaningful in per-turn mode (forceExpand === null)
-        section._expanded = !section._expanded;
+        expandedTurns[section._idx] = !expandedTurns[section._idx];
     }
 
     // Fallback htmlContent (legacy posts without sections) — sanitize on client.
