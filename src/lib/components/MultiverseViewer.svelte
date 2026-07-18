@@ -140,7 +140,7 @@
 
 	.episode-badge {
 		display: inline-block;
-		background: #C94C35;
+		background: #A53D28;
 		color: #fff;
 		padding: 0.25rem 0.75rem;
 		border-radius: 4px;
@@ -168,8 +168,8 @@
 	}
 
 	.nav-btn:hover, .play-btn:hover {
-		background: #C94C35;
-		border-color: #C94C35;
+		background: #A53D28;
+		border-color: #A53D28;
 	}
 
 	.scene-thumbnails {
@@ -193,7 +193,7 @@
 	}
 
 	.thumbnail.active {
-		border-color: #C94C35;
+		border-color: #A53D28;
 	}
 
 	.thumbnail:hover {

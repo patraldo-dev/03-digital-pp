@@ -105,7 +105,7 @@
     :global(:root) {
         --color-bg: #F9F6F0;
         --color-text: #2D3A36;
-        --color-brick: #C94C35;
+        --color-brick: #A53D28;
         --color-sage: #5a6e65;
         --color-white: #FFFFFF;
     }

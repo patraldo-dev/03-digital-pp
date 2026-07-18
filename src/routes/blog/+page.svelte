@@ -160,7 +160,7 @@
     :root {
         --color-bg: #F9F6F0;        /* Creamy White */
         --color-text: #2D3A36;      /* Deep Dark Green/Slate */
-        --color-brick: #C94C35;     /* Vibrant Brick Red */
+        --color-brick: #A53D28;     /* Brick Red (WCAG AA compliant) */
         --color-sage: #8DA399;      /* Muted Sage Green */
         --color-white: #FFFFFF;
     }
@@ -433,7 +433,7 @@
     }
 
     .newsletter-box {
-        background: var(--color-brick);
+        background: var(--color-text);
         border-radius: 40px;
         padding: 4.5rem;
         position: relative;
@@ -443,14 +443,14 @@
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 2rem;
-        box-shadow: 0 25px 50px -12px rgba(201, 76, 53, 0.4);
+        box-shadow: 0 25px 50px -12px rgba(45, 58, 54, 0.3);
     }
 
     .newsletter-content {
         max-width: 600px;
         position: relative;
         z-index: 2;
-        color: var(--color-text);
+        color: var(--color-white);
     }
 
     .newsletter-content h2 {
@@ -461,7 +461,7 @@
     }
 
     .newsletter-content p {
-        color: var(--color-text);
+        color: rgba(255, 255, 255, 0.85);
         font-size: 1.2rem;
         margin-bottom: 0;
         line-height: 1.6;
