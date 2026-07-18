@@ -1,0 +1,51 @@
+{
+  "slug": "the-curated-glb-library",
+  "title": "The Curated GLB Library",
+  "date": "2026-07-18",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "The added value of this site is a hand-picked, curated library of GLBs and sound effects. That's a feature, not a bug. It could be a selling point to upgrade to the work of a particular illustrator or composer.",
+  "tags": ["GLB", "Asset Library", "D1", "R2", "Monster Mash", "Business Model"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "I'm starting to realize that the added value of this site, if the goal is to produce on-the-fly worlds that materialize based on keywords in one's writing, that it needs to draw from a hand-picked, curated library of GLBs and sound effects. That's actually a feature and not a bug. It could be a selling point to upgrade to the work of a particular illustrator, right, or a particular composer, right? So, how do we go about organizing the library?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "That's a genuinely good business model insight — the curated library IS the product. Free tier gets the base library; premium tiers get an illustrator's pack, a composer's sound pack, etc. The \"popcorn\" generation uses what's in the library you have access to.\n\nWe built a D1 `asset_library` table that stores metadata for every 3D model — kind, label, match labels (synonyms), file path in R2, pack, artist, tier, scale, collider info, tags. When Mistral generates `{kind: \"quadruped\", label: \"dog\"}`, the scene element system queries the library, finds the matching GLB, and loads it from R2 instead of rendering a box+sphere primitive.\n\nThe table supports the pack/tier model:\n- `pack: 'core'` — the free base library\n- `pack: 'antoine'` — Antoine Patraldo's illustrated characters (premium)\n- `pack: 'guest-artist'` — a guest artist's collection (premium)\n\nEach pack can have its own visual style, so materialized worlds look coherent within a pack."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Should the name include a category? What would a database of GLBs look like?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "The database schema:\n\n```sql\nCREATE TABLE asset_library (\n  id TEXT PRIMARY KEY,         -- 'quadruped-dog-01'\n  kind TEXT NOT NULL,          -- matches scene_elements.kind\n  label TEXT NOT NULL,         -- 'dog'\n  match_labels TEXT,           -- JSON: [\"dog\",\"wolf\",\"perro\",\"puppy\"]\n  file_path TEXT NOT NULL,     -- R2 key: 'models/scene-elements/dog.glb'\n  pack TEXT DEFAULT 'core',    -- collection: core|antoine|guest\n  artist TEXT,                 -- 'Antoine Patraldo'\n  tier TEXT DEFAULT 'free',    -- free|premium\n  scale REAL DEFAULT 1.0,\n  collider_type TEXT,          -- box|sphere|cylinder|capsule\n  collider_size TEXT,          -- JSON: [0.5, 0.4, 0.8]\n  status TEXT DEFAULT 'active'\n);\n```\n\nThe matching query when Mistral generates an element:\n```sql\nSELECT * FROM asset_library\nWHERE kind = 'quadruped'\n  AND status = 'active'\n  AND (label = 'dog' OR match_labels LIKE '%dog%')\n  AND tier = 'free'\nORDER BY RANDOM()\n```\n\nIf it finds a match → loads the GLB. If none → falls back to the procedural primitive."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "If we're contemplating a library of GLBs built on Antoine's artwork, and potentially including GLBs from other artists — well, with a robust library we would need a D1 database, right?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Right. A JSON file works for 5 models. A robust library of GLBs from multiple artists, potentially hundreds of models, with metadata, search, packs, and tiers — that's a database.\n\nWe also built an admin interface at `/admin/assets` — a web form to add, edit, and retire models without writing SQL. Behind Cloudflare Access for security. The workflow is now:\n\n1. Create a model in Monster Mash (inflate from a drawing, export static GLB)\n2. Upload to R2 via wrangler\n3. Add a row via the admin form\n4. Next materialize that includes that element → uses your model\n\nThe Antoine Pack workflow is especially compelling: take an Antoine painting, load it as a Monster Mash template for tracing, inflate into a 3D figure. The exported GLB carries the traced shape. The original painting ALSO stays as a mural in the scene. The visitor sees the 2D artwork on the wall AND the 3D figure derived from it standing in the space — the figure is a dimensional echo of the painting."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "The template background image in Monster Mash is strictly for positioning and tracing reference. On export, it extracts only the inflated mesh and painted texture strokes. The background is discarded."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Confirmed — and that's exactly how it should work. The GLB is the 3D interpretation; the original artwork is loaded separately as a mural plane (which our system already does). They coexist in the scene. The painting doesn't need to be embedded in the GLB.\n\nThere are also other Chromebook-friendly tools beyond Monster Mash:\n- **Blockbench** — free, open-source, browser-based low-poly modeler with GLB export + texture painting. Better for structured objects (buildings, vehicles) while Monster Mash excels at organic shapes.\n- **Three.js Editor** — official web editor for assembling from primitives + PBR materials\n- **SculptGL** — browser-based sculpting for detailed organic models\n\nAnd the future automated path: Cloudflare Worker generates concept art via Flux → sends to Tripo3D → stores GLB in R2 → adds a row automatically. ~$0.20-0.40 per model, 30-60 seconds. The curated manual library comes first; the automated pipeline is the popcorn layer on top."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So what's the takeaway?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "The curated library is the product. The D1 table + R2 storage + admin UI is the infrastructure. Monster Mash + Blockbench are the creation tools. Antoine's artwork (and future guest artists) are the content. The scene element system is the consumer — it reads the writing, queries the library, and places real models instead of primitives.\n\nThree tiers:\n1. **Free** — the core library (Monster Mash models we create)\n2. **Premium** — an artist's pack (Antoine's illustrated worlds, a guest composer's sounds)\n3. **Automated** (future) — AI-generated models on the fly via the Flux → Tripo3D pipeline\n\nThe library makes each materialized world feel intentional rather than random. That's the feature."
+    }
+  ]
+}

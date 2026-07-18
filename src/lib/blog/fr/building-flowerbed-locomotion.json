@@ -1,0 +1,52 @@
+{
+  "slug": "building-flowerbed-locomotion-in-threejs",
+  "title": "Construire la locomotion de parterre de fleurs en Three.js",
+  "date": "2026-07-18",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Nous avons étudié le code source du projet Flowerbed de Meta et avons répliqué sa suite complète de locomotion — physique au sol, téléportation parabolique, rotation instantanée, vignette de confort et objets saisissables — dans notre système portail Three.js + ECS.",
+  "tags": [
+    "WebXR",
+    "Three.js",
+    "Locomotion",
+    "Teleportation",
+    "Project Flowerbed"
+  ],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Je pense que nous avons des idées très différentes de ce que sont ou devraient être les royaumes. Détection de collision ? Absolument. Prenable — ce n'est pas de la locomotion mais imaginons que ce projet Flowerbed encapsule beaucoup de ce que nous essayons de faire. C'est un monde de scène. Nous espérons produire quelque chose de similaire, pas seulement une fois mais plusieurs fois en matérialisant des mondes physiques similaires avec ces contraintes."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Tu as raison, et j'avais une vision erronée. Je pensais aux royaumes comme des espaces flottants abstraits — \"vol libre onirique à travers des vides atmosphériques.\" Mais ta note de mémoire le dit clairement : *scènes dans des mondes que nous pouvons explorer qui révèlent des objets... évoluant vers un prototype de jeu.* **Explorer** signifie mouvement au sol. **Révéler des objets** signifie que vous vous approchez des choses. **Jeu** signifie contraintes — sols, collisions, choses que vous pouvez toucher.\n\nDonc, Flowerbed n'est pas seulement un benchmark de qualité visuelle. C'est un **plan fonctionnel**. Nous l'avons étudié via des investigations parallèles du code source complet.\n\n**La suite de locomotion de Flowerbed (5 systèmes) :**\n- **TeleportationSystem** — rayon courbé parabolique (gravité -9.8, v0=10, 10 segments), anneau de torus d'atterrissage, 3 vérifications de collision\n- **JoystickMovementSystem** — manche gauche → xz relatif à la caméra, 3.0 m/s, s'accumule dans expectedMovement\n- **SnapTurnSystem** — zones du manche droit 30°-150°, rotations de 45° en quaternion, déclenchées par les bords\n- **LocomotionVignetteSystem** — tube à gradient (0.2r, BackSide, texture de toile), modulé par la déviation du manche\n- **PlayerPhysicsSystem** — capsule (r=0.5), gravité -10, 2 sous-étapes, capsuleCast contre OBSTACLE"
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Nous avons des royaumes avec des sols. Il peut y avoir un royaume de l'espace/cosmos mais la majorité des mondes devraient accueillir une locomotion qui inclut la téléportation. Je n'arrive toujours pas à croire que nous n'aurions pas pu avoir des royaumes où l'on pourrait nager, faire du spacewalk ou voler. Alors pensons au Starfield et au cosmos comme une exception à la règle."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Correction importante notée. Deux modes de locomotion, déterminés par le type de royaume :\n\n- **Royaumes au sol** (forêt, ville, théâtre, mémoire, célébration) — sol, physique de capsule, téléportation, collision\n- **Royaumes de vol libre** (océan = nage, espace/rêve = vol, cosmos = page d'accueil du menu) — le modèle de vol libre actuel est *correct* pour ceux-ci\n\nLe royaume du cosmos est une **page de menu/accueil**, pas un endroit à explorer. Le rig du joueur doit être **bimodal** : démarrer en locomotion au sol pour la plupart des royaumes, vol libre pour les types d'exception.\n\nNous avons construit `grounded-player.js` en utilisant `three-mesh-bvh` (la même bibliothèque de collision que Flowerbed utilise) :\n- Collisionneur de capsule (rayon 0.4, hauteur 1.6)\n- Gravité -10 m/s², 2 sous-étapes de physique par image\n- Collision précise au triangle via BVH\n- Détection du sol + annulation de la vitesse\n- Poussée de la capsule contre les maillages (glisse sur les surfaces)"
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Passons à l'enregistrement des obstacles, puis à la téléportation."
+    },
+    {
+      "title": "ZCode:",
+      "content": "**Enregistrement des obstacles** — le constructeur de monde scanne la scène après la construction et enregistre les plans de sol (surfaces marchables) ainsi que les obstacles (maillages solides de 0.2m à 6m de haut). Ignore les surcouches transparentes, les particules et les décorations en hauteur. La capsule du joueur entre maintenant en collision avec le sol ET les obstacles.\n\n**Téléportation** — construite comme `teleport-system.js`, la chose que tu as imaginée dès le début :\n- **Rayon parabolique** lancé depuis ton point de vue avec gravité (-9.8), décrit un arc sur 12 segments\n- **Anneau d'atterrissage** — tore bleu où le rayon touche le sol marchable ; rouge foncé s'il est invalide\n- **Vérifications de collision** — ne se pose que sur des surfaces orientées vers le haut ; vérifie la clarté\n- **Entrée de bureau** : maintenir la barre d'espace pour viser, relâcher pour téléporter\n- **Entrée XR** : pousser le pouce droit vers l'avant → viser, relâcher → téléporter ; gauche/droite → rotation de 45°\n\n**Vignette de confort** — un tube à gradient noir-transparent attaché à la caméra, modulé par la vitesse de mouvement. Seulement en XR (il masque la vue de bureau). Pulse lors de la rotation et de la téléportation.\n\n**Objets prenables** — les éléments de la scène (figures, quadrupèdes, structures) ont maintenant `userData.grabbable`. Surlignage au survol avec augmentation de l'opacité ; saisir détache et suit le contrôleur/souris ; relâcher dépose à la position actuelle."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "La télétransportation de locomotion se montre. Lorsque j'appuie sur la touche espace, une fine ligne s'arque. Peut-être que je ne sais tout simplement pas encore comment l'utiliser."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Et c'est un endroit honnête où être — la suite de locomotion est construite et déployée, mais l'UX nécessite un affinement. Le rayon de téléportation fonctionne ; le système de saisie fonctionne ; la physique au sol fonctionne. Mais tout cela n'a pas d'importance si les scènes elles-mêmes ne semblent pas convaincantes. La comparaison avec Flowerbed ne portait pas seulement sur la locomotion — il s'agissait de la qualité visuelle globale. Et c'est l'écart des actifs."
+    }
+  ],
+  "translated": true,
+  "translated_from": "en",
+  "translated_to": "fr"
+}

@@ -1,0 +1,61 @@
+{
+  "slug": "the-curated-glb-library",
+  "title": "La bibliothèque GLB Curatée",
+  "date": "2026-07-18",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "La valeur ajoutée de ce site est une bibliothèque soigneusement sélectionnée et curatée de GLBs et d'effets sonores. C'est une fonctionnalité, pas un bug. Cela pourrait être un argument de vente pour passer à l'œuvre d'un illustrateur ou d'un compositeur particulier.",
+  "tags": [
+    "GLB",
+    "Asset Library",
+    "D1",
+    "R2",
+    "Monster Mash",
+    "Business Model"
+  ],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Je commence à réaliser que la valeur ajoutée de ce site, si l'objectif est de produire des mondes en temps réel qui se matérialisent à partir de mots-clés dans son écriture, c'est qu'il doit puiser dans une bibliothèque sélectionnée et curatée de GLBs et d'effets sonores. C'est en fait une fonctionnalité et non un bug. Cela pourrait être un argument de vente pour passer à l'œuvre d'un illustrateur particulier, non ? Ou à celle d'un compositeur particulier ? Donc, comment allons-nous organiser la bibliothèque ?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "C'est vraiment une bonne idée commerciale — la bibliothèque curatée EST le produit. Le niveau gratuit obtient la bibliothèque de base ; les niveaux premium obtiennent un pack d'illustrations, un pack sonore d'un compositeur, etc. La génération \"popcorn\" utilise ce qui est dans la bibliothèque à laquelle vous avez accès.\n\nNous avons construit une table `asset_library` D1 qui stocke les métadonnées pour chaque modèle 3D — type, étiquette, étiquettes correspondantes (synonymes), chemin du fichier dans R2, pack, artiste, niveau, échelle, informations sur le collider, balises. Lorsque Mistral génère `{kind: \"quadruped\", label: \"dog\"}`, le système d'éléments de scène interroge la bibliothèque, trouve le GLB correspondant et le charge depuis R2 au lieu de rendre un primitif boîte+sphère.\n\nLa table prend en charge le modèle pack/niveau :\n- `pack: 'core'` — la bibliothèque de base gratuite\n- `pack: 'antoine'` — les personnages illustrés par Antoine Patraldo (premium)\n- `pack: 'guest-artist'` — une collection d'un artiste invité (premium)\n\nChaque pack peut avoir son propre style visuel, donc les mondes matérialisés semblent cohérents au sein d'un pack."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Le nom doit-il inclure une catégorie ? À quoi ressemblerait une base de données de GLBs ?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Le schéma de la base de données :\n\n```sql\nCREATE TABLE asset_library (\n  id TEXT PRIMARY KEY,         -- 'quadruped-dog-01'\n  kind TEXT NOT NULL,          -- corresponds to scene_elements.kind\n  label TEXT NOT NULL,         -- 'dog'\n  match_labels TEXT,           -- JSON: [\"dog\",\"wolf\",\"perro\",\"puppy\"]\n  file_path TEXT NOT NULL,     -- R2 key: 'models/scene-elements/dog.glb'\n  pack TEXT DEFAULT 'core',    -- collection: core|antoine|guest\n  artist TEXT,                 -- 'Antoine Patraldo'\n  tier TEXT DEFAULT 'free',    -- free|premium\n  scale REAL DEFAULT 1.0,\n  collider_type TEXT,          -- box|sphere|cylinder|capsule\n  collider_size TEXT,          -- JSON: [0.5, 0.4, 0.8]\n  status TEXT DEFAULT 'active'\n);\n```\n\nLa requête de correspondance lorsque Mistral génère un élément :\n```sql\nSELECT * FROM asset_library\nWHERE kind = 'quadruped'\n  AND status = 'active'\n  AND (label = 'dog' OR match_labels LIKE '%dog%')\n  AND tier = 'free'\nORDER BY RANDOM()\n```\n\nSi elle trouve une correspondance → charge le GLB. Sinon → revient au primitif procédural."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Si nous envisageons une bibliothèque de GLBs construite à partir des œuvres d'Antoine, et potentiellement incluant des GLBs d'autres artistes — eh bien, avec une bibliothèque robuste, nous aurions besoin d'une base de données D1, non ?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Exactement. Un fichier JSON fonctionne pour 5 modèles. Une bibliothèque robuste de GLBs provenant de plusieurs artistes, potentiellement des centaines de modèles, avec des métadonnées, des recherches, des packs et des niveaux — c'est une base de données.\n\nNous avons également construit une interface d'administration à `/admin/assets` — un formulaire web pour ajouter, modifier et retirer des modèles sans écrire de SQL. Derrière Cloudflare Access pour la sécurité. Le flux de travail est maintenant :\n\n1. Créer un modèle dans Monster Mash (gonfler à partir d'un dessin, exporter un GLB statique)\n2. Télécharger sur R2 via wrangler\n3. Ajouter une ligne via le formulaire d'administration\n4. La prochaine matérialisation incluant cet élément → utilise votre modèle\n\nLe flux de travail du Pack Antoine est particulièrement convaincant : prendre une peinture d'Antoine, la charger comme modèle de Monster Mash pour le traçage, gonfler en une figure 3D. Le GLB exporté porte la forme tracée. La peinture originale RESTE ÉGALEMENT comme un mural dans la scène. Le visiteur voit l'œuvre d'art 2D sur le mur ET la figure 3D dérivée de celle-ci debout dans l'espace — la figure est un écho dimensionnel de la peinture."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "L'image de fond du modèle dans Monster Mash sert strictement de référence de positionnement et de traçage. À l'exportation, elle extrait uniquement le maillage gonflé et les coups de pinceau de texture peints. Le fond est abandonné."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Confirmé — et c'est exactement comme cela devrait fonctionner. Le GLB est l'interprétation 3D ; l'œuvre d'art originale est chargée séparément comme un plan mural (ce que notre système fait déjà). Ils coexistent dans la scène. La peinture n'a pas besoin d'être intégrée dans le GLB.\n\nIl existe également d'autres outils compatibles avec Chromebook au-delà de Monster Mash :\n- **Blockbench** — gratuit, open-source, modélisateur low-poly basé sur le navigateur avec exportation GLB + peinture de texture. Meilleur pour les objets structurés (bâtiments, véhicules) tandis que Monster Mash excelle dans les formes organiques.\n- **Three.js Editor** — éditeur web officiel pour assembler à partir de primitives + matériaux PBR\n- **SculptGL** — sculpture basée sur le navigateur pour des modèles organiques détaillés\n\nEt le chemin automatisé futur : Cloudflare Worker génère des œuvres conceptuelles via Flux → envoie à Tripo3D → stocke le GLB dans R2 → ajoute une ligne automatiquement. ~$0.20-0.40 par modèle, 30-60 secondes. La bibliothèque manuelle curatée vient en premier ; le pipeline automatisé est la couche popcorn au-dessus."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Quelle est la conclusion ?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "La bibliothèque curatée est le produit. La table D1 + le stockage R2 + l'interface utilisateur d'administration est l'infrastructure. Monster Mash + Blockbench sont les outils de création. Les œuvres d'Antoine (et les futurs artistes invités) sont le contenu. Le système d'éléments de scène est le consommateur — il lit l'écriture, interroge la bibliothèque et place des modèles réels au lieu de primitifs.\n\nTrois niveaux :\n1. **Gratuit** — la bibliothèque de base (modèles Monster Mash que nous créons)\n2. **Premium** — un pack d'artiste (les mondes illustrés d'Antoine, les sons d'un compositeur invité)\n3. **Automatisé** (futur) — modèles générés par IA en temps réel via le pipeline Flux → Tripo3D\n\nLa bibliothèque fait en sorte que chaque monde matérialisé semble intentionnel plutôt que aléatoire. C'est la fonctionnalité."
+    }
+  ],
+  "translated": true,
+  "translated_from": "en",
+  "translated_to": "fr"
+}
