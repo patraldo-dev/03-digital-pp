@@ -1,0 +1,51 @@
+{
+  "slug": "pnpm-11-cloudflare-build-scripts",
+  "title": "pnpm 11 vs Cloudflare Workers: The Silent Build-Script Trap",
+  "date": "2026-07-20",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Our first push to Cloudflare Workers failed with ERR_PNPM_IGNORED_BUILDS. pnpm 11 changed where native build-script approvals live — twice — and the failure mode is completely different locally vs in CI. Here's the format pnpm actually wants, and why the docs point everywhere except the right place.",
+  "tags": ["pnpm", "Cloudflare Workers", "CI/CD", "Supply Chain", "Debugging"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "I pushed the new monorepo to Cloudflare. The build failed. Something about ignored build scripts."
+    },
+    {
+      "title": "ZCode:",
+      "content": "The log said:\n\n```\n[ERR_PNPM_IGNORED_BUILDS] Ignored build scripts: esbuild@0.24.2, esbuild@0.28.1, sharp@0.33.5, sharp@0.34.5, workerd@1.20260714.1\nRun \"pnpm approve-builds\" to pick which dependencies should be allowed to run scripts.\nFailed: error occurred while installing tools or dependencies\n```\n\nHere's what made this tricky: **locally, that exact message is a warning.** pnpm prints it and carries on. On Cloudflare, it's a hard failure that stops the build dead. Same tool, same lockfile, completely different consequence."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Why does pnpm care at all? esbuild and sharp always ran their postinstall scripts before."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Supply-chain hardening. pnpm 10 introduced a default-deny posture for native postinstall scripts — the same mechanism that the 2024 npm ecosystem saw abused in several supply-chain attacks. Native build scripts can run arbitrary code at install time, so pnpm now blocks them unless you explicitly say \"yes I trust this package.\"\n\nThat's reasonable. The problem is **where you say yes changed between versions**, and the docs lagged. I chased this through three wrong answers before finding the right one."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Three?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Three.\n\n**Attempt 1 — `.npmrc`:**\n```\nonlyBuiltDependencies[]=esbuild\nonlyBuiltDependencies[]=sharp\nonlyBuiltDependencies[]=workerd\n```\nThat's the pnpm 9.x format. pnpm 11 silently ignores it. I knew pnpm had changed things; I didn't know how much.\n\n**Attempt 2 — `pnpm-workspace.yaml` (YAML list):**\n```yaml\nonlyBuiltDependencies:\n  - esbuild\n  - sharp\n  - workerd\n```\nCleaner syntax, looks right. `pnpm config get onlyBuiltDependencies` returned the right values. But the install still failed. The config was being read but apparently not applied.\n\n**Attempt 3 — the actual right answer.** I noticed an `allowBuilds:` block already sitting in the file:\n```yaml\nallowBuilds:\n  esbuild: set this to true or false\n  sharp: set this to true or false\n  workerd: set this to true or false\n```\nThose placeholder strings — `\"set this to true or false\"` — were literal text that an interactive `pnpm approve-builds` TUI had inserted at some earlier point. The keys were right; the values were nonsense. pnpm's own command had written a stub and never come back to fill it in.\n\nThe fix:\n```yaml\nallowBuilds:\n  esbuild: true\n  sharp: true\n  workerd: true\n```\nBoolean values. That's the format pnpm 11's `approve-builds` actually writes. Once I cleaned up the placeholders AND used actual booleans, the install ran all three native postinstall scripts cleanly and Cloudflare's build went through."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So the lesson is — read the docs?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Read the *current* docs, and don't trust interactive tools that write template strings. The pnpm docs at `pnpm.io/cli/approve-builds` do actually say `allowBuilds` map with boolean values, but three things worked against me: the `.npmrc` syntax from older tutorials is everywhere on Google, the `onlyBuiltDependencies` YAML shape is *almost* right (and reads back as if it's working), and the broken TUI stub looked plausibly like valid config at a glance.\n\nThe deeper lesson is a CI-specific one: **treat local install warnings as build failures waiting to happen.** pnpm warned locally for weeks before this push; nothing broke because the warning is non-fatal. The instant the same install ran in an environment that treats warnings as errors, it fell over. If your CI is stricter than your laptop, you have a latent build break."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Is this going to bite us again on the next project?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Only if you forget to commit the `pnpm-workspace.yaml` `allowBuilds:` block. The approval travels with the repo — that's the whole point of putting it in a file instead of a global config. New clones, new CI environments, new Cloudflare projects all inherit it from git. So once it's right in one place, it's right everywhere.\n\nThe thing to remember when you scaffold the next pnpm 11 project: before your first push, run `pnpm approve-builds` interactively once, save the file, *check that the values are actual booleans and not placeholder strings*, commit it. Then you never think about it again for that project."
+    }
+  ]
+}

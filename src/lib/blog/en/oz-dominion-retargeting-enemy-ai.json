@@ -1,0 +1,59 @@
+{
+  "slug": "oz-dominion-retargeting-enemy-ai",
+  "title": "One Variable, A Different Game: Retargeting the Enemy AI in Oz: Dominion",
+  "date": "2026-07-20",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Our flying monkeys were attacking the player. Patrouch reframed Dorothy as a defender, not a victim — and a small change to what the monkeys *target* completely rewired the game's feel. Plus: a rare rogue variant that breaks the new loop on purpose.",
+  "tags": ["Game Design", "WebXR", "AI", "ECS", "Oz Dominion"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "I've been thinking about what Oz actually is. If I'm going to be Dorothy, she's a bad-ass western flying monkey wrangler in this edition of Oz: Dominion. Her first task in the first scene is to save the munchkins from the flying monkeys."
+    },
+    {
+      "title": "ZCode:",
+      "content": "That reframes everything. The monkeys had been attacking the player — chasing Dorothy, hitting her on proximity, costing her points. Standard VR enemy loop. But you've just described a game where Dorothy is the *defender*, not the target. The monkeys shouldn't care about her at all. They want the munchkins.\n\nWhat's striking is how small the code change is, mechanically. The enemy AI was a chase-the-player system. To turn it into chase-the-munchkin-and-kidnap-one, I needed to: give each monkey a target munchkin, swap what it chases on XZ, swoop toward munchkin-height instead of head-height, and on proximity trigger a kidnap instead of a player hit. Same ECS, same movement math, same WebSocket sync — just a different target."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "What happens when a monkey reaches a munchkin?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "We talked through three options. **Kidnap** — the monkey grabs the munchkin and flies off with it, player loses the chance to collect. **Scare** — the munchkin scurries behind a different flower, just relocated. **Kill** — the munchkin destroyed in a particle burst.\n\nYou picked kidnap, and I think that's the right call for a few reasons. It's the clearest fit for the 'wrangler' identity — your job is literally to stop the kidnap. It creates a visible failure state: you see the monkey laboriously hauling a munchkin skyward, and you know you messed up. And it has comedy potential, which matters for the Oz tone.\n\nMechanically, the kidnap is: attach the munchkin's group to the monkey (Three.js `obj.attach()` preserves world transform), tuck it under the body, switch the monkey to a 'fleeing' state where it climbs + drifts away + despawns at altitude. The munchkin is gone for good — no score for anyone."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "And Dorothy just shoots the monkeys before they get there?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Exactly. Click-to-shoot was already implemented for the old player-attack loop; it now becomes the *primary* verb of the game instead of a defensive one. Your job: spot the dive-bombing monkey, assess which munchkin it's after, decide if you can intercept in time, shoot. That's the whole moment-to-moment loop.\n\nThe thing I didn't anticipate was how this exposes a *new* design problem. If monkeys only hunt munchkins, Dorothy can stand still and just shoot. She's playing a turret. The game loses the movement tension that makes VR feel like VR."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Maybe there is one flying monkey out of the 50 that's a different color and attacks the player?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "That's the right instinct — you reached for the classic rogue-enemy pattern. A rare special mob that breaks the established rule. It's why Halo has stealth Elites mixed in with grunts, why Spelunky has the shopkeeper who turns hostile, why every defender game eventually adds a 'this one's coming for YOU' variant.\n\nWe made it gold. Gold body, green eyes, slightly larger, metallic sheen. Faster chase. It dive-bombs Dorothy directly, reviving the player-hit mechanic — but only for this one mob. Worth 15 points instead of 5. Max one at a time, on its own 45-second timer, independent of the regular munchkin-stealing waves.\n\nThe design payoff is immediate: when a gold one spawns, you have to make a priority call. *Do I keep defending this munchkin, or do I switch to dodge the gold one before it reaches me?* That tension is what was missing from pure defense."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Nothing can resemble the movie characters, by the way. Public domain limitations."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Important constraint, and worth being precise about. L. Frank Baum's 1900 book *The Wonderful Wizard of Oz* is in the public domain. The characters, places, and creatures as described in the book are usable. What's NOT usable: the 1939 MGM movie designs. The fez-winginged ape with the violin-F-hole wings, the specific costume designs, the ruby slippers (in the book they're silver) — those are the film's copyright.\n\nOur abstract sphere-and-cone monkey proxy is safely generic. 'Gold = boss' is universal game vocabulary — Dark Souls, Zelda, and Mario all use it, none of them are movie references. We're clean. I added this to memory as a hard constraint so I don't accidentally suggest movie likenesses in future sessions."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "The whole loop feels different now."
+    },
+    {
+      "title": "ZCode:",
+      "content": "It does, and that's the design lesson I'm taking from this. **The most leveraged change you can make to a game's feel is often not what the player does, but what the enemy targets.** Same verbs, same controls, same engine — but swap 'enemy chases player' for 'enemy chases something the player cares about' and the player's whole relationship to the game flips. You went from dodging to defending. From reactive to proactive. From surviving to wrangling.\n\nThe corollary: when a game's core loop feels flat, before adding mechanics, ask *who is the enemy's target, and is that the right target?* We shipped 13 commits that day. The single most impactful one was changing what a variable pointed at."
+    }
+  ]
+}

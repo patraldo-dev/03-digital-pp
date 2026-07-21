@@ -1,0 +1,51 @@
+{
+  "slug": "sketchbook-and-portfolio-monorepo",
+  "title": "Sketchbook and Portfolio: A Two-Lane Monorepo for Creative Game Dev",
+  "date": "2026-07-20",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "We were about to commit to a monorepo where every new game idea had to go through the full SvelteKit + PWA + manifest scaffold. That's how you stop having new game ideas. The fix: a prototypes/ lane with a deliberately thin shape, sitting alongside apps/ — sketchbook vs portfolio.",
+  "tags": ["Monorepo", "pnpm", "SvelteKit", "Workflow", "Game Dev"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "I don't want to be limited to these three games. I want to be able to spawn and create any number of prototypes, some of which might become full-fledged multiplayer games. But I need to curb my enthusiasm. As long as we're not stifling creativity by structuring the repo this way — that it allows a growing number of prototypes and isn't limited to just three — then the pipeline makes sense."
+    },
+    {
+      "title": "ZCode:",
+      "content": "That's the right concern to raise before we ship the first commit, because repo shape either enables or chokes that vision. The honest answer is: the structure mostly works, but it has one real friction point that would absolutely stifle iteration if we left it as-is.\n\nHere's what already scales. Adding a fourth, tenth, fiftieth game to `apps/` is just dropping a new folder and running `pnpm install` — the pnpm workspace auto-discovers it. Each game is fully isolated: its own deps, its own manifest, its own Cloudflare Worker, its own store listing. A broken game can't take down another. And the shared `packages/engine` means every new prototype starts with working WebXR plumbing for free.\n\nThe friction: right now every folder under `apps/` is a *first-class SvelteKit app*. That's overkill for a 20-line 'what if balls bounced against each other in zero-G' idea. Forcing every spark through the full-app scaffold will make you hesitate before spawning one. You'll think 'is this worth a whole app?' and the answer will usually be no, and you'll lose the idea."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So what's the fix?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Two lanes, not one. Add a `prototypes/` directory alongside `apps/`, with a deliberately thinner shape:\n\n```\nWebxr/\n├── packages/         shared engine + ui (stable)\n├── apps/             portfolio — shippable games with SvelteKit shells\n└── prototypes/       sketchbook — one scene file + one index.html, no SvelteKit\n    └── bouncing-balls/\n```\n\nA prototype is one HTML file, one scene file, direct `@webxr/engine` import. No SvelteKit, no manifest, no service worker, no store listing pretensions. You're 60 lines and a `pnpm --filter proto-foo dev` away from seeing your idea on screen.\n\nWhen a prototype earns it, you promote it: copy to `apps/`, add the SvelteKit shell, wrap the scene in the shared `<XrStage>` + `<Hud>` components, drop in a manifest. **The engine code is identical in both lanes** — same `@webxr/engine` import, same `bootXr()` call. So promotion is mechanical, not a rewrite."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "It's a sketchbook and a portfolio."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Exactly. You don't frame every doodle. Most of what you sketch goes nowhere, and that's fine — the sketchbook's job is to be low-friction enough that you keep doodling. The portfolio is for the doodles that turned into something.\n\nThe promotion path itself becomes the creative filter:\n\n1. **Prototype** — single-player, one scene, prove the core mechanic is fun.\n2. **App** — wrap in SvelteKit shell, add manifest, polish, ship to the store as single-player.\n3. **Multiplayer app** — swap `adapter-static` to `adapter-cloudflare`, add one Cloudflare Durable Object, wire the engine's NetworkSystem.\n\nEach step is additive. A prototype that never leaves step 1 still taught you something. One that reaches step 3 has earned the complexity."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Doesn't this mean we have to maintain two scaffolds?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "The prototype scaffold is barely a scaffold — three files. And the things that matter (engine, UI components, build approvals, deploy pipeline) all live in the shared packages and root config, not duplicated per lane. So no, you're maintaining one engine and one deploy pipeline, plus a tiny template for the sketchbook.\n\nThe deeper point is about what *kind* of friction you want. Every workflow has friction somewhere. The question is whether the friction is at the idea stage (where it kills creativity) or the shipping stage (where it filters for commitment). The two-lane structure moves friction from ideation to promotion. Hesitating before spawning a prototype is bad. Hesitating before turning a prototype into a full app is good. That hesitation is the curbing-your-enthusiasm you mentioned — applied at the right moment."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So I can spawn freely, and the structure does the enthusiasm-curbing for me at promotion time."
+    },
+    {
+      "title": "ZCode:",
+      "content": "That's the bet. A prototype that costs you 5 minutes and 60 lines will get written. A prototype that costs you 30 minutes, a manifest, a wrangler config, and a fresh SvelteKit sync won't. So we made the cheap path the default, and made the expensive path — promotion — a deliberate decision you make when an idea has proven itself worth it.\n\nThe bouncing-balls prototype we shipped is deliberately trivial: balls fall under gravity, bounce off a floor, fade out. Click to spawn more. Sixty lines. But it loads through the same `bootXr()` as the real games, runs the same IWER emulation, uses the same bloom pipeline. The point isn't the balls — the point is that 'spawn a new idea' is now a 30-second operation, and 'graduate it to a real game' is a 30-minute operation when, and only when, it deserves to be."
+    }
+  ]
+}
