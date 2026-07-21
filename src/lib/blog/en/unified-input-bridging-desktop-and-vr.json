@@ -1,0 +1,59 @@
+{
+  "slug": "unified-input-bridging-desktop-and-vr",
+  "title": "Unified Input: Bridging Desktop and VR in an ECS World",
+  "date": "2026-07-20",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Our ECS locomotion code branched on world.session everywhere — one path for keyboard/mouse, another for XR controllers. We built an InputAdapter that mirrors IWSDK's gamepad API so gameplay code never branches. Here's why the 'pure' Flowerbed approach doesn't work in production.",
+  "tags": ["WebXR", "ECS", "InputAdapter", "IWSDK", "Flowerbed", "Architecture"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Use mcp zread or web reader to compare Project Flowerbed's key concepts about ecsy systems, component classes and Three.js objects and how to bridge them to the ECS world."
+    },
+    {
+      "title": "ZCode:",
+      "content": "The comparison revealed two high-impact divergences. First: our locomotion code branched on world.session everywhere — separate code paths for keyboard/mouse and XR controllers. Flowerbed's approach maps keyboard/mouse to the SAME emulated controller API, so all ECS systems run identically on VR and desktop without branching. Second: we had manual _triggerPrev edge detection scattered across three systems. Flowerbed has a clean ControllerInterface with proper edge detection built in."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So why not just do what Flowerbed does — auto-grant an IWER session on desktop?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "That's the key insight. We CAN'T, and here's why: IWER is dev-only. It's installed via a Vite plugin that injects the emulator into your dev server. On patrouch.ca — the production site — desktop visitors have no IWER. Their world.session is genuinely undefined. There's no emulated XRSession to grant. So the 'pure' Flowerbed approach works in development but fails in production. The unified API has to abstract over BOTH real gamepads AND keyboard/mouse, not just fake a session."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So what did you build?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "An InputAdapter with two implementations. InlineGamepad mirrors StatefulGamepad's read surface — getButtonDown, getButtonUp, getAxesEnteringState, getAxesValues — but it's backed by keyboard/mouse/touch instead of a real gamepad. On desktop, WASD feeds the left thumbstick axes, mouse-down feeds the trigger, arrow keys feed the right stick. The adapter picks the right implementation automatically: if world.input.gamepads.left exists (real XR session), it delegates to the real StatefulGamepad. Otherwise it uses the InlineGamepad. Gameplay code reads input through one surface regardless of platform."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "And the only session branch left?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "The rig target. In XR, the camera is parented to world.player (the XROrigin rig), so we move the rig. Inline, the camera IS the viewpoint, so we move the camera. That's a structural difference — you're moving different Object3D objects — so it stays as one ternary. But everything else: movement direction, snap-turn edge detection, trigger clicks, grab raycasting — all reads through the adapter. No branching. The locomotion system went from 603 to 524 lines, and we deleted _triggerPrev, _xrSnapState, and _xrTeleportEngaged — all replaced by the adapter's built-in edge detection."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "What about edge detection specifically? That was scattered everywhere."
+    },
+    {
+      "title": "ZCode:",
+      "content": "IWSDK's StatefulGamepad already has getButtonDown and getAxesEnteringState — double-buffered per-frame edge detection. Our InlineGamepad implements the same surface with its own double-buffer. So when you click a trigger (or click a mouse), getButtonDown fires for exactly one frame. When you flick a thumbstick (or press an arrow key), getAxesEnteringState fires once on the transition. The old code tracked _triggerPrev manually and checked triggerNow && !this._triggerPrev every frame. That's reimplementing what the API already provides."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "How does this compare to Flowerbed now?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "On the input abstraction specifically: we now adhere. The adapter IS our ControllerInterface. The divergence is philosophical: Flowerbed can rely on always having a session (desktop runs under IWER emulation). We can't — production desktop has no emulator. So our adapter works in both worlds. In dev with IWER, it delegates to real gamepads. In production on desktop, it reads keyboard/mouse. Same gameplay code, different transport. That's the honest tradeoff."
+    }
+  ]
+}

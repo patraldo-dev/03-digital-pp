@@ -1,0 +1,67 @@
+{
+  "slug": "porting-to-a-monorepo-shared-assets-and-engine",
+  "title": "Porting to a Monorepo: Shared Assets, Engine, and Flying Monkeys",
+  "date": "2026-07-20",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Moving Oz from a monolithic SvelteKit app to a pnpm monorepo with shared engine + UI packages. One D1, one R2, one compression pipeline — for all games. Plus the first flying monkeys and a lesson about when NOT to share.",
+  "tags": ["Monorepo", "pnpm", "WebXR", "Architecture", "Shared Assets", "Cloudflare"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Can we transfer the oz code to the new project directory and make it a standalone app? ~/sveltecloudflare/dev-ambientx/WebXR/apps/"
+    },
+    {
+      "title": "ZCode:",
+      "content": "The monorepo was already well-structured — a pnpm workspace with packages/engine (@webxr/engine: bootXr, DepartureEffects, InputAdapter), packages/ui (@webxr/ui: XrStage, Hud, TouchControls), and apps/ (parade, tomato-opera, bulls-reversed). Oz became apps/oz, a thin shell that imports from the shared packages. The world logic lives in src/lib/oz-world.js; the page is just XrStage + Hud."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "What had to change in the code?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Three key adaptations. First: World.create was replaced with bootXr from @webxr/engine — the engine handles IWER install + World.create + optional bloom in one call. Second: DepartureEffects now imports from @webxr/engine instead of a local file — and the engine's version is a superset (it has a confetti mode for Parade). Third: elics is imported via @iwsdk/core's re-export, not as a direct dependency. The pnpm workspace doesn't hoist transitive deps, so importing elics directly fails to resolve."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Can we not replace the GLB loading with anything but a new API that fetches the GLBs?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "You wanted real GLBs, not procedural primitives. So we built a self-contained asset API in the Oz app: a D1 database for model metadata, an R2 bucket for GLB bytes, and two routes — /api/assets/library?game=oz returns the metadata, /api/assets/models/[...key] serves the GLB from R2. The oz-world.js client code didn't need changes — it already fetched from /api/assets/library?game=oz."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Since we'll be using GLBs in all the games — it's the standard, right — would we be better off moving or next time recreating the D1 and R2 in the monorepo?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Yes. Per-app D1+R2 was already feeling redundant — Oz had its own, Parade would need its own, Tomato Opera would need its own. Same schema, same API code, no shared models. So we created packages/asset-service (@webxr/assets): one shared D1 (webxr-assets), one shared R2 bucket (webxr-assets), one schema, one compression script. Each app's API routes are 2-line wrappers that call the shared handlers. Models are filtered by game_name — Oz queries ?game=oz, Parade will query ?game=parade."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Should we have a shared Durable Object as well?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Not yet. Game rooms share about 60% of their code — connection tracking, heartbeat, roster broadcast, pose relay, WebRTC signaling — but differ 40% in game mechanics. Oz has monkey waves; grab-demo had round timers and promotion; Parade will have alien dive waves. A single shared GameRoom would either be too generic (just a relay — loses server-authoritative state) or too opinionated. The right move: extract BaseGameRoom when the SECOND game room exists. We have one (OzRoom). When Parade gets its DO, we'll see exactly what varies. That's the right time to abstract."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "We have a new AGR-munchkin-2.glb that is 16.7mb because it has animation. Let's run it through compression."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Meshopt compressed it to 11.57MB — 30.6% smaller, preserving the morph targets and animations that Draco would destroy. The static munchkin-1 (1.4MB) only compressed 5.4% — meshopt shines on high-poly models, not already-lean Monster Mash exports. Both are now in the shared asset library, tagged game_name='oz'. The loader alternates between them: even-indexed munchkins use the static model, odd-indexed use the animated one. Variety without uploading 12 separate files."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "How did you know where to find the file?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Honestly — I guessed the path. Earlier in the session, you'd pasted a wrangler command that included the path /mnt/chromeos/MyFiles/Downloads/AGR-munchkin-1.glb. When you mentioned AGR-munchkin-2.glb, I inferred it would be in the same Downloads folder with the same naming pattern. It was there because Chrome OS exposes Downloads to the Linux container at that mount point. I should have said 'I'm guessing the path based on your earlier command' rather than running it silently."
+    }
+  ]
+}

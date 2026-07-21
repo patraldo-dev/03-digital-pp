@@ -1,0 +1,75 @@
+{
+  "slug": "durable-object-migration-multiplayer-from-scratch",
+  "title": "The Durable Object Migration: Multiplayer from Scratch",
+  "date": "2026-07-20",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Building multiplayer for a WebXR game taught us about Cloudflare Durable Objects, WebSocket presence, the SvelteKit DO export problem, and why the invite-link model was wrong from the start. A story of room models, promote loops, and the deploy that killed all connections.",
+  "tags": ["Cloudflare", "Durable Objects", "WebSocket", "Multiplayer", "WebXR", "SvelteKit"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Why is sending an invite link to play a game a thing? I'm not an online game player. Is that a common feature?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "The invite-link pattern comes from games like Chess.com or Mario Kart private lobbies, where two friends want a private match. For your vision — visitors dropping into patrouch.ca and finding people to play with — it's the wrong default. You want what MMOs and arena games do: show up, get matched, play."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "I'd like that and to have a LobbyMatchmaker DO team people up, or give them the option. Or have X number of individuals chasing the aliens at the parade."
+    },
+    {
+      "title": "ZCode:",
+      "content": "That reframed everything. You're describing drop-in shared sessions — 2 people chasing collectibles in grab-demo, but also potentially X people chasing aliens at the parade. We went with one shared room per game: everyone who opens the game is in the same room, sees everyone else, collects from the same pool."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "What was the hardest part of building the Durable Object?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Three problems, each a different class of challenge. First: the SvelteKit DO export problem. Cloudflare requires DO classes to be exported from the worker entry point, but adapter-cloudflare generates that file automatically. The sveltekit-cloudflare-durable-objects vite plugin was supposed to inject the export, but its closeBundle hook fires BEFORE the adapter writes the file. So it couldn't find _worker.js. The fix: use the CLI tool instead — run it AFTER vite build, when the file exists. The plugin's own error message pointed to this solution."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "And the migration problem?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "That was the second. Cloudflare Pages auto-build runs npm run build and deploys the output — but it does NOT run wrangler deploy. So DO migrations never apply. The binding is declared in wrangler.jsonc, but the DO class is never registered with Cloudflare. The WS route returns 500 because env.GRAB_DEMO_ROOM is undefined. This required a one-time manual wrangler deploy — the 'exceptional reason' to our git_autopush rule. After that one deploy, future code changes to the DO flow through git_autopush normally."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "What was the third problem?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "The promote loop. The DO's round-end logic promoted the highest-scoring player to the next difficulty level. But a solo player (alone, score 0) would 'win' by default every 90 seconds, get promoted, redirect to the next level's room — which canceled their WebSocket, reloaded the page, and restarted the boot. The URL kept climbing: ?level=1 → ?level=2 → ?level=3. Each redirect cleared the console, so it looked like 'no console output.' The fix: promotion requires 2+ players AND score > 0. Solo players just restart the round at the same level."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "The level-keyed rooms also split players apart."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Exactly. Rooms were keyed by level — level-1 players were in one DO instance, level-2 promoted players in another. A phone player on level 1 and a desktop player on level 2 were in DIFFERENT rooms. They never saw each other. The 15-0 score was two solo games, not a real match. Collapsing to a single shared room fixed that."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "There's a lot that's not working. But the grab-demo is still jumping to level-2."
+    },
+    {
+      "title": "ZCode:",
+      "content": "That was the stale URL — the browser still had ?level=2 from the old promote loop. Going to the bare URL without a query string dropped back to level 1. Sometimes the bug is in the bookmark, not the code."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Or only the winner keep the table, as in the pool hall. The loser stays behind until a new player arrives."
+    },
+    {
+      "title": "ZCode:",
+      "content": "That's the pool-hill / king-of-the-hill variant — the winner keeps their streak and difficulty, the loser stays at their current level. It's a natural complement to what we built and a future mode we parked for phase 2."
+    }
+  ]
+}
