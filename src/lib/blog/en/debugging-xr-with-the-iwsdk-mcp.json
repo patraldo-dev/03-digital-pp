@@ -1,0 +1,51 @@
+{
+  "slug": "debugging-xr-with-the-iwsdk-mcp",
+  "title": "Debugging XR With Ground Truth Instead of Guesses",
+  "date": "2026-07-21",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Console logs tell you what went wrong. The IWSDK MCP tells you what IS — every entity, every component, every transform, in the live scene. It turned a vague 'scoreboard barely visible' report into a precise five-bug diagnosis in minutes.",
+  "tags": ["WebXR", "MCP", "Debugging", "IWSDK", "ECS"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "The scoreboard is barely visible and doesn't seem to be working correctly. You have an MCP skill for IWSDK — can you use it to diagnose the problem?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "This was the moment the MCP earned its keep. Instead of adding console.log statements and reloading, I queried the live scene directly.\n\nFirst, `ecs_find_entities` with `withComponents: ['OzMunchkin']` — returned all 30 munchkin entities, spawned correctly with proper positions, states, and component values. So the munchkin spawning wasn't broken.\n\nThen `ecs_query_entity` on entity 52 — showed its Transform (position [4.8, 0.6, 0.9], scale [0,0,0] because state was 'hidden'), its OzMunchkin component (revealDist 3.3, points 2, collected false). The data was perfect.\n\nThen `scene_get_hierarchy` — showed the full Three.js scene tree with LevelRoot, 30+ child groups for munchkins, the xr-origin-head for the camera rig. The scene was rendering."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So what was actually broken?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "`browser_get_console_logs` revealed the truth: `[assets] library query failed: D1_ERROR: no such table: asset_library`. The D1 database had zero tables. Every munchkin's GLB lookup returned nothing, fell back to a hardcoded path that also 404'd, and landed on a capsule mesh.\n\nThe scoreboard wasn't broken at all. The munchkins were spawning but rendering as capsules. The score never changed because the collection chain was intact — you just couldn't see what you were collecting, and without monkeys spawning, there was nothing to shoot.\n\nThe MCP turned 'scoreboard barely visible' into five precise bugs in minutes: missing D1 schema, missing R2 assets, dead WebSocket, no monkey spawns, and a CSS contrast issue. Each had a distinct fix."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "How is this different from just reading console logs?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Console logs tell you what went wrong — an error message, a stack trace. The MCP tells you what IS. I can query any entity's component values, list all registered ECS systems and their priorities, capture a screenshot of the actual rendered frame, compare two ECS snapshots to see what changed frame-by-frame.\n\nWith console logs, I'd see 'GLB load failed' and guess at why. With `ecs_query_entity`, I see the munchkin's actual state ('hidden'), its actual scale ([0,0,0]), its actual distance from the player. I can distinguish 'the munchkin exists but is invisible because it hasn't been revealed yet' from 'the munchkin failed to spawn entirely' — without modifying a single line of code.\n\nIt's the difference between reading a crash report and having a live debugger with breakpoints."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "And the architecture — the bridge, the WebSocket endpoint?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "The IWSDK Vite plugin exposes a WebSocket endpoint at `/__iwer_mcp` on the dev server. The browser connects to it and routes commands to the IWER device emulation layer and the framework's ECS runtime. ZCode connects via a stdio-to-WebSocket bridge — a standalone script that translates MCP JSON-RPC over stdio into WebSocket messages.\n\nThe tricky part: IWSDK plugin 0.3.2 dropped the standalone bridge script that 0.3.1 shipped. We vendored the 0.3.1 bridge into the monorepo so we're not dependent on an old test project. The bridge is a 21,000-line bundled file — fully self-contained, no external deps."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Worth it?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "For XR development specifically — where you can't easily inspect a 3D scene with DevTools, where the state is in an ECS registry not the DOM, where the rendering happens on a canvas you can't peek inside — it's the single biggest debugging force multiplier we have. Every session where I use it, I find bugs in minutes that would have taken hours of console-log-and-reload cycles."
+    }
+  ]
+}

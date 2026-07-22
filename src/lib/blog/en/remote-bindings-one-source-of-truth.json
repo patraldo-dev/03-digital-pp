@@ -1,0 +1,51 @@
+{
+  "slug": "remote-bindings-one-source-of-truth",
+  "title": "Remote Bindings: One Source of Truth for Local Dev",
+  "date": "2026-07-21",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Why maintain GLB models, audio files, and database rows in two places? Cloudflare's per-binding remote flag lets local dev hit the real R2 and D1 directly — no duplication, no sync, no seed scripts.",
+  "tags": ["Cloudflare", "R2", "D1", "Wrangler", "Local Dev", "WebXR"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "The munchkins are showing as capsules again. We uploaded the GLBs to R2, registered them in D1, and it worked. Then I restarted the dev server and they're capsules."
+    },
+    {
+      "title": "ZCode:",
+      "content": "The library API is returning `{ models: [], error: 'D1_ERROR: no such table: asset_library' }`. The table exists on remote — I verified it with `wrangler d1 execute --remote`. The problem is that SvelteKit's dev server is hitting a **local** miniflare D1 instance, not the remote one.\n\nThe `platformProxy: { remote: true }` in the vite config looks like it should proxy to remote, but reading wrangler 4.112's source code reveals the truth: `remote` isn't the right option name. The actual check is `options.remoteBindings !== false`, and remote bindings are enabled by default at the wrangler level. The real switch is a **per-binding `\"remote\": true` flag** in wrangler.jsonc itself."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So every D1 database and R2 bucket needs its own remote flag?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Exactly. Each binding independently declares whether dev should route to the real Cloudflare resource. So in wrangler.jsonc:\n\n```jsonc\n\"d1_databases\": [{\n  \"binding\": \"DB_ASSETS\",\n  \"database_name\": \"webxr-assets\",\n  \"remote\": true   // ← this is the switch\n}],\n\"r2_buckets\": [{\n  \"binding\": \"R2_ASSETS\",\n  \"bucket_name\": \"webxr-assets\",\n  \"remote\": true\n}]\n```\n\nNow dev hits the real remote D1 and R2 directly. No local copies of GLBs, no seed scripts, no sync."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "But having GLBs in two locations is untenable. Besides the munchkins, we'll have flying monkeys, flowers — all GLBs, much more."
+    },
+    {
+      "title": "ZCode:",
+      "content": "That's exactly why this matters. With per-binding remote flags, you upload a GLB to R2 once, register it in D1 once, and it works everywhere — local dev, production, every developer's machine. The asset library scales to hundreds of models without any local duplication."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "What about the DevalueError I saw in the logs?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Ah — that's a quirk of remote R2 bindings. When you call `object.writeHttpMetadata(headers)` on a remote R2 object, the metadata contains non-POJO values that miniflare's Devalue serializer can't handle. The fix is simple: wrap it in try/catch. We set Content-Type ourselves based on the file extension anyway, so `writeHttpMetadata` is best-effort, not load-bearing."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So the architecture is: one R2 bucket, one D1 database, every environment reads from the same source of truth."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Exactly. One upload, one registration, works everywhere. The per-binding remote flag is the single line that makes it possible."
+    }
+  ]
+}

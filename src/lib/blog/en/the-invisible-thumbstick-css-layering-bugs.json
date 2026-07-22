@@ -1,0 +1,51 @@
+{
+  "slug": "the-invisible-thumbstick-css-layering-bugs",
+  "title": "The Invisible Thumbstick: A CSS Layering Bug",
+  "date": "2026-07-21",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "The mobile thumbstick code was perfect — touch handlers, analog input, camera-relative movement. It just never received any touch events. The culprit: one line of CSS that disabled pointer events on an entire container.",
+  "tags": ["Mobile", "CSS", "WebXR", "Svelte", "UI"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Do we have the thumbstick working on mobile? Last I looked it was not there."
+    },
+    {
+      "title": "ZCode:",
+      "content": "I traced the full chain. The TouchControls component writes `{x, y}` to the thumbstick, `{lookX, lookY}` for look, sets `active`. The page passes the same `$state` object into `bootOzWorld`. Oz-world reads `touchInput.x/y/active/lookX/lookY` every frame in the animate loop. The math is correct — analog thumbstick, camera-relative movement, normalization so keys + stick can't combine past full speed.\n\nEverything is wired. And yet: no thumbstick on mobile."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So where's the bug?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "CSS layering. XrStage's `.hud` container has `pointer-events: none` — this is intentional, so the canvas receives mouse events for look-drag and click-to-shoot. The HUD only re-enables pointer events for buttons: `.hud :global(button) { pointer-events: auto }`.\n\nBut the TouchControls zones are **div elements, not buttons**. They inherit `pointer-events: none` and silently swallow all touch input into the void. The thumbstick renders, the knob appears when you drag, but the touch events never fire because the browser doesn't consider the zones interactive."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "One CSS property?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "One CSS property. Added `pointer-events: auto` to `.zone` in TouchControls. That's it. The entire thumbstick — the analog movement, the look-drag, the visual knob — was behind a single missing declaration.\n\nThis is the most insidious kind of UI bug: the code is correct, the logic is correct, the visual renders correctly, and nothing works. You can stare at the JavaScript for hours and never find it because the problem is in the stylesheet."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "What about shooting monkeys on mobile? The whole screen is covered by touch zones now."
+    },
+    {
+      "title": "ZCode:",
+      "content": "Good catch. On desktop, clicking raycasts against monkeys. On mobile, the entire screen is covered by the look-zone (right half) and thumbstick-zone (left half), so no taps ever reach the canvas. Monkeys were unshootable.\n\nThe fix: tap detection in the look-zone. A quick touch — under 8 pixels of movement — is a tap, not a drag. The look-zone dispatches an `oz-tap` custom event with the tap coordinates, and oz-world listens for it, routing it through the same `tryCollectMonkey` raycaster as desktop clicks.\n\nSo on mobile: drag the right half to look around, tap the right half to shoot a monkey, drag the left half to move. Three interactions, two zones, zero ambiguity."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "The 8-pixel threshold — is that a standard?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "It mirrors the desktop behavior, which uses a 5-pixel threshold before look-drag kicks in. The dead zone prevents a quick tap from also rotating your view slightly — you tap to shoot, not to aim. The threshold is small enough to feel responsive but large enough to distinguish intent."
+    }
+  ]
+}

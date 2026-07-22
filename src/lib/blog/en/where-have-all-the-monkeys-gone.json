@@ -1,0 +1,51 @@
+{
+  "slug": "where-have-all-the-monkeys-gone",
+  "title": "Where Have All the Monkeys Gone?",
+  "date": "2026-07-21",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "The flying monkeys vanished for weeks. The bug wasn't in the spawn code — it was in the architecture. When your enemies only exist via a Durable Object that can't run in dev, you need a fallback.",
+  "tags": ["WebXR", "Game Dev", "Cloudflare", "Durable Objects", "Oz"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Where are the flying monkeys? I haven't seen them in a coon's age."
+    },
+    {
+      "title": "ZCode:",
+      "content": "They're gone because of how they were architected. In Oz: Dominion, monkeys only spawn when the OzRoom Durable Object broadcasts a `monkey_wave` message over WebSocket. The DO owns wave timing so all clients spawn the same monkeys at the same positions — no desync in multiplayer.\n\nThe problem: SvelteKit's dev mode can't instantiate Durable Objects. The workerd warning we keep seeing — *\"A DurableObjectNamespace in the config referenced the class 'OzRoom', but no such Durable Object class is exported from the worker\"* — means the DO never starts. The WebSocket times out. No waves arrive. Zero monkeys."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So the code was right, it just had no trigger?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Exactly. The spawn function, the monkey AI, the wing-flap animation, the rogue gold variant — all correct, all sitting idle waiting for a WebSocket message that never came. It's like writing a beautiful event handler and forgetting to attach the event listener."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "How do we fix it?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "A local fallback spawner. When the WebSocket isn't connected — `!_wsReady` — a timer fires waves locally:\n\n- First wave 6 seconds after boot (2-3 monkeys at random positions around the player)\n- Subsequent waves every 12-20 seconds\n- Gold rogue monkey every 30-45 seconds (worth 15 points)\n- Uses high monkey IDs (10000+) to avoid clashing with DO-assigned IDs when multiplayer comes online\n\nThe key design decision: it **goes silent automatically** once the DO connects. In production, the real DO takes over. In dev, the fallback fills the gap. The game is playable in both environments."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Is this pattern specific to monkeys, or is it broader?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "It's a general principle for any game architecture where the server owns authoritative state but you still want local dev to work. Munchkins already had it — they spawn locally regardless of WebSocket state. Now monkeys match. Any future server-driven event (boss spawns, weather changes, scripted sequences) should follow the same pattern: local fallback when the server is unavailable, silent handoff when it connects.\n\nThe alternative — requiring the full backend stack to be running just to test basic gameplay — is a development friction tax you pay forever. The fallback eliminates it."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "And in production, the DO handles everything?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Right. The OzRoom DO broadcasts monkey waves to all connected clients. Wave size scales with player count — more players = more monkeys. Positions are deterministic (derived from monkeyId) so every client agrees. The local fallback is purely a dev convenience; production uses the real thing."
+    }
+  ]
+}
