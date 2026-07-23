@@ -1,0 +1,43 @@
+{
+  "slug": "stem-colliders-dont-register-the-whole-flower",
+  "title": "Stem Colliders: Don't Register the Whole Flower",
+  "date": "2026-07-22",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "BVH capsule collision is powerful but dumb — it collides against every triangle you give it. Register a full flower mesh and Dorothy can't walk under the canopy. Register only the stem and she weaves through the garden naturally.",
+  "tags": ["Three.js", "Collision", "BVH", "Game Design", "WebXR"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Dorothy walks through everything. Is there no collision set?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "I added three-mesh-bvh — the same capsule collision library used in Meta's Project Flowerbed and the patrouch.ca portal engine. Dorothy is a capsule (0.3m radius, 1.6m tall). Every registered mesh becomes a triangle collider. Gravity keeps her grounded, substeps push her out of intersecting geometry.\n\nThe ground was registered as a collider — a 60m plane. Dorothy stays on the surface. Then I registered all 50 flowers.\n\nThis is where it went wrong."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "What happened?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "The flowers are 3 to 6 meters tall. Their GLB meshes have wide petal clusters at head height — 1.5m to 3m up. Dorothy's capsule spans from 0.3m to 1.6m. So when she walks toward a flower, her capsule hits the petals at head height before she reaches the stem. She gets blocked by geometry she should walk *under*.\n\nThe BVH doesn't know the difference between a stem and a petal. It just sees triangles. Every triangle in the registered mesh is solid."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "So you need separate collision geometry?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Exactly. Instead of registering the full flower GLB, I create an invisible cylinder — 0.3m radius, 1m tall, centered at the flower's base. That's the stem collider. Dorothy bumps against it at shin-to-waist height, but the petals above are non-collidable. She walks under canopies freely.\n\n```js\nconst stemCollider = new THREE.Mesh(\n    new THREE.CylinderGeometry(0.3, 0.3, 1.0, 6),\n    new THREE.MeshBasicMaterial({ visible: false })\n);\nstemCollider.position.set(fx, 0.5, fz);\ngroundedPlayer.register(stemCollider);\n```\n\nThis is a universal pattern in game physics: collision geometry is separate from visual geometry. The beautiful flower mesh is for rendering. The invisible cylinder is for physics. They occupy the same space but serve different purposes."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Like hitboxes in fighting games?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Exactly the same principle. In Street Fighter, the character model is elaborate — flowing hair, capes, weapons. But the collision and hit detection uses simple rectangles and circles that approximate the body. If collision used the visual mesh, capes would block punches and hair would trigger hitboxes.\n\nFor our flowers: the GLB mesh renders the petals, stem, and colors. The invisible cylinder handles \"Dorothy can't walk through this.\" Two geometries, same position, different jobs."
+    }
+  ]
+}

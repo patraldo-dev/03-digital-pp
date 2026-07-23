@@ -1,0 +1,35 @@
+{
+  "slug": "the-negative-scale-bug-when-zero-isnt-zero",
+  "title": "The Negative Scale Bug: When Zero Isn't Zero",
+  "date": "2026-07-22",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Monkeys were technically alive but completely invisible and unclickable. The culprit: a despawn animation that multiplied scale past zero into negative territory, flipping every mesh inside-out. The MCP ECS query caught what console logs never could.",
+  "tags": ["Three.js", "Debugging", "ECS", "WebXR", "IWSDK MCP"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "Still absolutely no sign that any score is registering or changing. The army of monkeys is flying around and around in circles."
+    },
+    {
+      "title": "ZCode:",
+      "content": "I queried the live ECS with `ecs_find_entities` — 82 monkey entities. Every single one had `collected: true` and `state: 'collected'`. But worse: the Transform component showed `scale: [-1.08, -1.08, -1.08]`.\n\nNegative scale. The despawn shrink code used `obj.scale.multiplyScalar(1 - dt * 0.5)`. When the scale reaches zero and the multiplier applies again, it goes negative. Three.js handles negative scale by flipping the mesh inside-out — back-face culling makes it invisible, and the hit sphere inverts so raycasts miss entirely.\n\nThe monkey is there. It's alive. It has a position, an entity, animation mixers running. But you can't see it and you can't click it. It's a ghost."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "How did you find that? Console logs?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "The IWSDK MCP's `ecs_query_entity` tool. I picked entity index 85 and got its full component values — Transform with position, orientation, AND scale all laid bare. The negative values were staring at me.\n\nConsole logs would have shown the monkey spawning, the AI running, the state transitions. Everything looks fine in the logs. The bug is in a numeric value that only a component inspector can reveal — `scale: [-1.08, -1.08, -1.08]` instead of `[1.0, 1.0, 1.0]`.\n\nThis is the single biggest argument for the MCP over console debugging: ECS state is structured data, not text. You need to query the actual values, not read log lines."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "What was the fix?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "`obj.scale.setScalar(Math.max(0.01, obj.scale.x - dt * 0.5))` instead of `multiplyScalar(1 - dt * 0.5)`. The subtraction approach can't go negative if you clamp at 0.01. The multiply approach wraps through zero into negative space.\n\nThe deeper lesson: `multiplyScalar(1 - x)` is a decay function that asymptotically approaches zero but never reaches it in theory. In practice, with floating-point arithmetic and a fixed `dt`, it overshoots. The scale becomes -0.0001, then -0.0002, then -1.08. Once negative, Three.js treats it as a mirror transform — the mesh is reflected through the origin, invisible from outside.\n\nIf you're shrinking objects for despawn animations, always clamp. Never trust asymptotic decay to stay positive."
+    }
+  ]
+}
