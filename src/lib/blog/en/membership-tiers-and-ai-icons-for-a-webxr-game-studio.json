@@ -1,0 +1,43 @@
+{
+  "slug": "membership-tiers-and-ai-icons-for-a-webxr-game-studio",
+  "title": "Membership Tiers and AI Icons for a WebXR Game Studio",
+  "date": "2026-07-24",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "We built a four-tier membership system (Guest → Free → Premium → VIP) with AI-generated player icons powered by Cloudflare Workers AI, score multipliers, and a profile management page — all shared across every game in the monorepo via a single D1 database and a .ambientx.dev cookie domain.",
+  "tags": ["Cloudflare Workers AI", "Membership", "Game Dev", "Better Auth", "WebXR"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "We need to make accounts more robust. Tie into the apps with AI-driven icon options, full identity with profiles, and a membership hierarchy — guest, basic, VIP, premium. What are the catchy terms that are trending?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "I researched what's trending in 2026 gaming memberships. PlayStation uses Essential/Extra/Premium. Ubisoft uses Free/Premium/VIP with battle passes. Xbox Game Pass has tiered perks with XP boosts.\n\nThe industry-standard pattern that players instantly recognize is **Free → Premium → VIP**. We chose that over themed names (Explorer/Guardian/Luminary or Sprout/Bloom/Canopy) because clarity beats cleverness when you're asking people to pay.\n\nThe tiers:\n- **Guest** (👤, no account) — play for free, random name, no persistence\n- **Free** (🆓) — account, curated icon set, score saved\n- **Premium** (⭐, $4.99/mo) — AI-generated icons, 2x score multiplier, priority access\n- **VIP** (💎, $9.99/mo) — 3x multiplier, exclusive cosmetics, early access to new games"
+    },
+    {
+      "title": "Patrouch:",
+      "content": "How do the AI icons work?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Cloudflare Workers AI — `env.AI.run('@cf/stabilityai/stable-diffusion-xl-base-1.0', { prompt })`. The player types a description like 'brave knight with emerald eyes' and gets a unique 512x512 PNG. We store it in R2 and set it as their `icon_url`.\n\nThe endpoint is server-side gated: only Premium and VIP members can use it. Free members pick from 12 curated emoji icons. The check happens in the Worker, not the client — you can't bypass it by modifying the frontend.\n\nThe beauty of Workers AI is zero infrastructure: no external API key, no per-image cost negotiation, no rate limit configuration. It's already bound to your Cloudflare account via `env.AI`. One line of code."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "And the score multiplier?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "A Free player shoots a monkey → +5 points. A Premium player → +10. A VIP player → +15. Same for munchkin defense (3→6→9) and the boss kill (25→50→75).\n\nThe multiplier is a single variable: `const tierMultiplier = options.tier === 'vip' ? 3 : options.tier === 'premium' ? 2 : 1;`. It flows from the server session (fetched in hooks.server.js) → the page's `data.user.tier` → `bootOzWorld({ tier })` → every `score += pts * tierMultiplier`.\n\nThis makes membership feel valuable immediately — you see higher numbers on the scoreboard. It's the same dopamine hook that battle passes use: visible progression that rewards investment."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "What about the cross-game identity?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "One shared D1 database (`webxr-auth`) stores users, sessions, memberships, and notifications. The `.ambientx.dev` cookie domain means a login on `oz.ambientx.dev` is visible on `parade.ambientx.dev`, `accounts.ambientx.dev`, everywhere.\n\nA player signs up once on the central accounts hub, picks their icon, gets their tier — and that identity follows them to every game. The scoreboard shows their real username, their tier badge (⭐/💎), and their icon. No separate accounts per game.\n\nThe `memberships` table has `stripe_customer_id` and `stripe_subscription_id` columns ready for when we wire payments. For now, tiers can be set manually in D1 for testing. The architecture is payment-processor-agnostic — Stripe, Paddle, LemonSqueezy, whatever we choose later, the tier check stays the same."
+    }
+  ]
+}
