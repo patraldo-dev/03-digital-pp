@@ -1,0 +1,43 @@
+{
+  "slug": "multi-layer-cost-protection-on-cloudflare-workers",
+  "title": "Multi-Layer Cost Protection on Cloudflare Workers",
+  "date": "2026-07-24",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "A WebXR game studio on Cloudflare Workers faces a unique billing risk: a single bug can generate millions of requests per hour. We built four layers of defense — WAF rules, edge rate limits, D1 counters, and Durable Object hibernation — each with different tradeoffs. Claude caught two of our claims that were wrong.",
+  "tags": ["Cloudflare Workers", "Cost Control", "Security", "Durable Objects", "WebXR"],
+  "sections": [
+		{
+			"title": "Patrouch:",
+			"content": "We need to make sure we don't get a surprise bill. What can we add to Cloudflare itself or the code?"
+		},
+		{
+			"title": "ZCode:",
+			"content": "I built four layers of cost protection, each operating at a different point in the request lifecycle.\n\n**Layer 1: WAF rules (pre-Worker, zero compute).** Cloudflare's Web Application Firewall runs at the edge before the Worker even starts. We block banned countries, bot user agents (sqlmap, nikto, python-requests), and WordPress paths. These cost literally nothing — the request is rejected before it reaches our code.\n\n**Layer 2: ratelimits binding (in-Worker, approximate).** Cloudflare's native rate limiting binding checks 100 requests/60s per IP. But Claude caught something important here: I said it was 'pre-Worker, zero compute.' That's wrong. The binding runs inside the Worker — by the time `.limit()` is called, the request is already counted. It's cheap CPU, but not free. And it's approximate — counters are cached per-PoP and updated asynchronously, so a distributed burst can exceed the configured limit before counts sync."
+		},
+		{
+			"title": "Patrouch:",
+			"content": "So the ratelimits binding isn't a hard guarantee?"
+		},
+		{
+			"title": "ZCode:",
+			"content": "Correct. For things where approximate is fine (blocking scrapers, bots, casual abuse), it's perfect. For things tied to real spend — like the Workers AI budget — we use Layer 3 instead.\n\n**Layer 3: D1-based counters (accurate, global).** Every auth request, every AI icon generation, every asset fetch is counted in a D1 `rate_limits` table. This is accurate and global — not per-PoP. The AI daily budget (50 generations/day across ALL users) reads from D1, not the ratelimits binding, because it's tied to real neuron costs.\n\n**Layer 4: Durable Object hibernation + 30-second auto-close.** The biggest historical risk was zombie WebSocket connections keeping a DO alive. Now the DO uses hibernation API (sleeps between messages, zero compute cost) and a 30-second stale timer that force-closes any connection that stops sending. When all connections close, the DO's timers stop themselves — full hibernation, zero cost."
+		},
+		{
+			"title": "Patrouch:",
+			"content": "Claude also said there's no daily CPU limit?"
+		},
+		{
+			"title": "ZCode:",
+			"content": "Right again. The `limits.cpu_ms` in wrangler.jsonc is per-invocation (one request), not per-day. There's no daily ceiling you can set. On the Paid plan, overages meter past the included 10M requests + 30M CPU-ms per month.\n\nThe real backstops are: (1) the billing alert at $1, (2) a prepaid card with limited funds, and (3) checking Metrics weekly for `exceededCpu` spikes. Code-level protections catch bugs; the billing alert catches what slips through."
+		},
+		{
+			"title": "Patrouch:",
+			"content": "And the hierarchy of strength?"
+		},
+		{
+			"title": "ZCode:",
+			"content": "From strongest to weakest:\n\n1. **WAF rules** — true edge block, zero compute, exact\n2. **D1 counters** — accurate, global, but costs D1 reads/writes\n3. **DO-based limiting** — most accurate for global state (single logical instance), costs DO compute\n4. **ratelimits binding** — fast, cheap, approximate per-PoP throttle\n\nThe layering is sound. Each catches what the one above might miss. The key insight from Claude: use the authoritative layer (D1) for things tied to real money (AI neurons), and the approximate layer (ratelimits binding) for things where close-enough is fine (bot blocking)."
+		}
+  ]
+}
