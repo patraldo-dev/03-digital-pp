@@ -1,0 +1,51 @@
+{
+  "slug": "the-four-rounds-of-better-auth-on-cloudflare",
+  "title": "Four Rounds of Better Auth on Cloudflare Workers",
+  "date": "2026-07-23",
+  "original_lang": "en",
+  "author": "Patrouch & ZCode",
+  "excerpt": "Adding Better Auth to a Cloudflare Workers monorepo sounds simple — install the package, wire it up, done. In practice it took four separate build failures, each revealing a different layer of incompatibility between Node.js, esbuild, and Cloudflare's runtime.",
+  "tags": ["Better Auth", "Cloudflare Workers", "SvelteKit", "Authentication", "pnpm"],
+  "sections": [
+    {
+      "title": "Patrouch:",
+      "content": "We need real player names on the scoreboard. Let's use Better Auth like we have on patrouch.ca."
+    },
+    {
+      "title": "ZCode:",
+      "content": "I created a shared `@webxr/auth` package, wired it into the oz app's hooks.server.js, and pushed. The build failed.\n\n**Round 1: Wrong import path.** `usernameClient` was imported from `better-auth/client` but the installed version (1.6.24) exports it from `better-auth/client/plugins`. The build resolved the shorter path to the client index, which doesn't export it. Fix: removed the client-side `usernameClient` entirely — it's a server-side plugin that doesn't need a browser counterpart."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Still failing?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "**Round 2: Node.js builtins in the Worker.** Better Auth imports `node:fs`, `node:os`, `node:path` internally. Cloudflare Workers can't resolve these — esbuild throws `Could not resolve \"node:fs\"`. Fix: add `ssr.external` in vite.config.js listing better-auth, drizzle-orm, and all their subpaths as external packages. The Worker bundle doesn't try to include them."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "And that worked?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Production yes. Dev no.\n\n**Round 3: SSR parse error in dev.** Vite's import analyzer tried to parse `better-auth` during SSR module loading in dev mode. The file contains Node.js syntax that isn't valid JavaScript for the browser-targeted parser. Fix: changed the hooks.server.js from `import { createAuth } from '@webxr/auth'` to `const { createAuth } = await import('@webxr/auth')`. The dynamic import defers loading past the parse phase."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "Three rounds. Anything else?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "**Round 4: Prerender crash.** The oz app had `export const prerender = true` in its layout. During the prerender pass, SvelteKit tried to access `event.platform.env` (the Cloudflare D1 binding) — but the adapter proxy throws `Cannot access platform.env in a prerenderable route`. Fix: `prerender = false`. Oz is a client-rendered WebGL game — there was nothing to prerender anyway.\n\nFour failures, four different root causes, each at a different layer: import resolution (npm package exports), bundling (Node.js builtins), dev-time parsing (Vite SSR), and build-time evaluation (prerendering). The lesson: Better Auth was designed for Node.js servers. Running it on Cloudflare Workers requires telling every tool in the chain — esbuild, Vite, SvelteKit, the adapter — to handle it specially."
+    },
+    {
+      "title": "Patrouch:",
+      "content": "But it works now?"
+    },
+    {
+      "title": "ZCode:",
+      "content": "Yes. Tested end-to-end on production: signup creates a user in D1 with an auto-generated username, signin returns a valid session token, the `.ambientx.dev` cookie makes the session visible across all game subdomains. The scoreboard shows real player names instead of `Player-x4kf`."
+    }
+  ]
+}
