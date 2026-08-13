@@ -1,0 +1,37 @@
+{
+    "slug": "service-bindings-not-http-fetch",
+    "title": "Service Bindings, Not HTTP Fetch: Same-Network Worker-to-Worker",
+    "date": "2026-08-12",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "The landing page and green room were polling opera status via public HTTP fetch — a round trip through the public internet with CORS headers. We switched to Cloudflare service bindings: Worker-to-Worker calls over Cloudflare's network, no public internet hop, no CORS. The DO's existing RPC methods stay in place for future use.",
+    "tags": [
+        "Cloudflare",
+        "ServiceBindings",
+        "DurableObjects",
+        "RPC",
+        "Architecture"
+    ],
+    "sections": [
+        {
+            "title": "ZCode:",
+            "content": "The landing page and green room were fetching https://opera.ambientx.dev/ every 15 seconds to check live show status. That's a public internet round trip with CORS headers — functional but suboptimal. Worse, the root path was actually hitting SvelteKit's HTML page renderer, not the DO's JSON handler. The status fetch was silently broken, returning HTML instead of JSON.\n\nCloudflare service bindings let one Worker call another over Cloudflare's internal network — no public internet, no CORS, lower latency. The pattern: env.OPERA_SERVICE.fetch('https://opera/api/opera/status') routes through the target Worker's fetch handler on Cloudflare's network."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Why wait? Let's wire it up now instead of HTTP."
+        },
+        {
+            "title": "ZCode:",
+            "content": "The architecture became:\n\nBrowser → fetch('/api/opera-status') (same-origin, no CORS) → site/green room Worker → env.OPERA_SERVICE.fetch (service binding, same network) → opera Worker /api/opera/status route → OperaRoom Durable Object → JSON status response.\n\nThree new files: a status route in opera (forwards to the DO), and proxy endpoints in green room and site (try service binding first, fall back to public HTTP if the binding isn't configured). The DO's existing RPC methods — getPerformerInfo, getPlayerCount, getRoundState — stay in place for any future Worker that exports an RPC class as its default. We use service-binding fetch now because SvelteKit's adapter-cloudflare owns the default export."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Can we use .rpc.methodName() instead of fetch?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "True RPC (env.OPERA_SERVICE.rpc.getPerformerInfo()) requires the target Worker's default export to be an RPC class. But SvelteKit's adapter-cloudflare owns the default export — it's the fetch handler. Fighting the adapter to inject an RPC class is fragile. The service binding fetch achieves the same benefit (same-network, no public internet) with a clean SvelteKit-compatible architecture. The DO's RPC methods remain on the OperaRoom class for any non-SvelteKit Worker that wants to use them directly."
+        }
+    ]
+}

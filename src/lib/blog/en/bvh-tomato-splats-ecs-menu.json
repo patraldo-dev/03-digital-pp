@@ -1,0 +1,45 @@
+{
+    "slug": "bvh-tomato-splats-ecs-menu",
+    "title": "Bone-Anchored Splats and an In-World ECS Menu: Fixing the Glass Window Bug",
+    "date": "2026-08-12",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "Tomatoes were hitting empty air inside the performer's bounding box — the 'glass window' bug. We added MeshBVH raycast detection and bone-anchored decals that flex with the avatar's limbs. Plus: an in-world 3D menu panel built as an ECS system, raycast from both screen taps and VR controller rays.",
+    "tags": [
+        "Three.js",
+        "ECS",
+        "MeshBVH",
+        "WebXR",
+        "DecalGeometry"
+    ],
+    "sections": [
+        {
+            "title": "ZCode:",
+            "content": "The tomato splat system had two bugs. First: hit detection used a bounding-box cylinder — horizontal distance less than 1.2m plus Y within the performer's Box3 height. A tomato could hit empty air inside the box or pass through an outstretched arm. Second: the splat decal was parented to the mesh root, not a bone, so it floated rigidly while the skinned mesh animated underneath.\n\nThe fix for hit detection: two-phase testing. Phase one is the cheap broad-phase cylinder gate. Phase two is a MeshBVH raycast of the tomato's frame-over-frame trajectory against the performer's skinned-mesh geometry. If the ray misses the mesh silhouette, the tomato keeps flying — it passed through a gap."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "The tomato splats great on the avatar's legs. It seems not to detect the arms or face."
+        },
+        {
+            "title": "ZCode:",
+            "content": "The BVH was built from only the first skinned mesh found under the performer root. VRM avatars have multiple meshes — body, arms, face, hair as separate draw calls. Fixed by collecting ALL meshes, merging their geometries in root-local space, and building a single BVH from the merge."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "The arms of the avatar are by default in a raised position. And the avatar's arms are still inverted — mine go up, its go down."
+        },
+        {
+            "title": "ZCode:",
+            "content": "The VRM is rotated 180 degrees on Y to face the audience. This inverts all three local axes. We found the correct mapping by analyzing the official Kalidokit VRM demo source and confirming with mocapdiag data: all three axes negated. applyEuler(bone, -a.x, -a.y, -a.z). After three wrong attempts (direct, negated-X, swapped-XY), the mocapdiag diagnostic — logging raw Kalidokit arm values once per second via ?mocapdiag=1 in the URL — gave us the ground truth to calibrate from."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Can the HUD be split into before and after entering the theater? Once inside, can all HUD move into an in-world menu for VR?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Built an OperaMenu ECS component with fields for scores, performers, role, mocap status, revolt counter. The MenuSystem draws the panel content onto a CanvasTexture — scores, button regions, performer status — and hit-tests button regions via raycast from both screen taps and XR controller rays. Same ECS pattern as ProjectileSystem. The factory returns the System class plus input API (handleScreenTap, wireXRControllers, toggle, dispose).\n\nOn flat screens we discovered the 3D panel raycast was fragile — too many coordinate transforms, distance-dependent raycaster.far clipping. The reliable solution: DOM buttons for flat screens, 3D panel for VR. Both coexist."
+        }
+    ]
+}

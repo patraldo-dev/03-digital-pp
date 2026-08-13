@@ -1,0 +1,45 @@
+{
+    "slug": "cloudflare-calls-sfu-spatial-audio",
+    "title": "Cloudflare Calls SFU: One-Hop Voice for a WebXR Theater",
+    "date": "2026-08-12",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "We replaced an N² P2P WebRTC mesh with Cloudflare's Realtime SFU. The performer uploads audio once to the nearest edge, Cloudflare distributes it to the audience. Dynamic occlusion muffles the sound when geometry blocks line-of-sight. Here's the full architecture.",
+    "tags": [
+        "Cloudflare",
+        "WebRTC",
+        "SFU",
+        "SpatialAudio",
+        "WebXR"
+    ],
+    "sections": [
+        {
+            "title": "ZCode:",
+            "content": "When we first built performer audio, we used a P2P WebRTC mesh — each performer opened a separate RTCPeerConnection to every audience member. Four performers and twenty audience members meant eighty peer connections. That doesn't scale, there's no TURN fallback, and client CPU melts.\n\nThe fix: Cloudflare Calls, their Realtime SFU product. The performer uploads their audio track once to the nearest Cloudflare edge data center. Cloudflare distributes it to all audience members from there. No mesh, no TURN, scales to any audience size.\n\nThe API is clean: POST /apps/{appId}/sessions/new creates a session. POST /sessions/{sessionId}/tracks/new exchanges SDP for track publish/subscribe. Bearer token auth with the app secret. Pricing is $0.05/GB egress with the first 1,000GB free each month — a 64kbps Opus stream for a 3-minute song is about 1.4MB per listener, so the free tier covers roughly 700 audience-minutes per month."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "We need dynamic occlusion built in from the start. Sound should be muffled when something is between the listener and the source."
+        },
+        {
+            "title": "ZCode:",
+            "content": "Each performer's PositionalAudio gets a BiquadFilterNode (lowpass) inserted in its filter chain. An OcclusionSystem — an ECS system running at priority 0 alongside ProjectileSystem and MenuSystem — raycasts from the camera (the AudioListener) to each audio source each frame. If the ray hits scene geometry between the listener and the source, the lowpass frequency drops from 22,050Hz (full range, clear) down to 400Hz (heavily muffled). Clear line-of-sight restores full frequency.\n\nThe cost is one ray per audio source per frame — one to four rays for performers. Negligible compared to the BVH splat detection rays.\n\nThe whole spatial audio stack uses one shared AudioContext. We had a bug where splat-audio.js and audience-ambience.js each created their own AudioContext — browsers degrade performance with multiple active contexts. Fixed by making both import getAudioContext() from spatial-audio.js, the singleton."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "And we need architecture for a karaoke type performance."
+        },
+        {
+            "title": "ZCode:",
+            "content": "The songId and startTime plumbing already exists end-to-end. The DO's round_start event carries songId + startTime. On round_start, all clients load the backing track and start at the timestamp offset for sync. The performer's live mic is mixed over the backing track. The audience hears both: backing track (non-spatial, fills the room) plus performer voice (spatial PositionalAudio with occlusion). Lyrics in LRC format scroll on an in-world text panel for the performer. Phase 2 — ready to build when we have a demo song."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "We should use Cloudflare Calls or a turn-key service. For voice chat, you eventually want an SFU. Look into Cloudflare Calls, which provides an edge-rendered WebRTC SFU API."
+        },
+        {
+            "title": "ZCode:",
+            "content": "Done. All three apps — Tomato Opera, Green Room, Oz — now share the same Cloudflare Calls SFU app. Each Durable Object creates its own room session lazily on first publish. The DO acts as the signaling proxy (exchanging SDP via the existing WebSocket channel), and the SFU handles media fan-out at the edge. Graceful degradation: if credentials aren't set, voice silently fails and everything else works normally."
+        }
+    ]
+}

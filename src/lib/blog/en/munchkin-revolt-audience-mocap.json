@@ -1,0 +1,41 @@
+{
+    "slug": "munchkin-revolt-audience-mocap",
+    "title": "The Munchkin Revolt: Audience Mocap, Arm-Motion Throwing, and Consequences",
+    "date": "2026-08-12",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "When you enter the Tomato Opera theater, your webcam drives a VRM avatar seated in the audience. You throw tomatoes by thrusting your hand forward. If your tomatoes fall short and hit the munchkins three times, the audience revolts and ejects you. Here's the full pipeline from MediaPipe to munchkin mayhem.",
+    "tags": [
+        "MediaPipe",
+        "VRM",
+        "GameDesign",
+        "Kalidokit",
+        "WebXR"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "What about adding the option of playing an audience member in opera and using MediaPipe to capture a player in the audience who throws tomatoes at the performer? Also, if the throws fall short and land on the other audience members — a theater full of monster-mash GLB munchkins — what if after three tomatoes hit the munchkins there's a revolt and the player gets kicked out?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "When you click Enter the Theater, your webcam permission is requested. A VRM avatar spawns seated in the back-center audience seat — legs bent 90 degrees via applySeatedRestPose, arms relaxed. Your movements drive the avatar in real-time. Thrust your hand forward and a tomato spawns from your avatar's hand and flies toward the stage.\n\nThe throw detection tracks the right hand bone's world position each mocap frame. When the hand moves forward faster than the velocity threshold — 0.04 units per frame — and the forward component exceeds half that, the onThrow callback fires with the hand's world position as origin and the frame-over-frame velocity as the throw vector, scaled up and given an upward arc.\n\nA 350ms cooldown prevents multi-fire from one motion. The tomato uses the same spawnTomatoLocal function as the drag-to-throw and test-throw paths — same physics, same BVH hit detection, same splat decals."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "The tomatoes hit but don't splat on the avatar's legs."
+        },
+        {
+            "title": "ZCode:",
+            "content": "Fixed. Each of the 36 munchkin clones gets a bounding-sphere hit test — 0.5m radius, Z-gated for performance. When a tomato enters a munchkin's sphere, the onMunchkinHit callback increments the revolt counter. The HUD shows 'Audience anger: 1/3.' After three hits, a full-screen ejection overlay: 'You've Been Ejected! The munchkins have seized the theater.' A 'Sneak Back In' button reloads the page.\n\nThe munchkin revolt was firing before the player entered the theater — the ProjectileSystem ran on boot, so remote tomatoes from other players were hitting munchkins during the landing screen. Fixed with an isActive gate: the system returns early until setStarted(true) is called from the Enter button."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "The arms of the avatar are by default in a raised position. We need a natural arms-down rest pose."
+        },
+        {
+            "title": "ZCode:",
+            "content": "VRM models ship with arms outstretched as their bind pose. We added applyRestPose — rotates upper arms down about 57 degrees and slightly inward, lower arms with a slight bend, shoulders relaxed. Called the instant any VRM spawns, before mocap frames arrive. Once MediaPipe delivers the first frame, it overwrites these values seamlessly — there's no visible pop because the rest pose is already close to where mocap puts the arms at rest.\n\nFor seated audience avatars, applySeatedRestPose does the same upper body but also bends the legs 90 degrees at hips and knees so the avatar looks seated, not standing through the floor."
+        }
+    ]
+}

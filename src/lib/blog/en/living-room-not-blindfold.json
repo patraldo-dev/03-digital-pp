@@ -1,0 +1,41 @@
+{
+    "slug": "living-room-not-blindfold",
+    "title": "Designing for the Living Room, Not the Blindfold",
+    "date": "2026-08-12",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "James Cameron points at $2.3 billion as vindication of 3D filmmaking. But a reviewer said 3D 'feels like viewing through a paper towel tube.' That's the vestibular mismatch — your eyes say one thing, your inner ear says another. AmbientX is built for the living room: mocap-driven VRM avatars that work on a phone webcam, spatial audio on speakers, a 3D world you can see without goggles.",
+    "tags": [
+        "Design",
+        "WebXR",
+        "AR",
+        "MediaPipe",
+        "Philosophy"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "Use mcp zread to read this search about James Cameron and 3D. Is he still a proponent?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Cameron remains the loudest 3D proponent, pointing at Avatar's box office as vindication. But the critical counterpoint is the reviewer who said 3D 'feels like viewing through a paper towel tube.' That's the vestibular mismatch problem. Cameron's Avatar works in theaters because the screen fills your peripheral vision and the 3D is subtle depth, not thrust. A VR headset is the opposite: total immersion but total sensory replacement."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Keep writing clean, modular ECS code where your Transform components serve as the absolute source of truth. Just make sure your experiences are designed to layer neatly on top of a user's real living room rather than demanding they blindfold themselves with a plastic visor. The new glasses are coming at Meta Connect 2026 in 6 weeks or so. I want to build our apps for that."
+        },
+        {
+            "title": "ZCode:",
+            "content": "AmbientX's strength is exactly this: mocap-driven VRM avatars that work on a phone webcam, spatial audio that works on speakers, a 3D world you can see on a screen without goggles. The XR and VR features are the enhancement layer, not the gate. When someone puts on a Quest, they get the bonus experience — first-person avatar view, VR controller throwing, hand tracking via WebXR. When they don't have one, everything still works.\n\nThis is the right architecture. The ECS Transform-as-source-of-truth pattern, the service bindings, the SFU voice chat, the touchless hand pointer — all platform-agnostic infrastructure that serves both modes equally. Design for the living room, let the headset be the enhancement.\n\nThe role mapping falls out naturally: VR-headset players become performers (full-body VRM mocap on stage), flat-screen players become audience and camera-operators (webcam mocap seated in the crowd, throw tomatoes with arm motion). You're not fighting the hardware divide, you're using it as the role divide — performers on stage, audience watching screens."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "What about touchless control as an additional pointing mechanism? Hand gesture tracking is key."
+        },
+        {
+            "title": "ZCode:",
+            "content": "The touchless pointer uses the webcam's hand landmarks: index finger tip as cursor, pinch to click. It works today on phone and desktop with a webcam. When AR glasses with displays arrive, the hand pointer plus the in-world 3D panel become the primary interaction. No controller, no touch — just your hand. This is the input layer for the post-headset era."
+        }
+    ]
+}

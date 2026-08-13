@@ -1,0 +1,32 @@
+{
+    "slug": "live-show-status-across-platforms",
+    "title": "LIVE Badge: Cross-Platform Show Status via Service Bindings",
+    "date": "2026-08-12",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "The landing page, green room, and opera now all show consistent live show status. The badge polls every 15 seconds — but via a same-origin proxy through Cloudflare service bindings, not a public HTTP fetch. A red pulsing 'LIVE · performer name' when someone is on stage, gray audience count when idle.",
+    "tags": [
+        "Cloudflare",
+        "ServiceBindings",
+        "DurableObjects",
+        "UX"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "The performer status should be a card in the green room also or instead, and definitely on the home landing page site app."
+        },
+        {
+            "title": "ZCode:",
+            "content": "The landing page now shows a live status badge on the Tomato Opera game card. It polls every 15 seconds — red pulsing 'LIVE · performer name' when someone is on stage, gray 'N in theater' audience count when idle. All three surfaces show consistent status: site landing page (badge on game card), green room (status panel with performer names), opera (performer status in the in-world menu and DOM bar).\n\nThe badge was silently broken before — the browser fetched opera.ambientx.dev/ which hit SvelteKit's HTML page renderer, not the DO's JSON handler. Fixed by adding a dedicated /api/opera/status route that forwards to the Durable Object. The green room and site proxy through their own /api/opera-status endpoint, which uses the OPERA_SERVICE service binding to call the opera Worker over Cloudflare's network instead of the public internet."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "RPC would be lower latency. Why wait? Let's wire it up now instead of HTTP."
+        },
+        {
+            "title": "ZCode:",
+            "content": "Wired. The browser calls /api/opera-status (same-origin, no CORS). The Worker calls env.OPERA_SERVICE.fetch (service binding, same network). The opera Worker routes to the DO. The DO returns JSON. Lower latency, no CORS, no public internet hop. Falls back to public HTTP if the binding isn't configured.\n\nThe Durable Object already has the data: connections.size for player count, _performerInfo() for who's on stage, roundState for show lifecycle. The status endpoint just needed to be routed correctly from the SvelteKit app to the DO stub."
+        }
+    ]
+}

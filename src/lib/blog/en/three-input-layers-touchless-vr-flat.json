@@ -1,0 +1,54 @@
+{
+    "slug": "three-input-layers-touchless-vr-flat",
+    "title": "Three Input Layers: Designing for Phone, Headset, and AR Glasses Simultaneously",
+    "date": "2026-08-12",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "AmbientX now has three coexisting input systems: DOM buttons for flat screens, VR controller grip-throw for headsets, and a touchless hand-gesture pointer using MediaPipe for future AR glasses. The platform determines which layer is primary — no platform detection needed.",
+    "tags": [
+        "WebXR",
+        "MediaPipe",
+        "Touchless",
+        "AR",
+        "InputDesign",
+        "Architecture"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "Controlling the avatar VRM with MediaPipe is more compelling than using a joystick or WASD, for the most part. But now I've complicated things by adding VRM avatars as audience members who can lance tomatoes with a physical arm throw. What might be even more compelling is the ability to view the theater from inside the avatar. How to go back and forth?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "The key move is separating locomotion and embodiment — they're already different systems. Arms and torso stay 1:1 body-tracked for the throw mechanics, while a separate locomotion layer handles translation through the theater. That's how every social VR app handles full-body tracking, because your physical play space will never be as big as a theater."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Great answers, and probably completely logical given the VR context, but my WebXR isn't just about VR; I've tried to build it so that it can be useful without goggles."
+        },
+        {
+            "title": "ZCode:",
+            "content": "That reframes everything. Third-person cameras are the default on flat screens — free-orbit, smooth transitions, cinematic cuts, nothing needs comfort engineering the way it does in VR. On desktop/mobile, first person vs third person is just a camera preference. The free-cam ghost mode that's risky for VR is just a normal camera toggle on flat screen."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "So what about touchless control interfaces? What about Meta Connect 2026 — AR glasses with displays?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "We built three input layers that coexist. The platform determines which one the user reaches for:\n\n**Flat screen (phone/desktop):** DOM bottom bar buttons + drag-to-throw + touchless hand pointer. The bar auto-hides after 5 seconds. Drag anywhere to fling a tomato.\n\n**VR headset (Quest):** In-world 3D menu panel floating in the theater, interacted with via controller ray or hand pinch. VR controller grip-swing-release throws tomatoes with real velocity computed from a 5-frame position buffer.\n\n**AR glasses (future):** In-world 3D panel + touchless hand pointer. Your index finger becomes the cursor, pinch to click. No controller needed.\n\nThe touchless pointer reuses the existing MediaPipe HolisticLandmarker's rightHandLandmarks — index finger tip (landmark 8) maps to screen position, thumb-index pinch distance triggers a click. No separate model, no extra compute cost. It dispatches a real DOM click via document.elementFromPoint, so existing buttons receive it naturally."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "So if we had Meta glasses, say the Ray-Bans, we could use the in-world menu and not the bottom bar?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "The current Ray-Ban Metas can't show a 3D menu — they have no display layer. They're camera + audio only. But the in-world panel is ready and waiting for any device that CAN render 3D. When AR glasses with actual displays arrive, the 3D panel will be the natural interaction method — you'd look at the floating panel in your living room and tap it with your finger. The DOM bottom bar is the reliable fallback for everything else, and that's not a compromise — it's the right UX for flat screens."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Keep writing clean, modular ECS code where your Transform components serve as the absolute source of truth. Make sure your experiences are designed to layer neatly on top of a user's real living room rather than demanding they blindfold themselves with a plastic visor."
+        }
+    ]
+}
