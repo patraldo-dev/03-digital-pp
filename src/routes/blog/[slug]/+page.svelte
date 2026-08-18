@@ -5,6 +5,7 @@
     import { marked } from 'marked';
     import DOMPurify from 'dompurify';
     import { untrack } from 'svelte';
+    import BlogSidebar from '$lib/components/BlogSidebar.svelte';
 
     // Svelte 5: Get props
     let { data } = $props();
@@ -157,6 +158,11 @@
 
 <article class="blog-post">
     <div class="container">
+        <div class="blog-layout">
+        <aside class="index-col">
+            <BlogSidebar posts={data.allPosts || []} currentSlug={data.post?.slug} {t} />
+        </aside>
+        <div class="main-col">
         <header class="post-header">
             <a href="/blog" class="back-link">← {t.blog_post_back || 'Back to Blog'}</a>
             <div class="badges-row">
@@ -189,6 +195,35 @@
                 </div>
             {/if}
         </header>
+
+        {#if data.previousPost || data.nextPost || data.oldestPost || data.latestPost}
+            <nav class="post-navigation top-nav" aria-label={t.blog_navigation || 'Post navigation'}>
+                {#if data.oldestPost && data.oldestPost.slug !== data.post?.slug}
+                    <a href="/blog/{data.oldestPost.slug}" class="nav-link end-link" title={data.oldestPost.title}>
+                        <span class="nav-label">« {t.blog_index_oldest || 'Oldest'}</span>
+                        <span class="nav-title">{data.oldestPost.title}</span>
+                    </a>
+                {/if}
+                {#if data.previousPost}
+                    <a href="/blog/{data.previousPost.slug}" class="nav-link prev" title={data.previousPost.title}>
+                        <span class="nav-label">← {t.blog_post_prev || 'Previous'}</span>
+                        <span class="nav-title">{data.previousPost.title}</span>
+                    </a>
+                {/if}
+                {#if data.nextPost}
+                    <a href="/blog/{data.nextPost.slug}" class="nav-link next" title={data.nextPost.title}>
+                        <span class="nav-label">{t.blog_post_next || 'Next'} →</span>
+                        <span class="nav-title">{data.nextPost.title}</span>
+                    </a>
+                {/if}
+                {#if data.latestPost && data.latestPost.slug !== data.post?.slug}
+                    <a href="/blog/{data.latestPost.slug}" class="nav-link end-link latest" title={data.latestPost.title}>
+                        <span class="nav-label">{t.blog_index_latest || 'Latest'} »</span>
+                        <span class="nav-title">{data.latestPost.title}</span>
+                    </a>
+                {/if}
+            </nav>
+        {/if}
 
         <div class="post-content">
             {#if renderedSections.length > 0}
@@ -243,23 +278,33 @@
         </div>
 
         <footer class="post-footer">
-            {#if data.previousPost || data.nextPost}
-                <nav class="post-navigation">
-                    {#if data.previousPost}
-                        <a href="/blog/{data.previousPost.slug}" class="nav-link prev">
-                            <span class="nav-label">← {t.blog_post_prev || 'Previous'}</span>
-                            <span class="nav-title">{data.previousPost.title}</span>
-                        </a>
-                    {/if}
-                    {#if data.nextPost}
-                        <a href="/blog/{data.nextPost.slug}" class="nav-link next">
-                            <span class="nav-label">{t.blog_post_next || 'Next'} →</span>
-                            <span class="nav-title">{data.nextPost.title}</span>
-                        </a>
-                    {/if}
-                </nav>
-            {/if}
+            <nav class="post-navigation">
+                {#if data.previousPost}
+                    <a href="/blog/{data.previousPost.slug}" class="nav-link prev">
+                        <span class="nav-label">← {t.blog_post_prev || 'Previous'}</span>
+                        <span class="nav-title">{data.previousPost.title}</span>
+                    </a>
+                {:else if data.oldestPost && data.oldestPost.slug !== data.post?.slug}
+                    <a href="/blog/{data.oldestPost.slug}" class="nav-link prev">
+                        <span class="nav-label">« {t.blog_index_oldest || 'Oldest'}</span>
+                        <span class="nav-title">{data.oldestPost.title}</span>
+                    </a>
+                {/if}
+                {#if data.nextPost}
+                    <a href="/blog/{data.nextPost.slug}" class="nav-link next">
+                        <span class="nav-label">{t.blog_post_next || 'Next'} →</span>
+                        <span class="nav-title">{data.nextPost.title}</span>
+                    </a>
+                {:else if data.latestPost && data.latestPost.slug !== data.post?.slug}
+                    <a href="/blog/{data.latestPost.slug}" class="nav-link next">
+                        <span class="nav-label">{t.blog_index_latest || 'Latest'} »</span>
+                        <span class="nav-title">{data.latestPost.title}</span>
+                    </a>
+                {/if}
+            </nav>
         </footer>
+        </div>
+        </div>
     </div>
 </article>
 
@@ -395,6 +440,15 @@
     .blog-post {
         padding: 4rem 0 6rem;
         min-height: calc(100vh - 200px);
+    }
+
+    /* Sidebar index + main column. The post content keeps its own
+       800px cap inside the main column. */
+    .blog-layout {
+        display: grid;
+        grid-template-columns: 270px minmax(0, 1fr);
+        gap: 3rem;
+        align-items: start;
     }
 
     .post-header {
@@ -774,6 +828,40 @@
         padding-top: 3rem;
     }
 
+    /* The moved prev/next + Oldest/Latest bar sits under the header —
+       compact cells, clamped titles, so it never pushes the article
+       below the fold. */
+    .top-nav {
+        max-width: 800px;
+        margin: 0 auto 3rem;
+        padding: 1.5rem 1rem 0;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .top-nav .nav-link {
+        padding: 0.8rem 1rem;
+        border-radius: 14px;
+    }
+
+    .top-nav .nav-label {
+        margin-bottom: 0.35rem;
+        font-size: 0.68rem;
+    }
+
+    .top-nav .nav-title {
+        font-size: 0.82rem;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .top-nav .nav-link.end-link .nav-label {
+        color: #B8A06A;
+    }
+
     .nav-link {
         display: flex;
         flex-direction: column;
@@ -817,9 +905,21 @@
         line-height: 1.4;
     }
 
+    @media (max-width: 1023px) {
+        .blog-layout {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+    }
+
     @media (max-width: 768px) {
         .blog-post {
             padding: 3rem 0 4rem;
+        }
+
+        .top-nav {
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
         }
 
         .post-header h1 {

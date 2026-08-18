@@ -1,6 +1,7 @@
 <script>
     import { page } from '$app/stores';
     import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+    import BlogSidebar from '$lib/components/BlogSidebar.svelte';
 
     // Svelte 5: Get props
     let { data } = $props();
@@ -43,6 +44,12 @@
 
 <div class="container">
     <section class="blog-content">
+        {#if data.allPosts && data.allPosts.length > 0}
+            <aside class="index-col">
+                <BlogSidebar posts={data.allPosts} {t} />
+            </aside>
+        {/if}
+        <div class="main-col">
         {#if data.posts && data.posts.length > 0}
             <div class="posts-grid">
                 {#each data.posts as post}
@@ -81,6 +88,7 @@
                 <a href="/contact" class="btn btn-primary">{t.blog_no_posts_btn || 'Stay Updated'}</a>
             </div>
         {/if}
+        </div>
     </section>
 
     <!-- Newsletter signup -->
@@ -269,6 +277,17 @@
     /* --- Blog Content --- */
     .blog-content {
         padding: 4rem 0 6rem;
+        display: grid;
+        grid-template-columns: 270px minmax(0, 1fr);
+        gap: 3rem;
+        align-items: start;
+    }
+
+    @media (max-width: 1023px) {
+        .blog-content {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
     }
 
     .posts-grid {

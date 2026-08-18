@@ -310,5 +310,9 @@
   "project_mexicanbold_link": "Walk the Corridor",
   "project_urbaninversion_title": "GDL.urbaninversion.com",
   "project_urbaninversion_desc": "WebXR immersive portal experience exploring Guadalajara urban landscapes. 3D spatial navigation with real-time AR overlay. SvelteKit 5, Three.js, WebXR, Cloudflare Workers.",
-  "project_urbaninversion_link": "Enter the Portal"
+  "project_urbaninversion_link": "Enter the Portal",
+  "blog_index_title": "All Posts",
+  "blog_index_open": "Post index",
+  "blog_index_oldest": "Oldest",
+  "blog_index_latest": "Latest"
 }

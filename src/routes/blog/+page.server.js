@@ -21,6 +21,9 @@ export async function load({ url, locals }) {
 
     return {
         posts,
+        // Full title index for the sidebar (posts above are the
+        // paginated 6; the sidebar lists every post regardless).
+        allPosts: sortedPosts.map((p) => ({ slug: p.slug, title: p.title, date: p.date })),
         pagination: {
             currentPage: page,
             totalPages,

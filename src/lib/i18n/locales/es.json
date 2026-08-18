@@ -310,5 +310,9 @@
   "project_mexicanbold_link": "Camina el Corredor",
   "project_urbaninversion_title": "GDL.urbaninversion.com",
   "project_urbaninversion_desc": "Experiencia WebXR con portal inmersivo que explora los paisajes urbanos de Guadalajara. Navegación espacial 3D con overlay AR en tiempo real. SvelteKit 5, Three.js, WebXR, Cloudflare Workers.",
-  "project_urbaninversion_link": "Entra al Portal"
+  "project_urbaninversion_link": "Entra al Portal",
+  "blog_index_title": "Todas las entradas",
+  "blog_index_open": "Índice de entradas",
+  "blog_index_oldest": "La más antigua",
+  "blog_index_latest": "La más reciente"
 }

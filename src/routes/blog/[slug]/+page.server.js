@@ -22,7 +22,10 @@ export async function load({ params, locals, url }) {
         throw error(404, 'Post not found');
     }
 
-    // Build prev/next navigation across the locale's posts (newest first).
+    // Navigation across the locale's posts (newest first): prev/next
+    // neighbours, the full title index for the sidebar, and the two
+    // ends of the timeline so the reader can jump to the very first
+    // post or straight back to the latest.
     const allPosts = await getBlogPosts(locale);
     const sortedPosts = allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
     const currentIndex = sortedPosts.findIndex((p) => p.slug === slug);
@@ -34,6 +37,15 @@ export async function load({ params, locals, url }) {
     return {
         post,
         previousPost,
-        nextPost
+        nextPost,
+        // Sidebar index (slim — titles only, no bodies)
+        allPosts: sortedPosts.map((p) => ({
+            slug: p.slug,
+            title: p.title,
+            date: p.date
+        })),
+        // Timeline ends: sortedPosts[0] is the newest, last is the oldest.
+        latestPost: sortedPosts.length > 1 ? sortedPosts[0] : null,
+        oldestPost: sortedPosts.length > 1 ? sortedPosts[sortedPosts.length - 1] : null
     };
 }

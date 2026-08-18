@@ -310,5 +310,9 @@
   "project_mexicanbold_link": "Parcourir le Couloir",
   "project_urbaninversion_title": "GDL.urbaninversion.com",
   "project_urbaninversion_desc": "Expérience WebXR avec portail immersif explorant les paysages urbains de Guadalajara. Navigation spatiale 3D avec overlay AR en temps réel. SvelteKit 5, Three.js, WebXR, Cloudflare Workers.",
-  "project_urbaninversion_link": "Entrer dans le Portail"
+  "project_urbaninversion_link": "Entrer dans le Portail",
+  "blog_index_title": "Tous les articles",
+  "blog_index_open": "Index des articles",
+  "blog_index_oldest": "Le plus ancien",
+  "blog_index_latest": "Le plus récent"
 }
