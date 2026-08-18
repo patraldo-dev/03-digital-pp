@@ -1,5 +1,6 @@
 <script>
     import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+    import BlogSearch from '$lib/components/BlogSearch.svelte';
     import { page } from '$app/stores';
 
     let { data } = $props();
@@ -31,7 +32,10 @@
             <h1 class="ink-reveal">
                 <span class="gradient-text">{t.home_hero_title}</span>
             </h1>
-                    </div>
+            <div class="hero-search">
+                <BlogSearch {t} />
+            </div>
+        </div>
     </div>
 </div>
 
@@ -277,6 +281,11 @@
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
+    }
+
+    .hero-search {
+        margin-top: 1rem;
+        max-width: 800px;
     }
 
     .hero-subtitle {
