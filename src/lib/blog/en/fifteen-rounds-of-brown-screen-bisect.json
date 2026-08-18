@@ -1,0 +1,57 @@
+{
+    "slug": "fifteen-rounds-of-brown-screen-bisect",
+    "title": "Fifteen Rounds with a Brown Screen: Bisecting a WebXR Regression Through Production Deploys",
+    "date": "2026-08-17",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "The opera theater started rendering everything behind a brown fill. What followed was a fifteen-round bisect carried out not with a debugger but with production deploys, exact git tree restores, build stamps, and one human eyeball. Two independent causes, one poisoned verdict, and a long list of things we confirmed along the way so the day wasn't a total bust.",
+    "tags": [
+        "WebXR",
+        "Debugging",
+        "Git",
+        "Cloudflare",
+        "ThreeJS"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "The theater is brown. Everything renders and then this brown fill covers it. It worked before the last batch of changes — the crowd morph bake, the pinch-zoom removal, the lighting teardown. Where do we even start?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "The awkward part: that last batch was three changes in one push, and none of them obviously touch color. You can't bisect what you can't run, and the artifact only reproduces reliably in a real browser on the deployed site — headless SwiftShader probes render the scene fine and show no errors.\n\nSo we built a bisect out of what we do have: git, the deploy pipeline, and your eyes. Each round works like this — pick a commit, restore its exact tree with `git read-tree -u --reset <sha>^{tree}`, commit that as a checkpoint, push through the script that auto-builds and deploys to Cloudflare, poll `/_app/version.json` until the new build id lands, then you hard-refresh and say BROWN or NO BROWNS.\n\nThe build stamp matters more than anything else in that loop. Every boot logs `[viewdbg] attached — build <id>`. If your console doesn't show the id we just deployed, your browser served you a stale bundle and the verdict doesn't count."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "How many rounds did this take?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Fifteen. And the first surprise came immediately: round 0 tested the commit we thought was the last known good — BAD. The brown predates the batch we suspected. The regression was older than our suspicions.\n\nRounds 1 through 4 walked back through July-era commits — all clean. Round 5 flipped BAD. Rounds 6 and 7 stayed BAD, which put the boundary at e86e06f: the crowd morph bake, the change that replaced 36 live munchkin animations with baked poses for performance. We re-ran its parent to be sure — clean. Cause A, pinned."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "So it was the bake. Why didn't we just revert it and go home?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "We tried exactly that. The revert deployed... brown. That's the moment the day went from 'a bug' to 'a mess': removing cause A did not remove the brown. Either the bake broke something persistently — state, an asset, a cached bundle — or there was a second cause.\n\nThere was a second cause. And here's the confession that goes with it: the way we found it was the dirty way. Since the modern commits all tested BAD, we stopped believing any of them and built a synthetic chain — the old known-good tree with newer changes replayed on top one checkpoint at a time, each round deployed and eyeballed. Eight more rounds. All of them clean, which finally localized the brown to one specific commit: f2caa47, which contained — all tangled together — the lighting teardown, the pinch-zoom removal, and the crowd bake.\n\nRound 15 was the split: that exact tree, bake taken back out, pinch-zoom restored. Clean, verified on build 1787027069062. Two causes, both now named: the crowd morph bake (cause A) and whatever the pinch-kill dragged in with it (cause B)."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "You said the bake was for performance. Are we just eating that cost again?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "For now, yes — 36 munchkins animating live again. The honest engineering answer is that the bake is the right idea implemented on the wrong assumption, and the proper fix is accessor-based baking that reads morph attributes per seat instead of sharing one baked geometry across clones. That's parked until the dust settles. Performance debt is survivable; a brown theater is not.\n\nAnd a caveat we owe the record: the very first revert that 'stayed brown' was never build-stamp verified. Given that we caught your browser serving stale bundles twice during this saga, that verdict is suspect. It's moot in practice — the final tree has the pinch alive and the bake out — but if we ever autopsy this again, that's the loose thread."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "It feels like a day lost to a brown rectangle. Was anything actually gained?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "More than a debug session usually produces, honestly:\n\n1. We proved the regression predated our suspects. Without round 0 we'd have 'fixed' the wrong batch and shipped brown again.\n2. The exact-tree restore became a trusted primitive — `git checkout <sha> -- .` leaves droppings; `read-tree -u --reset` gives you bit-for-bit the tree you asked for, and it's how we can restore any checkpoint forever.\n3. The split-round technique: when one commit carries three changes and the BAD follows it, stop bisecting commits and start bisecting changes inside the commit.\n4. The build-stamp rule — every verdict must be tied to the boot line's build id and matched against version.json. It rejected two stale-cache verdicts that would each have sent the bisect down a wrong branch.\n5. We cleared the lighting teardown of all suspicion. It's still in the final tree, working.\n6. The final tree is the newest real code minus the bake — a three-line diff from the true tip. We lost nothing, and we know exactly what we're standing on.\n\nThe theater is un-brown, the avatars are seated, and the next time a deploy goes visually wrong, the whole apparatus for finding out why already exists."
+        }
+    ]
+}

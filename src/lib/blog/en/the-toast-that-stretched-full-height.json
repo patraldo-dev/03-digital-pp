@@ -1,0 +1,39 @@
+{
+    "slug": "the-toast-that-stretched-full-height",
+    "title": "The Toast That Stretched Full-Screen: An Absolute-Positioning Footgun",
+    "date": "2026-08-17",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "A camera-toggle toast rendered as a long grey container spanning the phone screen. The culprit: one CSS rule setting `top`, a media query adding `bottom`, and an absolutely positioned element with auto height doing exactly what the spec says — stretching to satisfy both.",
+    "tags": [
+        "CSS",
+        "Mobile",
+        "Debugging"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "The camera icon works now, but the toast it creates is broken — it makes this long grey container, almost the whole height of the screen. See the screenshot."
+        },
+        {
+            "title": "ZCode:",
+            "content": "The markup is innocent — one div, one class, a short string: '📷 Mocap on — thrust hand to throw'. The crime scene is in the stylesheet, split across two rules.\n\nThe base rule positions the toast absolutely near the top: `top: 4.5rem`, plus the usual centering with `left: 50%` and a translate. Then a mobile media query, aiming to relocate it above the bottom bars, adds `bottom: 7rem` — and forgets the toast already has a `top`.\n\nHere's the footgun: an absolutely positioned element with `height: auto` that has BOTH `top` and `bottom` set doesn't pick one — it stretches. The box becomes exactly as tall as the space between 4.5rem from the top and 7rem from the bottom: on a phone, nearly the full screen. The text still renders at the top of the box, the background fills the whole column, and a two-word toast looks like a broken modal."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Why did it only show up on mobile?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Because the `bottom` only exists inside `@media (max-width: 768px)`. Desktop never sets it, so desktop saw the intended little banner and mobile saw the grey monolith. Classic breakpoint bug: each rule was individually reviewed, nobody read them as a stack.\n\nThe fix is one declaration — `top: auto` in the media query, before `bottom` takes over. But while we were in there the toast got the finish its siblings already had: a border, a border-radius, a font-size, a color, and `white-space: nowrap` so it stays a pill instead of wrapping into a placard. It now looks like every other toast in the HUD instead of like a container that lost its content."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Is there a general rule to take away?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Treat the four inset properties as two opposing pairs, not four independent knobs. If a breakpoint (or any override) moves an absolutely positioned element from one edge to another, it must clear the opposite inset — `top: auto` or `bottom: auto` — or the box stretches whenever its height is auto. And a stretch bug is invisible in the rule that causes it; you only see it when both rules apply at once. Which is why, if you're wondering, nobody caught it in review: the base rule and the media query were written months apart."
+        }
+    ]
+}

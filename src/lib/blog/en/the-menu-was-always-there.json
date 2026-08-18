@@ -1,0 +1,48 @@
+{
+    "slug": "the-menu-was-always-there",
+    "title": "The Menu Was Always There: Field of View, Tap-Through, and the Illusion of Missing Features",
+    "date": "2026-08-17",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "After restoring the opera from the brown-screen bisect, the in-world menu felt gone: every touch toggled the UI, the join-stage option was nowhere, the avatar was missing. Nothing was missing. The menu was sitting 50 degrees off-axis in a 26-degree field of view. A lesson in reachability versus existence.",
+    "tags": [
+        "WebXR",
+        "ThreeJS",
+        "UX",
+        "GameDesign"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "It's missing a lot. I don't see how to use the in-world menu because whether on desktop or mobile, touching the screen toggles the UI. And I don't see the join stage icon or the seated avatar anywhere. Did the restore lose features?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "The audit said no — the VRM loader, the seated rest pose, the webcam mocap session, the claim-stage WebSocket call, the in-world menu panel with its Join Stage button: all present in the restored tree, all wired. This was a reachability problem wearing a missing-feature costume.\n\nThree separate things stacked up. First, placement: the menu panel sat at a fixed world position — 5.5 meters to the right of the theater center. In VR that's a natural spot. On a flat screen, whether it's on-screen depends entirely on the field of view, and a phone in portrait has a horizontal FOV of roughly 24 to 26 degrees. The panel center sat about 50 degrees off the view axis. It wasn't hidden. It was standing just outside the window."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "And when I tapped where it should have been?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "That's the second problem. The tap handler raycast against the panel and checked whether the hit landed on a button. Hit a button — great, dispatch it. Miss everything — and the tap fell straight through to the window's YouTube-style toggle, which hides or shows the whole DOM UI. So on desktop, where the panel was technically in frame, a tap that grazed the panel's edge didn't press nothing — it flipped your controls off. Every imprecise touch felt like the app was fighting you.\n\nThe third: the comment in the code promised a ☰ button in the DOM bar to toggle the panel. The comment was a lie. The button had never been written."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "So how do you make one panel work for a Quest, a desktop, and a phone?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "In VR nothing changes — the panel stays world-anchored at its theater spot, because in a headset you can turn your head and find it; that's the medium. On flat screens the panel now follows the camera. Every frame it computes the horizontal FOV from the vertical one and the aspect ratio — hfov = 2·atan(tan(vfov/2)·aspect) — and anchors itself at the right edge of the view at a distance clamped between 6.6 and 10 meters. The floor of 6.6 keeps the 3.5-meter-tall panel inside a 50-degree vertical FOV; the ceiling of 10 keeps it inside the tap raycaster's 15-meter range. Same geometry code, any screen shape.\n\nThe tap fix is one line of intent: any hit on the panel consumes the tap. Missing a button should feel like missing a button, not like toggling a different UI. Then the ☰ button actually exists — first icon in the DOM bar — and when you hide the DOM bar, the panel is forced visible. There is no state where the screen has no control surface."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "The avatar still didn't show up after your fix."
+        },
+        {
+            "title": "ZCode:",
+            "content": "Signed out, weren't you. The 🎤 Join Stage button is tier-gated — premium, VIP, or beta tester — and an anonymous session gets an 'Upgrade' label instead. The 📷 avatar button works either way, but the whole feature reads as absent when you're not signed in. That's fair gating doing its job, just with poor messaging: 'upgrade' should probably also say 'or sign in.'\n\nThe general lesson we keep relearning: in a 3D UI, 'the user can't find it' and 'it doesn't exist' produce identical bug reports. Before hunting for lost code, check the field of view, the raycast, and the session. The features were never lost — they were 50 degrees away from the window and one sign-in short."
+        }
+    ]
+}

@@ -1,0 +1,40 @@
+{
+    "slug": "trust-the-build-stamp-not-the-browser",
+    "title": "Trust the Build Stamp, Not the Browser: Surviving Cache Stickiness During a Bisect",
+    "date": "2026-08-17",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "Twice during the brown-screen bisect, a fresh deploy was confirmed live on the server while the tester's browser kept running yesterday's bundle. Both verdicts would have poisoned the search. The fix wasn't cache headers — it was making every human verdict quote the build id embedded in the app itself.",
+    "tags": [
+        "Cloudflare",
+        "Debugging",
+        "CDN",
+        "Process"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "I tested the new round and it still looks wrong — here's my console paste."
+        },
+        {
+            "title": "ZCode:",
+            "content": "Your console paste starts with `[viewdbg] attached — build 1787026467184`. The deploy we're testing is 1787027069062. You just graded the previous round. No verdict accepted — go close the tab fully and come back, or add a cache-bust query to the URL.\n\nThat happened twice. Both times, the server was provably serving the new build — `/_app/version.json` returned the fresh id, and a clean headless probe loaded it and found the new code — while your browser quietly kept the old bundle from cache. A deploy is not a property of the code; it's a property of what the client actually executed."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Why not just fix the caching so this can't happen?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "The static hosting already does the right things — hashed filenames, immutable assets. But the entry document and the service-worker layer can still hold a session back, and during a bisect you're redeploying every few minutes, which is exactly the cadence caches are worst at. You can't fully cache-proof a browser you don't control, on a phone, over mobile data.\n\nSo the discipline moved to the protocol instead: the app stamps its build id into the very first boot log line — `[viewdbg] attached — build <id>`. Every verdict you report must include that line, and it gets matched against version.json on the server before the verdict counts. If they disagree, the test didn't happen. It cost one line of code and it has never been wrong since."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Any other traps from redeploying that fast?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Two worth naming. Mid-deploy mixed serving: for a short window after a push, the edge can serve the new document referencing old hashed chunks — you get a burst of 404s and a white screen that looks like a regression and is actually just timing. The rule: when version.json flips, wait a beat and re-poll before declaring anything broken.\n\nAnd verdict hygiene in general: a human eyeball is your most sensitive instrument for visual artifacts and your least reliable one for state. The build stamp turns 'it looks the same' into two distinct claims — 'I ran build X' and 'build X is brown' — and only one of those can be wrong. During fifteen rounds of bisection, that distinction is what kept the map trustworthy.\n\nIf you run staged deploys with human visual checks, steal the pattern: embed the build id in the boot log, make every verdict quote it, and treat a mismatch as a non-event rather than a data point."
+        }
+    ]
+}
