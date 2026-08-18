@@ -21,6 +21,20 @@
     }
   ],
 
+       /* Workers AI — native binding, no API token needed at runtime */
+       "ai": {
+    "binding": "AI"
+  },
+
+       /* Vectorize — semantic index for the blog search (768d cosine,
+          matches @cf/baai/bge-base-en-v1.5 embeddings) */
+       "vectorize": [
+    {
+      "binding": "VECTORIZE",
+      "index_name": "pp-blog-search"
+    }
+  ],
+
        "secrets_store_secrets": [
 	  {
 	    "binding": "CLOUDFLARE_API_TOKEN",

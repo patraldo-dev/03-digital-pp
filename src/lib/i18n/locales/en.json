@@ -314,5 +314,13 @@
   "blog_index_title": "All Posts",
   "blog_index_open": "Post index",
   "blog_index_oldest": "Oldest",
-  "blog_index_latest": "Latest"
+  "blog_index_latest": "Latest",
+  "search_title": "Search the blog",
+  "search_placeholder": "Search the blog — concepts work, not just keywords…",
+  "search_searching": "Searching…",
+  "search_no_results": "No matches — try another phrasing.",
+  "search_error": "Search failed",
+  "search_min_chars": "Keep typing — a few more letters…",
+  "search_match": "relevance",
+  "search_stages": "Ranked by"
 }

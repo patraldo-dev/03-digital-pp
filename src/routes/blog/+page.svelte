@@ -2,6 +2,7 @@
     import { page } from '$app/stores';
     import SubscribeForm from '$lib/components/SubscribeForm.svelte';
     import BlogSidebar from '$lib/components/BlogSidebar.svelte';
+    import BlogSearch from '$lib/components/BlogSearch.svelte';
 
     // Svelte 5: Get props
     let { data } = $props();
@@ -50,6 +51,7 @@
             </aside>
         {/if}
         <div class="main-col">
+        <BlogSearch {t} />
         {#if data.posts && data.posts.length > 0}
             <div class="posts-grid">
                 {#each data.posts as post}

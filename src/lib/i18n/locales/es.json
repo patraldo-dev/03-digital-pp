@@ -314,5 +314,13 @@
   "blog_index_title": "Todas las entradas",
   "blog_index_open": "Índice de entradas",
   "blog_index_oldest": "La más antigua",
-  "blog_index_latest": "La más reciente"
+  "blog_index_latest": "La más reciente",
+  "search_title": "Buscar en el blog",
+  "search_placeholder": "Busca en el blog — funcionan los conceptos, no solo las palabras…",
+  "search_searching": "Buscando…",
+  "search_no_results": "Sin resultados — prueba otra frase.",
+  "search_error": "La búsqueda falló",
+  "search_min_chars": "Sigue escribiendo — unas letras más…",
+  "search_match": "relevancia",
+  "search_stages": "Ordenado por"
 }
