@@ -6,6 +6,12 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "03-digital-pp",
 	"main": ".svelte-kit/cloudflare/_worker.js",
+	// Search index refresh — every 6 hours is far more often than the
+	// post cadence; the manual /api/search/reindex endpoint remains
+	// the "I just posted" override.
+	"triggers": {
+		"crons": ["0 */6 * * *"]
+	},
 	"compatibility_date": "2025-08-05",
 	"assets": {
 		"binding": "ASSETS",
