@@ -9,6 +9,11 @@
     
     // Get translations from page data
     let t = $derived($page.data?.t || {});
+    let lang = $derived($page.data?.lang || 'en');
+
+    // Locale-aware, SSR-stable date formatting (no bare toLocaleDateString).
+    const DATE_LOCALES = { en: 'en-US', es: 'es-MX', fr: 'fr-FR' };
+    const fmtDate = (d) => new Date(d).toLocaleDateString(DATE_LOCALES[lang] || 'en-US');
 </script>
 
 <svelte:head>
@@ -37,7 +42,7 @@
 
 <div class="page-header">
     <div class="container">
-        <div class="badge">📝 Blog</div>
+        <div class="badge"><span aria-hidden="true">📝</span> {t.blog_tag || 'Blog'}</div>
         <h1>{t.blog_page_title || 'Our Blog'}</h1>
         <p class="subtitle">{t.blog_page_subtitle || 'Insights on web development, design, and digital marketing'}</p>
     </div>
@@ -58,9 +63,9 @@
                     <article class="post-card">
                         <div class="post-top">
                             <span class="post-tag">{t.blog_tag || 'Blog'}</span>
-                            <span class="post-date">{new Date(post.date).toLocaleDateString()}</span>
+                            <span class="post-date">{fmtDate(post.date)}</span>
                         </div>
-                        <h3><a href="/blog/{post.slug}">{post.title}</a></h3>
+                        <h2 class="post-title"><a href="/blog/{post.slug}">{post.title}</a></h2>
                         <p class="post-excerpt">{post.excerpt}</p>
                         <a href="/blog/{post.slug}" class="read-more">{t.blog_read_story || 'Read Story'} <span class="arrow">→</span></a>
                     </article>
@@ -69,19 +74,19 @@
 
             <!-- Pagination -->
             {#if data.pagination && data.pagination.totalPages > 1}
-                <div class="pagination">
+                <nav class="pagination" aria-label={t.blog_page_title || 'Blog pagination'}>
                     {#if data.pagination.currentPage > 1}
                         <a href="/blog?page={data.pagination.currentPage - 1}" class="pagination-link">← {t.blog_pagination_prev || 'Previous'}</a>
                     {/if}
 
-                    <span class="pagination-info">
+                    <span class="pagination-info" aria-current="page">
                         {t.blog_pagination_page || 'Page'} {data.pagination.currentPage} {t.blog_pagination_of || 'of'} {data.pagination.totalPages}
                     </span>
 
                     {#if data.pagination.currentPage < data.pagination.totalPages}
                         <a href="/blog?page={data.pagination.currentPage + 1}" class="pagination-link">{t.blog_pagination_next || 'Next'} →</a>
                     {/if}
-                </div>
+                </nav>
             {/if}
         {:else}
             <div class="empty-state">
@@ -166,15 +171,7 @@
             animation: none;
         }
     }
-    /* --- Palette Definition --- */
-    :root {
-        --color-bg: #F9F6F0;        /* Creamy White */
-        --color-text: #2D3A36;      /* Deep Dark Green/Slate */
-        --color-brick: #A53D28;     /* Brick Red (WCAG AA compliant) */
-        --color-sage: #8DA399;      /* Muted Sage Green */
-        --color-white: #FFFFFF;
-    }
-
+    /* --- Palette: defined once in src/app.css --- */
     :global(body) {
         font-family: 'Outfit', sans-serif;
         background-color: var(--color-bg);
@@ -336,11 +333,11 @@
     }
 
     .post-date {
-        color: #999;
+        color: #5F6E68;
         font-weight: 500;
     }
 
-    .post-card h3 {
+    .post-card h2.post-title {
         font-size: 1.6rem;
         margin-bottom: 1rem;
         font-weight: 700;
@@ -348,18 +345,18 @@
         color: var(--color-text);
     }
 
-    .post-card h3 a {
+    .post-card h2.post-title a {
         color: var(--color-text);
         text-decoration: none;
         transition: color 0.2s;
     }
 
-    .post-card h3 a:hover {
+    .post-card h2.post-title a:hover {
         color: var(--color-brick);
     }
 
     .post-excerpt {
-        color: #6B7C76;
+        color: #5F6E68;
         margin-bottom: 2rem;
         line-height: 1.7;
         font-size: 1.05rem;
@@ -411,12 +408,12 @@
 
     .pagination-link:hover {
         background: var(--color-brick);
-        color: var(--color-text);
+        color: var(--color-white);
         transform: translateY(-2px);
     }
 
     .pagination-info {
-        color: #666;
+        color: #5F6E68;
         font-size: 0.95rem;
         font-weight: 500;
     }
@@ -439,7 +436,7 @@
     }
 
     .empty-state p {
-        color: #6B7C76;
+        color: #5F6E68;
         font-size: 1.15rem;
         margin-bottom: 2.5rem;
         max-width: 500px;
@@ -532,7 +529,7 @@
 
     .btn-primary {
         background: var(--color-brick);
-        color: var(--color-text);
+        color: var(--color-white);
         box-shadow: 0 10px 25px rgba(201, 76, 53, 0.3);
     }
 

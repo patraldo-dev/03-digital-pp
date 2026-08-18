@@ -24,17 +24,17 @@
 </script>
 
 <svelte:head>
-	<title>Subscription Confirmed</title>
+	<title>Subscription Confirmed - ¡Pinche Poutine! Digital</title>
 </svelte:head>
 
-<main class="container">
+<div class="container">
 	<div class="success-card">
 		{#if error && !already}
-			<div class="icon error">✗</div>
+			<div class="icon error" aria-hidden="true">✗</div>
 			<h1>Oops!</h1>
 			<p>{errorMessage}</p>
 		{:else}
-			<div class="icon">✓</div>
+			<div class="icon" aria-hidden="true">✓</div>
 			<h1>
 				{#if already}
 					Already Subscribed!
@@ -52,7 +52,7 @@
 		{/if}
 		<a href="/" class="home-button">Return to Home</a>
 	</div>
-</main>
+</div>
 
 <style>
 	.container {

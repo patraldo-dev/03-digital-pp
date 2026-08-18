@@ -1,5 +1,13 @@
-/* Import fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* Site-wide palette (single source of truth — pages no longer redefine :root).
+   --color-sage is darkened from #8DA399 so sage used as TEXT passes WCAG AA
+   on light backgrounds (decorative uses are blurred/low-opacity, unaffected). */
+:root {
+    --color-bg: #F9F6F0;        /* Creamy White */
+    --color-text: #2D3A36;      /* Deep Dark Green/Slate */
+    --color-brick: #A53D28;     /* Brick Red (AA on cream) */
+    --color-sage: #5a6e65;      /* Muted Sage Green (AA on white/cream) */
+    --color-white: #FFFFFF;
+}
 
 /* CSS Reset and Base Styles */
 *,
@@ -11,7 +19,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
     color: #333;
     background: #fff;
@@ -328,8 +336,8 @@ label {
 }
 
 /* Focus styles for better accessibility */
-*:focus {
-    outline: 2px solid #007cba;
+*:focus-visible {
+    outline: 3px solid var(--color-brick);
     outline-offset: 2px;
 }
 
@@ -338,16 +346,33 @@ label {
     position: absolute;
     top: -40px;
     left: 6px;
-    background: #007cba;
+    background: var(--color-brick);
     color: white;
-    padding: 8px;
+    padding: 8px 16px;
     text-decoration: none;
     border-radius: 4px;
     z-index: 10000;
+    font-weight: 700;
 }
 
 .skip-link:focus {
     top: 6px;
+}
+
+/* Respect reduced-motion preferences globally (page-level blocks remain
+   as no-ops but harmless). Covers blobs, reveals, spinners, smooth scroll. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
 }
 
 /* Print styles */

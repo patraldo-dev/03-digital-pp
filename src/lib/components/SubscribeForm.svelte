@@ -62,8 +62,8 @@
 
 <div class="subscribe-form">
 	{#if success}
-		<div class="success-message">
-			<h3>🎉 Thank you!</h3>
+		<div class="success-message" role="status">
+			<h3><span aria-hidden="true">🎉</span> {getText('subscribe_form_thanks', 'Thank you!')}</h3>
 			<p>{message}</p>
 			<p class="reset-hint">{getText('subscribe_form_reset_hint', 'Form will reset in a few seconds...')}</p>
 		</div>
@@ -73,8 +73,10 @@
 				<input
 					bind:value={email}
 					type="email"
-					aria-label="Email address"
+					name="email"
+					aria-label={getText('subscribe_form_label', 'Email address')}
 					placeholder={getText('subscribe_form_placeholder', 'Enter your email address')}
+					autocomplete="email"
 					required
 					disabled={loading}
 					class="email-input"
@@ -87,7 +89,7 @@
 	{/if}
 
 	{#if message && !success}
-		<p class="error-message">{message}</p>
+		<p class="error-message" role="alert">{message}</p>
 	{/if}
 </div>
 

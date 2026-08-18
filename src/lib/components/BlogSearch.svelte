@@ -4,6 +4,8 @@
      * and reranked server-side). Debounced; Escape clears; Enter
      * jumps to the top result.
      */
+    import { goto } from '$app/navigation';
+
     let { t = {} } = $props();
 
     let query = $state('');
@@ -65,7 +67,7 @@
             results = [];
             error = '';
         } else if (e.key === 'Enter' && results.length) {
-            window.location.href = `/blog/${results[0].slug}`;
+            goto(`/blog/${results[0].slug}`);
         }
     }
 
@@ -164,7 +166,7 @@
                     {#each results as r (r.lang + ':' + r.slug)}
                         <li>
                             <a href="/blog/{r.slug}" class="result-link">
-                                <span class="result-match" aria-label="{t.search_match || 'relevance'}">{r.match}%</span>
+                                <span class="result-match">{r.match}%<span class="visually-hidden"> {t.search_match || 'relevance'}</span></span>
                                 <span class="result-main">
                                     <span class="result-title">{r.title}</span>
                                     {#if r.speaker}
@@ -259,7 +261,7 @@
     .search-hint {
         padding: 0.6rem 0.9rem;
         font-size: 0.9rem;
-        color: #6B7C76;
+        color: #5F6E68;
     }
 
     .search-error {
@@ -328,7 +330,7 @@
         display: block;
         font-size: 0.84rem;
         line-height: 1.45;
-        color: #6B7C76;
+        color: #5F6E68;
     }
 
     .result-snippet :global(mark) {
@@ -353,7 +355,7 @@
         font-size: 0.7rem;
         letter-spacing: 0.4px;
         text-transform: uppercase;
-        color: #9aa8a3;
+        color: #5F6E68;
     }
 
     @media (max-width: 640px) {

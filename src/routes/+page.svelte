@@ -10,9 +10,13 @@
 <svelte:head>
     <title>{t.meta_title || 'Home'} - ¡Pinche Poutine! Digital</title>
     <meta name="description" content={t.meta_description || ''} />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="¡Pinche Poutine! Digital" />
+    <meta property="og:title" content="{t.meta_title || 'Home'} - ¡Pinche Poutine! Digital" />
+    <meta property="og:description" content={t.meta_description || ''} />
+    <meta property="og:url" content="https://pinchepoutine.digital/" />
+    <meta property="og:image" content="https://imagedelivery.net/4bRSwPonOXfEIBVZiDXg0w/f8a136eb-363e-4a24-0f54-70bb4f4bf800/full" />
+    <meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
 <!-- Decorative Background Image (ARIA hidden) -->
@@ -67,11 +71,27 @@
         </div>
 
         <div class="projects-grid">
-            <!-- Patrouch.ca -->
-            <a href="https://patrouch.ca" target="_blank" rel="noopener" class="project-card featured glass glass-patrouch">
+            <!-- AmbientX (flagship) -->
+            <a href="https://ambientx.dev" target="_blank" rel="noopener noreferrer" class="project-card featured glass glass-ambientx">
                 <span class="project-badge">{t.home_projects_featured_badge || 'Featured'}</span>
                 <div class="project-header">
-                    <span class="project-emoji">✍️</span>
+                    <span class="project-emoji" aria-hidden="true">🥽</span>
+                    <h3>AmbientX</h3>
+                </div>
+                <p class="project-desc">{t.project_ambientx_desc || 'Multiplayer WebXR venue — live shows, shared worlds, and the spatial web.'}</p>
+                <div class="project-tech">
+                    <span class="tech-tag">WebXR</span>
+                    <span class="tech-tag">Three.js</span>
+                    <span class="tech-tag">Durable Objects</span>
+                    <span class="tech-tag">Workers AI</span>
+                </div>
+                <span class="project-link">{t.project_ambientx_link || 'Step Into the Show'}</span>
+            </a>
+
+            <!-- Patrouch.ca -->
+            <a href="https://patrouch.ca" target="_blank" rel="noopener noreferrer" class="project-card glass glass-patrouch">
+                <div class="project-header">
+                    <span class="project-emoji" aria-hidden="true">✍️</span>
                     <h3>Patrouch</h3>
                 </div>
                 <p class="project-desc">{t.project_patrouch_desc}</p>
@@ -85,9 +105,9 @@
             </a>
 
             <!-- Mexican Bold -->
-            <a href="https://mexicanbold.com" target="_blank" rel="noopener" class="project-card glass glass-mexicanbold">
+            <a href="https://mexicanbold.com" target="_blank" rel="noopener noreferrer" class="project-card glass glass-mexicanbold">
                 <div class="project-header">
-                    <span class="project-emoji">🏛️</span>
+                    <span class="project-emoji" aria-hidden="true">🏛️</span>
                     <h3>Mexican Bold</h3>
                 </div>
                 <p class="project-desc">{t.project_mexicanbold_desc}</p>
@@ -101,7 +121,7 @@
             </a>
 
             <!-- Urban Inversion -->
-            <a href="https://GDL.urbaninversion.com" target="_blank" rel="noopener" class="project-card glass glass-urbaninversion">
+            <a href="https://GDL.urbaninversion.com" target="_blank" rel="noopener noreferrer" class="project-card glass glass-urbaninversion">
                 <div class="project-header">
                     <span class="project-icon-text gdl-icon">GDL</span>
                     <h3>urbaninversion.com</h3>
@@ -117,9 +137,9 @@
             </a>
 
             <!-- Antoine -->
-            <a href="https://antoine.patraldo.com" target="_blank" rel="noopener" class="project-card glass glass-antoine">
+            <a href="https://antoine.patraldo.com" target="_blank" rel="noopener noreferrer" class="project-card glass glass-antoine">
                 <div class="project-header">
-                    <span class="project-emoji">🎨</span>
+                    <span class="project-emoji" aria-hidden="true">🎨</span>
                     <h3>Antoine Patraldo</h3>
                 </div>
                 <p class="project-desc">{t.project_antoine_desc}</p>
@@ -155,15 +175,7 @@
         z-index: -2;
         pointer-events: none;
     }
-    /* --- Palette Definition --- */
-    :root {
-        --color-bg: #F9F6F0;        /* Creamy White */
-        --color-text: #2D3A36;      /* Deep Dark Green/Slate */
-        --color-brick: #b33f2a;     /* Vibrant Brick Red */
-        --color-sage: #8DA399;      /* Muted Sage Green */
-        --color-white: #FFFFFF;
-    }
-
+    /* --- Palette: defined once in src/app.css --- */
     :global(body) {
         font-family: 'Outfit', sans-serif;
         background-color: var(--color-bg);
@@ -288,67 +300,6 @@
         max-width: 800px;
     }
 
-    .hero-subtitle {
-        font-size: 1.4rem;
-        max-width: 650px;
-        color: #5F6E68;
-        margin-bottom: 3rem;
-        line-height: 1.6;
-        font-weight: 300;
-    }
-
-    .hero-actions {
-        display: flex;
-        gap: 1.5rem;
-    }
-
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem 2.5rem;
-        font-weight: 700;
-        text-decoration: none;
-        border-radius: 100px;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        font-size: 1.1rem;
-        border: none;
-        cursor: pointer;
-    }
-
-    .btn-primary {
-        background: var(--color-brick);
-        color: var(--color-white);
-        box-shadow: 0 10px 25px rgba(201, 76, 53, 0.3);
-    }
-
-    .btn-primary:hover {
-        background: #A83926;
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 15px 35px rgba(201, 76, 53, 0.4);
-    }
-
-    .btn-primary .arrow {
-        margin-left: 0.5rem;
-        transition: transform 0.3s ease;
-    }
-
-    .btn-primary:hover .arrow {
-        transform: translateX(5px);
-    }
-
-    .btn-secondary {
-        background: var(--color-white);
-        color: var(--color-brick);
-        border: 2px solid var(--color-brick);
-    }
-
-    .btn-secondary:hover {
-        background: var(--color-text);
-        border-color: var(--color-text);
-        color: var(--color-white);
-    }
-
     /* --- Projects Section --- */
     .projects-section {
         padding: 2rem 0;
@@ -400,6 +351,17 @@
         -webkit-backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.3);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    }
+
+    /* AmbientX — violet/spatial */
+    .glass-ambientx {
+        background: rgba(122, 102, 200, 0.14);
+        border-color: rgba(122, 102, 200, 0.3);
+    }
+    .glass-ambientx:hover {
+        background: rgba(122, 102, 200, 0.24);
+        box-shadow: 0 20px 40px rgba(122, 102, 200, 0.16);
+        transform: translateY(-8px);
     }
 
     /* Patrouch — cremoso/dorado */
@@ -577,55 +539,6 @@
         border-color: var(--color-brick);
     }
 
-    /* --- Process Section --- */
-    .process-section {
-        padding: 6rem 0;
-        background: rgba(141, 163, 153, 0.08);
-        margin: 0 -2rem;
-        padding-left: 2rem;
-        padding-right: 2rem;
-    }
-
-    .process-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2.5rem;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .process-item {
-        background: var(--color-white);
-        padding: 2.5rem;
-        border-radius: 24px;
-        text-align: center;
-        box-shadow: 0 5px 20px rgba(45, 58, 54, 0.05);
-        transition: all 0.3s ease;
-    }
-
-    .process-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(141, 163, 153, 0.2);
-    }
-
-    .process-icon {
-        font-size: 3.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .process-item h3 {
-        font-size: 1.3rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: var(--color-text);
-    }
-
-    .process-item p {
-        color: #6B7C76;
-        line-height: 1.6;
-        font-size: 1rem;
-    }
-
     /* --- Newsletter --- */
     .newsletter-section {
         padding: 1rem 2rem 2rem;
@@ -644,7 +557,6 @@
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         gap: 2rem;
         max-width: 1400px;
         margin: 0 auto;
@@ -703,30 +615,6 @@
     @media (max-width: 768px) {
         .hero h1 {
             font-size: 3.5rem;
-        }
-
-        .hero-subtitle {
-            font-size: 1.2rem;
-        }
-
-        .hero-actions {
-            flex-direction: column;
-        }
-
-        .btn {
-            width: 100%;
-        }
-
-        .about-box {
-            padding: 2.5rem;
-        }
-
-        .about-content h2 {
-            font-size: 2rem;
-        }
-
-        .about-decoration {
-            display: none;
         }
 
         .section-header h2 {

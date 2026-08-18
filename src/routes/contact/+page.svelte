@@ -11,10 +11,14 @@
     let parallaxLayers = $state([]);
     
     onMount(() => {
+        // Parallax scroll effect — skipped entirely for reduced-motion users
+        // (the global CSS block only stills transitions, not JS transforms).
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
         // Parallax scroll effect
         const layers = document.querySelectorAll('.parallax-layer');
         parallaxLayers = Array.from(layers);
-        
+
         function handleScroll() {
             const scrolled = window.scrollY;
             layers.forEach((layer, index) => {
@@ -22,7 +26,7 @@
                 layer.style.transform = `translateY(${scrolled * speed}px)`;
             });
         }
-        
+
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     });
@@ -107,9 +111,9 @@
                     <!-- Email Card -->
                     <a href="mailto:info@pinchepoutine.digital" class="contact-method-link">
                         <div class="contact-method glass-brick">
-                            <div class="method-icon">📧</div>
+                            <div class="method-icon" aria-hidden="true">📧</div>
                             <div class="method-content">
-                                <h3>{t.method_email_title || 'Email Us'}</h3>
+                                <h2>{t.method_email_title || 'Email Us'}</h2>
                                 <span class="method-link">
                                     {t.method_email_addr || 'info@example.com'}
                                 </span>
@@ -120,9 +124,9 @@
                     <!-- Chat Card -->
                     <a href="#contact-form" class="contact-method-link">
                         <div class="contact-method glass-yellow">
-                            <div class="method-icon">💬</div>
+                            <div class="method-icon" aria-hidden="true">💬</div>
                             <div class="method-content">
-                                <h3>{t.method_chat_title || 'Let us Chat'}</h3>
+                                <h2>{t.method_chat_title || 'Let us Chat'}</h2>
                                 <p>{t.method_chat_desc || 'Schedule a consultation'}</p>
                             </div>
                         </div>
@@ -131,9 +135,9 @@
                     <!-- Start Project Card -->
                     <a href="#contact-form" class="contact-method-link">
                         <div class="contact-method glass-teal">
-                            <div class="method-icon">🚀</div>
+                            <div class="method-icon" aria-hidden="true">🚀</div>
                             <div class="method-content">
-                                <h3>{t.method_start_title || 'Start Your Project'}</h3>
+                                <h2>{t.method_start_title || 'Start Your Project'}</h2>
                                 <p>{t.method_start_desc || 'Ready to begin?'}</p>
                             </div>
                         </div>
@@ -146,9 +150,9 @@
                 </div>
             </div>
 
-            <div class="contact-form-container" id="contact-form">
+            <div class="contact-form-container" id="contact-form" tabindex="-1">
                 <h2>{t.contact_form_section || 'Send us a Message'}</h2>
-                <ContactForm />
+                <ContactForm {t} />
             </div>
         </div>
     </section>
@@ -252,15 +256,7 @@
             transition: none;
         }
     }
-    /* --- Palette Definition --- */
-    :root {
-        --color-bg: #F9F6F0;        /* Creamy White */
-        --color-text: #2D3A36;      /* Deep Dark Green/Slate */
-        --color-brick: #A53D28;     /* Brick Red (WCAG AA compliant) */
-        --color-sage: #8DA399;      /* Muted Sage Green */
-        --color-white: #FFFFFF;
-    }
-
+    /* --- Palette: defined once in src/app.css --- */
     :global(body) {
         font-family: 'Outfit', sans-serif;
         background-color: var(--color-bg);
@@ -445,7 +441,7 @@
         flex-shrink: 0;
     }
 
-    .method-content h3 {
+    .method-content h2 {
         margin: 0 0 0.5rem 0;
         color: var(--color-text);
         font-size: 1.4rem;
@@ -460,7 +456,7 @@
     }
 
     .method-content small {
-        color: #999;
+        color: #5F6E68;
         font-size: 0.85rem;
         display: block;
     }
@@ -479,12 +475,12 @@
 
     .contact-method-link {
         text-decoration: none;
-        outline: none;
+        border-radius: 24px;
     }
 
-    .contact-method-link:focus,
     .contact-method-link:focus-visible {
-        outline: none;
+        outline: 3px solid var(--color-brick);
+        outline-offset: 2px;
     }
 
     .contact-method-link:hover .contact-method {
@@ -657,7 +653,7 @@
     }
 
     .faq-item p {
-        color: #6B7C76;
+        color: #5F6E68;
         line-height: 1.7;
         margin: 0;
         font-size: 1.05rem;

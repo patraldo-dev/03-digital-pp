@@ -1,5 +1,6 @@
 <script>
     import { browser } from '$app/environment';
+    import { page } from '$app/stores';
 
     /**
      * Full post index — the sidebar listing every blog post title.
@@ -14,6 +15,11 @@
     let { posts = [], currentSlug = '', t = {} } = $props();
 
     let detailsEl = $state(null);
+    let lang = $derived($page.data?.lang || 'en');
+
+    // Locale-aware, SSR-stable date formatting.
+    const DATE_LOCALES = { en: 'en-US', es: 'es-MX', fr: 'fr-FR' };
+    const fmtDate = (d) => new Date(d).toLocaleDateString(DATE_LOCALES[lang] || 'en-US');
 
     $effect(() => {
         if (!browser) return;
@@ -35,7 +41,7 @@
             {#each posts as post (post.slug)}
                 <li class:current={post.slug === currentSlug}>
                     <a href="/blog/{post.slug}" aria-current={post.slug === currentSlug ? 'page' : undefined}>
-                        <span class="idx-date">{new Date(post.date).toLocaleDateString()}</span>
+                        <span class="idx-date">{fmtDate(post.date)}</span>
                         <span class="idx-title">{post.title}</span>
                     </a>
                 </li>
@@ -110,7 +116,7 @@
         font-weight: 700;
         letter-spacing: 1.2px;
         text-transform: uppercase;
-        color: var(--color-sage, #8DA399);
+        color: var(--color-sage, #5a6e65);
     }
 
     .index-nav ul {
@@ -141,7 +147,7 @@
         font-size: 0.68rem;
         font-weight: 600;
         letter-spacing: 0.5px;
-        color: var(--color-sage, #8DA399);
+        color: var(--color-sage, #5a6e65);
     }
 
     .idx-title {

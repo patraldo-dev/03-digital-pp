@@ -7,6 +7,8 @@
 
     // Get translations from page data (set in layout load function)
     let t = $derived($page.data?.t || {});
+    let lang = $derived($page.data?.lang || 'en');
+    let pathname = $derived($page.url.pathname);
 
     // Function to toggle mobile menu and lock body scroll
     function toggleMenu() {
@@ -35,6 +37,8 @@
     }
 </script>
 
+<svelte:window onkeydown={(e) => { if (e.key === 'Escape' && isOpen) closeMenu(); }} />
+
 <header class="header">
     <div class="container">
         <div class="nav-wrapper" class:menu-open={isOpen}>
@@ -46,18 +50,18 @@
             </a>
 
             <!-- 2. Desktop Navigation (Hidden on Mobile) -->
-            <nav class="nav-desktop">
-                <a href="/blog">{t.nav_blog || 'Blog'}</a>
-                <a href="/contact" class="nav-cta">{t.nav_cta || 'Contact'}</a>
+            <nav class="nav-desktop" aria-label={t.lang_choose || 'Main menu'}>
+                <a href="/blog" aria-current={pathname.startsWith('/blog') ? 'page' : undefined}>{t.nav_blog || 'Blog'}</a>
+                <a href="/contact" class="nav-cta" aria-current={pathname === '/contact' ? 'page' : undefined}>{t.nav_cta || 'Contact'}</a>
             </nav>
 
             <!-- 3. Language Switcher (Visible on Desktop) -->
             <div class="lang-switcher-desktop">
-                <button class="lang-btn" onclick={() => setLanguage('en')}>EN</button>
+                <button class="lang-btn" class:current={lang === 'en'} onclick={() => setLanguage('en')} aria-pressed={lang === 'en'}>EN</button>
                 <div class="divider">|</div>
-                <button class="lang-btn" onclick={() => setLanguage('es')}>ES</button>
+                <button class="lang-btn" class:current={lang === 'es'} onclick={() => setLanguage('es')} aria-pressed={lang === 'es'}>ES</button>
                 <div class="divider">|</div>
-                <button class="lang-btn" onclick={() => setLanguage('fr')}>FR</button>
+                <button class="lang-btn" class:current={lang === 'fr'} onclick={() => setLanguage('fr')} aria-pressed={lang === 'fr'}>FR</button>
             </div>
 
             <!-- 4. Hamburger Button (Visible only on Mobile) -->
@@ -66,6 +70,8 @@
                 class:is-open={isOpen}
                 onclick={toggleMenu}
                 aria-label="Toggle navigation"
+                aria-expanded={isOpen}
+                aria-controls="mobile-menu"
             >
                 <span></span>
                 <span></span>
@@ -76,7 +82,7 @@
 
     <!-- 5. Mobile Menu Drawer (Slide-in Overlay) -->
     {#if isOpen}
-        <div class="mobile-menu-overlay">
+        <div class="mobile-menu-overlay" id="mobile-menu">
             <div class="mobile-menu-content">
 
                 <!-- Mobile Nav Links -->
@@ -211,15 +217,22 @@
         border: none;
         cursor: pointer;
         color: #666;
-        padding: 2px 4px;
+        padding: 4px 6px;
+        min-height: 24px;
         font-family: 'Outfit', sans-serif;
         font-weight: 700;
         transition: all 0.2s;
+        border-radius: 6px;
     }
 
     .lang-btn:hover {
         color: var(--color-brick);
-        transform: translateY(-1px);
+    }
+
+    .lang-btn.current {
+        color: var(--color-brick);
+        text-decoration: underline;
+        text-underline-offset: 3px;
     }
 
     .divider {

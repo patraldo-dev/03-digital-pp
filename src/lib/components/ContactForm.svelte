@@ -1,9 +1,11 @@
 <form class="contact-form" on:submit|preventDefault={handleSubmit}>
     <div class="form-group">
-        <label for="name">Name *</label>
+        <label for="name">{label('contact_form_name', 'Name')} *</label>
         <input
             type="text"
             id="name"
+            name="name"
+            autocomplete="name"
             bind:value={formData.name}
             required
             disabled={loading}
@@ -11,10 +13,12 @@
     </div>
 
     <div class="form-group">
-        <label for="email">Email *</label>
+        <label for="email">{label('contact_form_email', 'Email')} *</label>
         <input
             type="email"
             id="email"
+            name="email"
+            autocomplete="email"
             bind:value={formData.email}
             required
             disabled={loading}
@@ -22,10 +26,12 @@
     </div>
 
     <div class="form-group">
-        <label for="subject">Subject *</label>
+        <label for="subject">{label('contact_form_subject', 'Subject')} *</label>
         <input
             type="text"
             id="subject"
+            name="subject"
+            autocomplete="off"
             bind:value={formData.subject}
             required
             disabled={loading}
@@ -33,9 +39,10 @@
     </div>
 
     <div class="form-group">
-        <label for="message">Message *</label>
+        <label for="message">{label('contact_form_message', 'Message')} *</label>
         <textarea
             id="message"
+            name="message"
             bind:value={formData.message}
             rows="6"
             required
@@ -43,30 +50,36 @@
         ></textarea>
     </div>
 
-<input
-    type="text"
-    name="website"
-    style="display: none !important; opacity: 0; height: 0; width: 0; position: absolute;"
-    tabindex="-1"
-    autocomplete="off"
-/>
+    <input
+        type="text"
+        name="website"
+        aria-hidden="true"
+        style="display: none !important; opacity: 0; height: 0; width: 0; position: absolute;"
+        tabindex="-1"
+        autocomplete="off"
+    />
 
     {#if message}
-        <div class="message" class:success={messageType === 'success'} class:error={messageType === 'error'}>
+        <div class="message" class:success={messageType === 'success'} class:error={messageType === 'error'} role={messageType === 'error' ? 'alert' : 'status'}>
             {message}
         </div>
     {/if}
 
     <button type="submit" class="btn" disabled={loading}>
         {#if loading}
-            Sending...
+            {label('contact_form_sending', 'Sending...')}
         {:else}
-            Send Message
+            {label('contact_form_send', 'Send Message')}
         {/if}
     </button>
 </form>
 
 <script>
+    /** @type {{ t?: Record<string, string> }} */
+    let { t = {} } = $props();
+
+    const label = (key, fallback) => t?.[key] || fallback;
+
     let formData = {
         name: '',
         email: '',

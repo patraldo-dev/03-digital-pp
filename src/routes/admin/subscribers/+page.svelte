@@ -22,9 +22,25 @@
 	/** @type {string} */
 	let filter = 'all'; // 'all', 'newsletter', 'events', 'inactive'
 
+	/** @type {string} */
+	let adminToken = '';
+
+	/** @type {boolean} */
+	let needsToken = false;
+
 	onMount(async () => {
+		adminToken = localStorage.getItem('pp_admin_token') || '';
 		await loadSubscribers();
 	});
+
+	/**
+	 * Persist the entered admin token and retry
+	 * @returns {Promise<void>}
+	 */
+	async function saveToken() {
+		localStorage.setItem('pp_admin_token', adminToken.trim());
+		await loadSubscribers();
+	}
 
 	/**
 	 * Load subscribers from API
@@ -33,8 +49,16 @@
 	async function loadSubscribers() {
 		try {
 			loading = true;
-			const response = await fetch('/api/admin/subscribers');
-			
+			error = '';
+			const response = await fetch('/api/admin/subscribers', {
+				headers: adminToken ? { Authorization: `Bearer ${adminToken}` } : {}
+			});
+
+			if (response.status === 401) {
+				needsToken = true;
+				return;
+			}
+
 			if (!response.ok) {
 				throw new Error('Failed to load subscribers');
 			}
@@ -42,6 +66,7 @@
 			/** @type {{subscribers: Subscriber[]}} */
 			const data = await response.json();
 			subscribers = data.subscribers;
+			needsToken = false;
 		} catch (err) {
 			error = 'Failed to load subscribers';
 			console.error(err);
@@ -89,12 +114,27 @@
 </script>
 
 <svelte:head>
-	<title>Subscribers Admin - Your Site</title>
+	<title>Subscribers Admin - ¡Pinche Poutine! Digital</title>
 </svelte:head>
 
 <div class="admin-dashboard">
 	<h1>Subscribers Dashboard</h1>
 
+	{#if needsToken}
+		<form class="token-form" on:submit|preventDefault={saveToken}>
+			<label for="admin-token">Admin token</label>
+			<input
+				id="admin-token"
+				type="password"
+				bind:value={adminToken}
+				placeholder="SEARCH_ADMIN_TOKEN"
+				autocomplete="off"
+				required
+			/>
+			<button type="submit">Unlock</button>
+			<p class="token-hint">Enter the SEARCH_ADMIN_TOKEN worker secret.</p>
+		</form>
+	{:else}
 	<!-- Stats Cards -->
 	<div class="stats-grid">
 		<div class="stat-card">
@@ -117,13 +157,13 @@
 
 	<!-- Filter Controls -->
 	<div class="controls">
-		<select bind:value={filter} class="filter-select">
+		<select bind:value={filter} class="filter-select" aria-label="Filter subscribers">
 			<option value="all">All Active</option>
 			<option value="newsletter">Newsletter Only</option>
 			<option value="events">Events Only</option>
 			<option value="inactive">Inactive</option>
 		</select>
-		
+
 		<button on:click={loadSubscribers} class="refresh-button" disabled={loading}>
 			{loading ? 'Loading...' : 'Refresh'}
 		</button>
@@ -131,9 +171,9 @@
 
 	<!-- Subscribers Table -->
 	{#if loading}
-		<div class="loading">Loading subscribers...</div>
+		<div class="loading" role="status">Loading subscribers...</div>
 	{:else if error}
-		<div class="error">{error}</div>
+		<div class="error" role="alert">{error}</div>
 	{:else if filteredSubscribers.length === 0}
 		<div class="empty">No subscribers found for the selected filter.</div>
 	{:else}
@@ -165,12 +205,54 @@
 						</tr>
 					{/each}
 				</tbody>
-			</table>
-		</div>
+				</table>
+			</div>
+		{/if}
 	{/if}
 </div>
 
 <style>
+	.token-form {
+		max-width: 420px;
+		margin: 3rem auto;
+		padding: 2rem;
+		background: white;
+		border: 1px solid #e5e7eb;
+		border-radius: 0.5rem;
+		text-align: left;
+	}
+
+	.token-form label {
+		display: block;
+		margin-bottom: 0.5rem;
+		font-weight: 600;
+		color: #1f2937;
+	}
+
+	.token-form input {
+		width: 100%;
+		padding: 0.5rem;
+		border: 1px solid #d1d5db;
+		border-radius: 0.375rem;
+		box-sizing: border-box;
+	}
+
+	.token-form button {
+		margin-top: 1rem;
+		padding: 0.5rem 1rem;
+		background-color: #3b82f6;
+		color: white;
+		border: none;
+		border-radius: 0.375rem;
+		cursor: pointer;
+	}
+
+	.token-hint {
+		margin: 1rem 0 0;
+		font-size: 0.85rem;
+		color: #5F6E68;
+	}
+
 	.admin-dashboard {
 		max-width: 1200px;
 		margin: 0 auto;

@@ -1,16 +1,16 @@
 <script>
     import Header from '$lib/components/Header.svelte';
     import Footer from '$lib/components/Footer.svelte';
+    import { page } from '$app/stores';
     import '../app.css';
+
+    let t = $derived($page.data?.t || {});
 </script>
 
-<svelte:head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-</svelte:head>
-
 <div style="display: contents">
+    <a class="skip-link" href="#main">{t.skip_to_content || 'Skip to content'}</a>
     <Header />
-    <main>
+    <main id="main" tabindex="-1">
         <slot />
     </main>
     <Footer />

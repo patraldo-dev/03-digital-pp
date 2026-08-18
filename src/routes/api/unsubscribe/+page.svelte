@@ -22,6 +22,10 @@
 		}
 	});
 
+	// Locale-aware labels from the root layout load
+	$: t = $page.data?.t || {};
+	$: emailLabel = t.subscribe_form_label || 'Email address';
+
 	/**
 	 * Handle unsubscribe form submission
 	 * @returns {Promise<void>}
@@ -63,15 +67,15 @@
 </script>
 
 <svelte:head>
-	<title>Unsubscribe - Your Site</title>
+	<title>Unsubscribe - ¡Pinche Poutine! Digital</title>
 </svelte:head>
 
 <div class="unsubscribe-page">
 	<h1>Unsubscribe from Email Updates</h1>
 	
 	{#if success}
-		<div class="success-message">
-			<h2>✅ Successfully Unsubscribed</h2>
+		<div class="success-message" role="status">
+			<h2><span aria-hidden="true">✅</span> Successfully Unsubscribed</h2>
 			<p>{message}</p>
 			<p>We're sorry to see you go! You can always <a href="/">resubscribe</a> if you change your mind.</p>
 		</div>
@@ -83,7 +87,10 @@
 				<input
 					bind:value={email}
 					type="email"
-					placeholder="Enter your email address"
+					name="email"
+					placeholder={emailLabel}
+					aria-label={emailLabel}
+					autocomplete="email"
 					required
 					disabled={loading}
 					class="email-input"
@@ -95,7 +102,7 @@
 		</form>
 
 		{#if message}
-			<p class="error-message">{message}</p>
+			<p class="error-message" role="alert">{message}</p>
 		{/if}
 	{/if}
 </div>

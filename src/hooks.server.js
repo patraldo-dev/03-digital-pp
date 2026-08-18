@@ -12,9 +12,11 @@ import { getLocaleFromRequest } from '$lib/i18n/server.js';
 export async function handle({ event, resolve }) {
     const lang = getLocaleFromRequest(event.request);
     event.locals.lang = lang;
-    
-    const response = await resolve(event);
-    return response;
+
+    // Reflect the active locale in <html lang="%lang%"> (app.html).
+    return resolve(event, {
+        transformPageChunk: ({ html }) => html.replace('%lang%', lang)
+    });
 }
 
 /**

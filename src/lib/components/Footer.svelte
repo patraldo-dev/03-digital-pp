@@ -32,10 +32,6 @@
 
         <div class="footer-bottom">
             <p>&copy; {new Date().getFullYear()} ¡Pinche Poutine! Digital. {t.footer_rights || 'All rights reserved.'}</p>
-            <div class="footer-links">
-                <a href="/privacy">{t.footer_privacy || 'Privacy Policy'}</a>
-                <a href="/terms">{t.footer_terms || 'Terms of Service'}</a>
-            </div>
         </div>
     </div>
 </footer>

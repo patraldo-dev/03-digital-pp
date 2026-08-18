@@ -32,6 +32,10 @@
     /** Display names for language codes, for badges/chips. */
     const LANG_NAMES = { en: 'English', es: 'Español', fr: 'Français' };
 
+    /** Locale-aware, SSR-stable date formatting. */
+    const DATE_LOCALES = { en: 'en-US', es: 'es-MX', fr: 'fr-FR' };
+    const fmtDate = (d) => new Date(d).toLocaleDateString(DATE_LOCALES[readerLang] || 'en-US');
+
     /** The reader's UI locale (from cookie via layout). */
     let readerLang = $derived($page.data?.lang || 'en');
 
@@ -184,7 +188,7 @@
             {/if}
             <h1>{data.post?.title}</h1>
             <div class="post-meta">
-                <span class="post-date">{new Date(data.post?.date).toLocaleDateString()}</span>
+                <span class="post-date">{fmtDate(data.post?.date)}</span>
                 <span class="post-author">by {data.post?.author}</span>
             </div>
             {#if data.post?.tags && data.post.tags.length > 0}
@@ -199,25 +203,25 @@
         {#if data.previousPost || data.nextPost || data.oldestPost || data.latestPost}
             <nav class="post-navigation top-nav" aria-label={t.blog_navigation || 'Post navigation'}>
                 {#if data.oldestPost && data.oldestPost.slug !== data.post?.slug}
-                    <a href="/blog/{data.oldestPost.slug}" class="nav-link end-link" title={data.oldestPost.title}>
+                    <a href="/blog/{data.oldestPost.slug}" class="nav-link end-link">
                         <span class="nav-label">« {t.blog_index_oldest || 'Oldest'}</span>
                         <span class="nav-title">{data.oldestPost.title}</span>
                     </a>
                 {/if}
                 {#if data.previousPost}
-                    <a href="/blog/{data.previousPost.slug}" class="nav-link prev" title={data.previousPost.title}>
+                    <a href="/blog/{data.previousPost.slug}" class="nav-link prev">
                         <span class="nav-label">← {t.blog_post_prev || 'Previous'}</span>
                         <span class="nav-title">{data.previousPost.title}</span>
                     </a>
                 {/if}
                 {#if data.nextPost}
-                    <a href="/blog/{data.nextPost.slug}" class="nav-link next" title={data.nextPost.title}>
+                    <a href="/blog/{data.nextPost.slug}" class="nav-link next">
                         <span class="nav-label">{t.blog_post_next || 'Next'} →</span>
                         <span class="nav-title">{data.nextPost.title}</span>
                     </a>
                 {/if}
                 {#if data.latestPost && data.latestPost.slug !== data.post?.slug}
-                    <a href="/blog/{data.latestPost.slug}" class="nav-link end-link latest" title={data.latestPost.title}>
+                    <a href="/blog/{data.latestPost.slug}" class="nav-link end-link latest">
                         <span class="nav-label">{t.blog_index_latest || 'Latest'} »</span>
                         <span class="nav-title">{data.latestPost.title}</span>
                     </a>
@@ -230,11 +234,13 @@
                 {#if hasLongTurns}
                     <div class="turn-toolbar">
                         <button
+                            type="button"
                             class="turn-toggle"
                             onclick={() => (forceExpand = forceExpand === true ? null : true)}
                             class:active={forceExpand === true}
                         >{t.blog_expand_all || 'Expand all'}</button>
                         <button
+                            type="button"
                             class="turn-toggle"
                             onclick={() => (forceExpand = forceExpand === false ? null : false)}
                             class:active={forceExpand === false}
@@ -256,7 +262,7 @@
                             </div>
                             <div class="turn-body">{@html section._html}</div>
                             {#if section._isLong}
-                                <button class="turn-expand-btn" onclick={() => toggleTurn(section)}>
+                                <button type="button" class="turn-expand-btn" onclick={() => toggleTurn(section)}>
                                     {#if isExpanded(section)}
                                         {t.blog_collapse || 'Show less'} ▲
                                     {:else}
@@ -309,15 +315,7 @@
 </article>
 
 <style>
-    /* --- Palette Definition --- */
-    :root {
-        --color-bg: #F9F6F0;        /* Creamy White */
-        --color-text: #2D3A36;      /* Deep Dark Green/Slate */
-        --color-brick: #A53D28;     /* Brick Red (WCAG AA compliant) */
-        --color-sage: #8DA399;      /* Muted Sage Green */
-        --color-white: #FFFFFF;
-    }
-
+    /* --- Palette: defined once in src/app.css --- */
     :global(body) {
         font-family: 'Outfit', sans-serif;
         background-color: var(--color-bg);
@@ -417,7 +415,7 @@
     /* Machine-translation notice. Subtle, honest, not intrusive. */
     .translation-notice {
         font-size: 0.82rem;
-        color: #8a8a8a;
+        color: #5F6E68;
         margin-bottom: 1.5rem;
         padding: 0.6rem 1rem;
         background: rgba(184, 160, 106, 0.08);
@@ -482,7 +480,7 @@
     .post-meta {
         display: flex;
         gap: 1.5rem;
-        color: #6B7C76;
+        color: #5F6E68;
         font-size: 0.95rem;
         margin-bottom: 2rem;
         padding-bottom: 2rem;
@@ -607,7 +605,7 @@
         border-left: 4px solid var(--color-brick);
         padding-left: 2rem;
         margin: 2rem 0;
-        color: #6B7C76;
+        color: #5F6E68;
         font-style: italic;
         font-size: 1.15rem;
         background: rgba(201, 76, 53, 0.05);
@@ -708,7 +706,7 @@
         padding: 0.18rem 0.55rem;
         border-radius: 50px;
         background: rgba(45, 58, 54, 0.08);
-        color: #6B7C76;
+        color: #5F6E68;
         border: 1px solid rgba(45, 58, 54, 0.12);
     }
 
@@ -786,7 +784,7 @@
         background: transparent;
         border: 1px solid rgba(141, 163, 153, 0.35);
         border-radius: 50px;
-        color: #6B7C76;
+        color: #5F6E68;
         font-family: 'Outfit', sans-serif;
         font-size: 0.82rem;
         font-weight: 600;
