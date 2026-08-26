@@ -1,5 +1,6 @@
 <script>
     // src/lib/components/BlogSearch.svelte
+    
     let { t = /** @type {Record<string, string>} */ ({}) } = $props();
     
     /** @type {string} */
@@ -26,7 +27,7 @@
     /** @type {HTMLInputElement | null} */
     let inputEl = $state(null);
     
-    const FETCH_TIMEOUT_MS = 5000;
+    const FETCH_TIMEOUT_MS = 10000;  // Increased from 5000
     
     /**
      * @param {string} ch
@@ -76,27 +77,45 @@
     function onKeydown(e) {
         if (e.key === 'Escape') {
             inputEl?.blur();
+            results = [];
+            query = '';
         }
     }
     
     async function runSearch() {
-        if (!query.trim()) {
+        const trimmedQuery = query.trim();
+        if (!trimmedQuery) {
+            results = [];
+            loading = false;
+            error = null;
+            return;
+        }
+        
+        if (trimmedQuery.length < 2) {
             results = [];
             loading = false;
             return;
         }
         
         const mySeq = ++seq;
-        abortCtl?.abort();
+        
+        // Abort previous request
+        if (abortCtl) {
+            abortCtl.abort();
+        }
         abortCtl = new AbortController();
         
         loading = true;
         error = null;
         
-        const killer = setTimeout(() => abortCtl?.abort(), FETCH_TIMEOUT_MS);
+        const killer = setTimeout(() => {
+            if (abortCtl) {
+                abortCtl.abort();
+            }
+        }, FETCH_TIMEOUT_MS);
         
         try {
-            const resp = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+            const resp = await fetch(`/api/search?q=${encodeURIComponent(trimmedQuery)}`, {
                 signal: abortCtl.signal
             });
             clearTimeout(killer);
@@ -110,9 +129,14 @@
             
             const data = await resp.json();
             results = data.results || [];
+            error = null;
         } catch (/** @type {unknown} */ e) {
             if (mySeq !== seq) return;
             const err = e instanceof Error ? e : new Error(String(e));
+            // Ignore aborted requests - they're expected
+            if (err.name === 'AbortError' || err.message.includes('aborted')) {
+                return;
+            }
             error = err.message;
             results = [];
         } finally {
@@ -123,8 +147,10 @@
     }
     
     function onInput() {
-        clearTimeout(timer ?? undefined);
-        timer = setTimeout(runSearch, 280);
+        if (timer) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(runSearch, 400);  // Slightly longer delay
     }
     
     /**
@@ -133,9 +159,9 @@
      */
     function stageLabels(stages) {
         const b = [];
-        if (stages.semantic) b.push('semantic');
-        if (stages.lexical) b.push('keyword');
-        if (stages.rerank) b.push('reranked');
+        if (stages?.semantic) b.push('semantic');
+        if (stages?.lexical) b.push('keyword');
+        if (stages?.rerank) b.push('reranked');
         return b;
     }
 </script>
@@ -145,13 +171,13 @@
     bind:value={query}
     oninput={onInput}
     onkeydown={onKeydown}
-    placeholder="Search posts..."
+    placeholder={t.search_placeholder || 'Search posts...'}
     class="search-input"
     disabled={loading}
 />
 
 {#if loading}
-    <div class="search-status">Searching...</div>
+    <div class="search-status">{t.search_searching || 'Searching…'}</div>
 {/if}
 
 {#if error}
@@ -160,16 +186,23 @@
 
 {#if results.length > 0}
     <ul class="search-results">
-        {#each results as result (result.chunk.id)}
+        {#each results as result (result.chunk?.id || result.slug)}
             <li>
-                <a href="/blog/{result.chunk.slug}?lang={result.chunk.lang}">
-                    <strong>{result.chunk.title || result.chunk.slug}</strong>
-                    <span class="lang-badge">{result.chunk.lang}</span>
-                    <p>{@html highlight(result.chunk.text, query)}</p>
+                <a href="/blog/{result.slug}?lang={result.lang}">
+                    <strong>{result.title || result.slug}</strong>
+                    <span class="lang-badge">{result.lang}</span>
+                    {#if result.match}
+                        <span class="match-badge">{result.match}%</span>
+                    {/if}
+                    {#if result.snippet}
+                        <p>{@html highlight(result.snippet, query)}</p>
+                    {/if}
                 </a>
             </li>
         {/each}
     </ul>
+{:else if query.length >= 2 && !loading && !error}
+    <div class="no-results">{t.search_no_results || 'No matches — try another phrasing.'}</div>
 {/if}
 
 <style>
@@ -179,15 +212,30 @@
         font-size: 1rem;
         border: 1px solid #ccc;
         border-radius: 4px;
+        background: #fff;
+        color: #333;
+    }
+    .search-input:focus {
+        outline: none;
+        border-color: #5a6e65;
+        box-shadow: 0 0 0 2px rgba(90, 110, 101, 0.2);
+    }
+    .search-input:disabled {
+        opacity: 0.6;
     }
     .search-status {
-        padding: 0.5rem;
+        padding: 0.5rem 0;
         color: #666;
         font-style: italic;
     }
     .search-error {
-        padding: 0.5rem;
+        padding: 0.5rem 0;
         color: #c0392b;
+    }
+    .no-results {
+        padding: 0.5rem 0;
+        color: #888;
+        font-style: italic;
     }
     .search-results {
         list-style: none;
@@ -198,13 +246,29 @@
         padding: 0.5rem;
         border-bottom: 1px solid #eee;
     }
+    .search-results li:last-child {
+        border-bottom: none;
+    }
     .search-results li a {
         text-decoration: none;
         color: inherit;
+        display: block;
+    }
+    .search-results li a:hover {
+        background: #f8f9fa;
+        border-radius: 4px;
     }
     .lang-badge {
         font-size: 0.75rem;
         background: #eee;
+        padding: 0.125rem 0.5rem;
+        border-radius: 3px;
+        margin-left: 0.5rem;
+    }
+    .match-badge {
+        font-size: 0.75rem;
+        background: #5a6e65;
+        color: #fff;
         padding: 0.125rem 0.5rem;
         border-radius: 3px;
         margin-left: 0.5rem;
@@ -217,5 +281,6 @@
     .search-results :global(mark) {
         background: #ffdd57;
         padding: 0 0.125rem;
+        border-radius: 2px;
     }
 </style>
