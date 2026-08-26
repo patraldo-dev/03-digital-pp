@@ -26,6 +26,8 @@ export function getLocaleFromRequest(request) {
 /**
  * Loads the translations for the current request.
  * Uses the $lib alias to ensure paths resolve correctly in SvelteKit/Cloudflare.
+ * @param {Request} request - The incoming request
+ * @returns {Promise<{ lang: string; t: Record<string, string> }>}
  */
 export async function getTranslations(request) {
     const locale = getLocaleFromRequest(request);

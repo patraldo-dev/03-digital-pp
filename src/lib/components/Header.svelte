@@ -1,393 +1,154 @@
 <script>
-    import { page } from '$app/stores';
-    import { browser } from '$app/environment';
-
-    // Svelte 5 Runes: State management
-    let isOpen = $state(false);
-
-    // Get translations from page data (set in layout load function)
-    let t = $derived($page.data?.t || {});
-    let lang = $derived($page.data?.lang || 'en');
-    let pathname = $derived($page.url.pathname);
-
-    // Function to toggle mobile menu and lock body scroll
-    function toggleMenu() {
-        isOpen = !isOpen;
-        // Prevent scrolling behind the menu
-        if (browser) {
-            document.body.style.overflow = isOpen ? 'hidden' : '';
-        }
-    }
-
-    // Function to close menu (helper)
-    function closeMenu() {
-        isOpen = false;
-        if (browser) {
-            document.body.style.overflow = '';
-        }
-    }
-
-    // Language Switcher Logic
-    function setLanguage(lang) {
-        document.cookie = `lang=${lang}; path=/; max-age=31536000`;
-        // Reload is the simplest way to re-render SSR pages with new lang
-        if (browser) {
-            window.location.reload();
-        }
+    // src/lib/components/Header.svelte
+    
+    let { lang = 'en', t = {} } = $props();
+    
+    /** @type {boolean} */
+    let menuOpen = $state(false);
+    
+    /**
+     * @param {string} newLang
+     */
+    function setLanguage(newLang) {
+        document.cookie = `lang=${newLang}; path=/; max-age=31536000`;
+        window.location.reload();
     }
 </script>
 
-<svelte:window onkeydown={(e) => { if (e.key === 'Escape' && isOpen) closeMenu(); }} />
-
-<header class="header">
+<header>
     <div class="container">
-        <div class="nav-wrapper" class:menu-open={isOpen}>
-
-            <!-- 1. Logo (Visible always) -->
-            <a href="/" class="logo" onclick={closeMenu}>
-                <span class="logo-main">¡Pinche&nbsp;Poutine!</span>
-                <span class="logo-digital">Digital</span>
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <span>📝</span>
+                <span>{t.site_title || 'My Blog'}</span>
             </a>
-
-            <!-- 2. Desktop Navigation (Hidden on Mobile) -->
-            <nav class="nav-desktop" aria-label={t.lang_choose || 'Main menu'}>
-                <a href="/blog" aria-current={pathname.startsWith('/blog') ? 'page' : undefined}>{t.nav_blog || 'Blog'}</a>
-                <a href="/contact" class="nav-cta" aria-current={pathname === '/contact' ? 'page' : undefined}>{t.nav_cta || 'Contact'}</a>
-            </nav>
-
-            <!-- 3. Language Switcher (Visible on Desktop) -->
-            <div class="lang-switcher-desktop">
-                <button class="lang-btn" class:current={lang === 'en'} onclick={() => setLanguage('en')} aria-pressed={lang === 'en'}>EN</button>
-                <div class="divider">|</div>
-                <button class="lang-btn" class:current={lang === 'es'} onclick={() => setLanguage('es')} aria-pressed={lang === 'es'}>ES</button>
-                <div class="divider">|</div>
-                <button class="lang-btn" class:current={lang === 'fr'} onclick={() => setLanguage('fr')} aria-pressed={lang === 'fr'}>FR</button>
-            </div>
-
-            <!-- 4. Hamburger Button (Visible only on Mobile) -->
-            <button
-                class="hamburger"
-                class:is-open={isOpen}
-                onclick={toggleMenu}
-                aria-label="Toggle navigation"
-                aria-expanded={isOpen}
-                aria-controls="mobile-menu"
-            >
-                <span></span>
-                <span></span>
-                <span></span>
+            
+            <button class="menu-toggle" onclick={() => menuOpen = !menuOpen}>
+                ☰
             </button>
+            
+            <nav class={menuOpen ? 'open' : ''}>
+                <ul>
+                    <li><a href="/">{t.nav_home || 'Home'}</a></li>
+                    <li><a href="/blog">{t.nav_blog || 'Blog'}</a></li>
+                    <li><a href="/contact">{t.nav_contact || 'Contact'}</a></li>
+                    <li class="lang-switcher">
+                        <button onclick={() => setLanguage('en')} class:active={lang === 'en'}>EN</button>
+                        <button onclick={() => setLanguage('es')} class:active={lang === 'es'}>ES</button>
+                        <button onclick={() => setLanguage('fr')} class:active={lang === 'fr'}>FR</button>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
-
-    <!-- 5. Mobile Menu Drawer (Slide-in Overlay) -->
-    {#if isOpen}
-        <div class="mobile-menu-overlay" id="mobile-menu">
-            <div class="mobile-menu-content">
-
-                <!-- Mobile Nav Links -->
-                <div class="mobile-links">
-                    <a href="/blog" class="mobile-link" onclick={closeMenu}>{t.nav_blog || 'Blog'}</a>
-                    <a href="/contact" class="mobile-link" onclick={closeMenu}>{t.nav_contact || 'Contact'}</a>
-                </div>
-
-                <!-- Mobile Language Switcher -->
-                <div class="mobile-lang-section">
-                    <p>{t.lang_choose || 'Choose Language'}:</p>
-                    <div class="mobile-lang-buttons">
-                        <button class="mobile-lang-btn" onclick={() => setLanguage('en')}>{t.lang_english || 'English'}</button>
-                        <button class="mobile-lang-btn" onclick={() => setLanguage('es')}>{t.lang_spanish || 'Español'}</button>
-                        <button class="mobile-lang-btn" onclick={() => setLanguage('fr')}>{t.lang_french || 'Français'}</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    {/if}
 </header>
 
 <style>
-    /* --- CSS Variables --- */
-    :global(:root) {
-        --color-bg: #F9F6F0;
-        --color-text: #2D3A36;
-        --color-brick: #A53D28;
-        --color-sage: #5a6e65;
-        --color-white: #FFFFFF;
-    }
-
-    /* --- Base Header Styles --- */
-    .header {
-        background: var(--color-bg);
+    header {
+        background: #fff;
+        border-bottom: 1px solid #e9ecef;
         padding: 1rem 0;
-        border-bottom: 1px solid rgba(45, 58, 54, 0.1);
         position: sticky;
         top: 0;
-        z-index: 1000;
+        z-index: 100;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
-
     .container {
-        /* Uses global .container from app.css */
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
     }
-
-    .nav-wrapper {
+    .header-inner {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        height: 50px;
+        align-items: center;
     }
-
-    /* Logo */
     .logo {
-        font-family: 'Outfit', sans-serif;
-        font-weight: 900;
-        font-size: 1.4rem;
-        text-decoration: none;
-        color: var(--color-text);
-        text-transform: uppercase;
-        letter-spacing: -0.5px;
-        position: relative;
-        z-index: 1001;
         display: flex;
-        align-items: baseline;
-        gap: 0.25rem;
-        flex-wrap: wrap;
-    }
-
-    .logo-main {
-        white-space: nowrap;
-    }
-
-    .menu-open .logo,
-    .menu-open .logo-digital {
-        color: var(--color-white);
-    }
-
-    .logo-digital {
-        font-weight: 700;
-        font-size: 0.85em;
-        color: var(--color-sage);
-        letter-spacing: 0.5px;
-    }
-
-    /* --- Desktop Nav --- */
-    .nav-desktop {
-        display: none; /* Mobile First: Hidden */
-    }
-
-    .nav-desktop a {
-        font-family: 'Outfit', sans-serif;
-        text-decoration: none;
-        color: var(--color-text);
-        font-weight: 500;
-        font-size: 1.05rem;
-        transition: color 0.2s;
-        margin-right: 1rem;
-    }
-
-    .nav-desktop a:hover {
-        color: var(--color-brick);
-    }
-
-    .nav-cta {
-        background: var(--color-brick);
-        color: var(--color-white) !important;
-        padding: 0.5rem 1.5rem;
-        border-radius: 50px;
-        margin-left: 1rem;
-    }
-
-    .nav-cta:hover {
-        background: #A83926 !important;
-        color: var(--color-white);
-    }
-
-    /* --- Desktop Language Switcher --- */
-    .lang-switcher-desktop {
-        display: none; /* Mobile First: Hidden */
         align-items: center;
         gap: 0.5rem;
-        font-size: 0.9rem;
+        text-decoration: none;
+        font-size: 1.25rem;
         font-weight: 600;
-        margin-left: 1.5rem;
+        color: #2c3e50;
     }
-
-    .lang-btn {
+    .logo span:first-child {
+        font-size: 1.5rem;
+    }
+    .menu-toggle {
+        display: none;
         background: none;
         border: none;
+        font-size: 1.5rem;
         cursor: pointer;
-        color: #666;
-        padding: 4px 6px;
-        min-height: 24px;
-        font-family: 'Outfit', sans-serif;
-        font-weight: 700;
-        transition: all 0.2s;
-        border-radius: 6px;
+        padding: 0.25rem 0.5rem;
     }
-
-    .lang-btn:hover {
-        color: var(--color-brick);
-    }
-
-    .lang-btn.current {
-        color: var(--color-brick);
-        text-decoration: underline;
-        text-underline-offset: 3px;
-    }
-
-    .divider {
-        color: #767676;
-        font-size: 0.8rem;
-    }
-
-    /* --- Hamburger Button --- */
-    .hamburger {
+    nav ul {
         display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        width: 2.5rem;
-        height: 2.5rem;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        z-index: 1001;
+        align-items: center;
+        gap: 1.5rem;
+        list-style: none;
+        margin: 0;
         padding: 0;
     }
-
-    .hamburger span {
-        width: 2.5rem;
-        height: 3px;
-        background: var(--color-text);
-        border-radius: 10px;
-        transition: all 0.3s linear;
-        transform-origin: 1px;
-    }
-
-    .hamburger.is-open span {
-        background: var(--color-white);
-    }
-    .hamburger.is-open span:nth-child(1) {
-        transform: rotate(45deg);
-    }
-    .hamburger.is-open span:nth-child(2) {
-        opacity: 0;
-        transform: translateX(20px);
-    }
-    .hamburger.is-open span:nth-child(3) {
-        transform: rotate(-45deg);
-    }
-
-    /* --- Mobile Menu Overlay --- */
-    .mobile-menu-overlay {
-        position: fixed;
-        inset: 0;
-        background: var(--color-text);
-        color: var(--color-white);
-        z-index: 999;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        animation: slideIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    }
-
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .mobile-menu-content {
-        text-align: center;
-        width: 100%;
-        max-width: 400px;
-        padding: 4rem 2rem;
-        box-sizing: border-box;
-        margin-top: auto;
-        margin-bottom: auto;
-    }
-
-    /* --- FIX FOR SCRUNCHED MENU --- */
-    .mobile-links {
-        display: flex;
-        flex-direction: column; /* Force vertical stack */
-        gap: 1.5rem;          /* Add vertical spacing */
-        width: 100%;           /* Full width */
-        margin-bottom: 4rem;
-    }
-
-    .mobile-link {
-        font-family: 'Outfit', sans-serif;
-        font-size: 2.5rem;      /* Made slightly larger */
-        font-weight: 700;
-        color: var(--color-white);
+    nav a {
         text-decoration: none;
-        display: block;         /* Force block to take new line */
-        padding: 0.5rem 0;    /* Add breathing room */
-        border-bottom: 2px solid transparent;
-        transition: all 0.2s;
-        line-height: 1.2;
+        color: #495057;
+        transition: color 0.2s;
     }
-
-    .mobile-link:hover {
-        color: var(--color-brick);
-        border-bottom-color: var(--color-brick);
-        transform: translateX(10px);
+    nav a:hover {
+        color: #007bff;
     }
-
-    /* Mobile Language Section inside Menu */
-    .mobile-lang-section {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 2rem;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        width: 100%;
-    }
-
-    .mobile-lang-section p {
-        margin: 0 0 1.2rem 0;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        opacity: 0.8;
-    }
-
-    .mobile-lang-buttons {
+    .lang-switcher {
         display: flex;
-        flex-direction: column; /* Stack language buttons */
-        gap: 0.8rem;
+        gap: 0.25rem;
     }
-
-    .mobile-lang-btn {
-        background: transparent;
-        border: 2px solid var(--color-white);
-        color: var(--color-white);
-        padding: 1rem;
-        border-radius: 12px;
-        font-weight: 600;
+    .lang-switcher button {
+        background: none;
+        border: 1px solid #ced4da;
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
         cursor: pointer;
+        font-size: 0.75rem;
+        font-weight: 500;
         transition: all 0.2s;
-        font-family: 'Outfit', sans-serif;
-        font-size: 1rem;
     }
-
-    .mobile-lang-btn:hover {
-        background: var(--color-white);
-        color: var(--color-text);
+    .lang-switcher button:hover {
+        background: #e9ecef;
     }
-
-    /* --- Desktop Query --- */
-    @media (min-width: 769px) {
-        .nav-desktop {
-            display: flex;
-            align-items: center;
+    .lang-switcher button.active {
+        background: #007bff;
+        color: #fff;
+        border-color: #007bff;
+    }
+    @media (max-width: 768px) {
+        .menu-toggle {
+            display: block;
         }
-
-        .lang-switcher-desktop {
-            display: flex;
-        }
-
-        .hamburger {
+        nav {
             display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        nav.open {
+            display: block;
+        }
+        nav ul {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
+        }
+        nav ul li {
+            padding: 0.5rem 0;
+        }
+        .lang-switcher {
+            justify-content: center;
         }
     }
 </style>

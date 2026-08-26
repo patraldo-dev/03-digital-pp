@@ -1,5 +1,4 @@
 <script>
-    import { page } from '$app/stores';
     import { browser } from '$app/environment';
     import mermaid from 'mermaid';
     import { marked } from 'marked';
@@ -7,59 +6,67 @@
     import { untrack } from 'svelte';
     import BlogSidebar from '$lib/components/BlogSidebar.svelte';
 
-    // Svelte 5: Get props
     let { data } = $props();
 
-    // Get translations from page data
-    let t = $derived($page.data?.t || {});
+    /** @type {Record<string, string>} */
+    let t = $derived(data?.t || {});
 
-    // Configure marked (idempotent — safe to call once)
     marked.setOptions({
         breaks: true,
         gfm: true
     });
 
-    /**
-     * Turns longer than this many characters (plain text) start
-     * collapsed with a preview + fade, so the reader can scan a
-     * whole conversation quickly and expand what interests them.
-     * Below the threshold the turn renders in full.
-     */
     const PREVIEW_CHARS = 240;
-
     const SPEAKER_RE = /^(Patrouch|ZCode|Chef Tech|Pinche Poutine):\s*$/i;
 
-    /** Display names for language codes, for badges/chips. */
+    /** @type {{ en: string; es: string; fr: string }} */
     const LANG_NAMES = { en: 'English', es: 'Español', fr: 'Français' };
 
-    /** Locale-aware, SSR-stable date formatting. */
+    /** @type {{ en: string; es: string; fr: string }} */
     const DATE_LOCALES = { en: 'en-US', es: 'es-MX', fr: 'fr-FR' };
-    const fmtDate = (d) => new Date(d).toLocaleDateString(DATE_LOCALES[readerLang] || 'en-US');
+    
+    /**
+     * @param {string | Date} d
+     * @returns {string}
+     */
+const fmtDate = (d) => {
+    const langKey = /** @type {keyof typeof DATE_LOCALES} */ (readerLang);
+    const locale = DATE_LOCALES[langKey] || 'en-US';
+    return new Date(d).toLocaleDateString(locale);
+};
 
-    /** The reader's UI locale (from cookie via layout). */
-    let readerLang = $derived($page.data?.lang || 'en');
+    /** @type {string} */
+    let readerLang = $derived(data?.lang || 'en');
 
-    /** The language the post was actually written in. */
+    /** @type {string} */
     let postLang = $derived(data.post?.original_lang || data.post?.source_lang || 'en');
 
-    /** Whether this post is being shown in a language other than the reader's. */
+    /** @type {boolean} */
     let isForeignToReader = $derived(postLang !== readerLang);
 
-    /** Whether this version is a machine translation. */
+    /** @type {boolean} */
     let isTranslated = $derived(!!data.post?.translated);
 
-    /** Strip markdown/HTML to approximate visible length. */
+    /**
+     * @param {string} md
+     * @returns {number}
+     */
     function plainLength(md) {
         return (md || '')
-            .replace(/```[\s\S]*?```/g, ' ')   // code fences
-            .replace(/`[^`]*`/g, ' ')          // inline code
-            .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // images
-            .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // links → text
-            .replace(/[#>*_~|-]/g, ' ')        // markdown punctuation
+            .replace(/```[\s\S]*?```/g, ' ')
+            .replace(/`[^`]*`/g, ' ')
+            .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+            .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+            .replace(/[#>*_~|-]/g, ' ')
             .replace(/\s+/g, ' ')
             .trim().length;
     }
 
+    /**
+     * @param {any} section
+     * @param {number} idx
+     * @returns {any}
+     */
     function renderSection(section, idx) {
         const html = marked.parse(section.content || '', { async: false });
         const clean = browser ? DOMPurify.sanitize(html) : html;
@@ -81,68 +88,76 @@
         };
     }
 
-    // Pre-render sections once per post. This is $derived so it
-    // recomputes when the post data changes (navigation). It does
-    // NOT hold expansion state — that lives in expandedTurns below.
+    /** @type {any[]} */
     let renderedSections = $derived.by(() => {
         const sections = data.post?.sections;
         if (!sections || !sections.length) return [];
         return sections.map((s, i) => renderSection(s, i));
     });
 
-    // Per-turn expansion state, keyed by section index. Lives in
-    // $state so Svelte tracks mutations and re-renders on toggle.
-    // Reset when the post changes.
+    /** @type {Record<number, boolean>} */
     let expandedTurns = $state({});
 
-    // Reset expansion state when navigating to a different post.
     $effect(() => {
         data.post?.slug;
         expandedTurns = {};
     });
 
-    // Global expand-all override: null = each turn uses its own state,
-    // true = force all open, false = force all collapsed.
+    /** @type {boolean | null} */
     let forceExpand = $state(null);
 
-    // Whether any turn is long enough to warrant the toolbar at all.
-    let hasLongTurns = $derived(renderedSections.some((s) => s._isLong));
+    /** @type {boolean} */
+    let hasLongTurns = $derived(renderedSections.some((/** @type {any} */ s) => s._isLong));
 
+    /**
+     * @param {any} section
+     * @returns {boolean}
+     */
     function isExpanded(section) {
         if (forceExpand !== null) return forceExpand;
         if (!section._isLong) return true;
         return !!expandedTurns[section._idx];
     }
 
+    /**
+     * @param {any} section
+     */
     function toggleTurn(section) {
         expandedTurns[section._idx] = !expandedTurns[section._idx];
     }
 
-    // Fallback htmlContent (legacy posts without sections) — sanitize on client.
+    /** @type {string} */
     let safeHtmlContent = $derived.by(() => {
-        const html = data.post?.htmlContent || '';
+        const html = data.post?.content || '';
         return browser ? DOMPurify.sanitize(html) : html;
     });
 
     // Initialize Mermaid once (browser only)
     $effect(() => {
         if (!browser) return;
-        mermaid.initialize({
-            startOnLoad: false,
-            theme: 'default',
-            securityLevel: 'loose',
-        });
+        try {
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'default',
+                securityLevel: 'loose',
+            });
+        } catch (/** @type {unknown} */ err) {
+            console.error('Mermaid init failed:', err instanceof Error ? err.message : String(err));
+        }
     });
 
     // Render Mermaid diagrams after content lands in the DOM
     $effect(() => {
         if (!browser) return;
-        // Re-run whenever the rendered sections change
         renderedSections;
         const timer = setTimeout(() => {
-            const elements = document.querySelectorAll('.post-content .mermaid');
-            if (elements.length) {
-                mermaid.run({ querySelector: '.post-content .mermaid' });
+            try {
+                const elements = document.querySelectorAll('.post-content .mermaid');
+                if (elements.length) {
+                    mermaid.run({ querySelector: '.post-content .mermaid' });
+                }
+            } catch (/** @type {unknown} */ err) {
+                console.error('Mermaid render failed:', err instanceof Error ? err.message : String(err));
             }
         }, 100);
         return () => clearTimeout(timer);
@@ -154,7 +169,6 @@
     <meta name="description" content={data.post?.excerpt} />
 </svelte:head>
 
-<!-- Background Blobs -->
 <div class="bg-wrap">
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
@@ -173,13 +187,14 @@
                 <div class="badge">{t.blog_tag || 'Blog'}</div>
                 {#if isForeignToReader}
                     <div class="lang-badge" title={t.blog_original_lang_tip || 'This text is shown in its original language'}>
-                        {t.blog_original_lang || 'Originally in'} {LANG_NAMES[postLang] || postLang}
+                        {t.blog_original_lang || 'Originally in'} {LANG_NAMES[/** @type {keyof typeof LANG_NAMES} */ (postLang)] || postLang}
                     </div>
                 {/if}
             </div>
             {#if isTranslated}
                 <div class="translation-notice">
-                    {t.blog_machine_translation || 'Machine translation'} · {LANG_NAMES[postLang] || postLang}
+                    {t.blog_machine_translation || 'Machine translation'} · {LANG_NAMES[/** @type {keyof typeof LANG_NAMES} */ (postLang)] || postLang}
+ 
                     &nbsp;·&nbsp;
                     <a href="/blog/{data.post?.slug}?lang={data.post?.original_lang || 'en'}">
                         {t.blog_view_original || 'View original'}
@@ -257,7 +272,7 @@
                             <div class="turn-header">
                                 <span class="speaker-badge">{section._speaker}</span>
                                 {#if section._turnLang}
-                                    <span class="turn-lang-chip lang-{section._turnLang}">{LANG_NAMES[section._turnLang] || section._turnLang}</span>
+                                    <span class="turn-lang-chip lang-{section._turnLang}"> {LANG_NAMES[/** @type {keyof typeof LANG_NAMES} */ (section._turnLang)] || section._turnLang}</span>
                                 {/if}
                             </div>
                             <div class="turn-body">{@html section._html}</div>

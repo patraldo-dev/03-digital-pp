@@ -1,106 +1,141 @@
 <script>
-	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
-	
-	let error = false;
-	let already = false;
-	let expired = false;
-	let errorMessage = '';
-	
-	onMount(() => {
-		error = $page.url.searchParams.get('error');
-		already = $page.url.searchParams.get('already') === 'true';
-		expired = $page.url.searchParams.get('expired') === 'true';
-		
-		// Set error message based on error type
-		if (error === 'invalid') {
-			errorMessage = 'Invalid confirmation link';
-		} else if (error === 'expired') {
-			errorMessage = 'Confirmation link has expired';
-		} else if (error === 'server') {
-			errorMessage = 'An error occurred. Please try again.';
-		}
-	});
+    // src/routes/confirmation-success/+page.svelte
+    
+    import { onMount } from 'svelte';
+    import { page } from '$app/stores';
+    
+    /** @type {string | null} */
+    let error = $state(null);
+    
+    /** @type {boolean} */
+    let already = $state(false);
+    
+    /** @type {string} */
+    let errorMessage = $state('');
+    
+    /** @type {string} */
+    let email = $state('');
+    
+    /** @type {string} */
+    let status = $state('verifying');
+    
+    onMount(() => {
+        const errorParam = $page.url.searchParams.get('error');
+        const emailParam = $page.url.searchParams.get('email');
+        const alreadyParam = $page.url.searchParams.get('already');
+        
+        // Set state
+        error = errorParam;
+        email = emailParam || '';
+        already = alreadyParam === 'true';
+        
+        // Set error message based on error type
+        if (error === 'invalid') {
+            errorMessage = 'Invalid confirmation link';
+            status = 'error';
+        } else if (error === 'expired') {
+            errorMessage = 'Confirmation link has expired';
+            status = 'error';
+        } else if (error === 'server') {
+            errorMessage = 'An error occurred. Please try again.';
+            status = 'error';
+        } else if (!error) {
+            status = 'success';
+        }
+    });
 </script>
 
-<svelte:head>
-	<title>Subscription Confirmed - ¡Pinche Poutine! Digital</title>
-</svelte:head>
-
-<div class="container">
-	<div class="success-card">
-		{#if error && !already}
-			<div class="icon error" aria-hidden="true">✗</div>
-			<h1>Oops!</h1>
-			<p>{errorMessage}</p>
-		{:else}
-			<div class="icon" aria-hidden="true">✓</div>
-			<h1>
-				{#if already}
-					Already Subscribed!
-				{:else}
-					Subscription Confirmed!
-				{/if}
-			</h1>
-			<p>
-				{#if already}
-					You're already subscribed to our updates. Thanks for being part of our community!
-				{:else}
-					Thank you for confirming your subscription. You'll start receiving updates soon!
-				{/if}
-			</p>
-		{/if}
-		<a href="/" class="home-button">Return to Home</a>
-	</div>
+<div class="confirmation-page">
+    <div class="container">
+        {#if status === 'verifying'}
+            <div class="card">
+                <h1>Verifying...</h1>
+                <p>Please wait while we confirm your subscription.</p>
+            </div>
+        {:else if status === 'success'}
+            <div class="card success">
+                <h1>✅ Confirmed!</h1>
+                <p>Your email has been confirmed successfully.</p>
+                {#if email}
+                    <p class="email">{email}</p>
+                {/if}
+                <p>You'll now receive updates from us.</p>
+                <a href="/" class="button">Go Home</a>
+            </div>
+        {:else if status === 'error'}
+            <div class="card error">
+                <h1>❌ {errorMessage}</h1>
+                <p>There was a problem confirming your subscription.</p>
+                {#if error === 'expired'}
+                    <p>The confirmation link has expired. Please try subscribing again.</p>
+                    <a href="/subscribe" class="button">Subscribe Again</a>
+                {:else if error === 'invalid'}
+                    <p>The confirmation link is invalid. Please make sure you copied the full URL.</p>
+                    <a href="/subscribe" class="button">Subscribe Again</a>
+                {:else}
+                    <p>Please try again later or contact support.</p>
+                    <a href="/" class="button">Go Home</a>
+                {/if}
+            </div>
+        {/if}
+    </div>
 </div>
 
 <style>
-	.container {
-		max-width: 600px;
-		margin: 0 auto;
-		padding: 2rem;
-		text-align: center;
-	}
-	
-	.success-card {
-		background: white;
-		border-radius: 8px;
-		padding: 3rem 2rem;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	}
-	
-	.icon {
-		font-size: 4rem;
-		color: #22c55e;
-		margin-bottom: 1rem;
-	}
-	
-	.icon.error {
-		color: #ef4444;
-	}
-	
-	h1 {
-		color: #1f2937;
-		margin-bottom: 1rem;
-	}
-	
-	p {
-		color: #6b7280;
-		margin-bottom: 2rem;
-		line-height: 1.6;
-	}
-	
-	.home-button {
-		display: inline-block;
-		background-color: #007cba;
-		color: white;
-		padding: 0.75rem 1.5rem;
-		text-decoration: none;
-		border-radius: 4px;
-		transition: background-color 0.2s;
-	}
-	
-	.home-button:hover {
-		background-color: #005a87;
-	}
+    .confirmation-page {
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        width: 100%;
+    }
+    .card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 2.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .card.success {
+        border-top: 4px solid #28a745;
+    }
+    .card.error {
+        border-top: 4px solid #dc3545;
+    }
+    .card h1 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+    .card p {
+        margin-bottom: 1rem;
+        color: #555;
+        line-height: 1.6;
+    }
+    .card .email {
+        background: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 4px;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+    .button {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: #007bff;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background 0.2s;
+        margin-top: 0.5rem;
+    }
+    .button:hover {
+        background: #0056b3;
+    }
 </style>

@@ -1,44 +1,48 @@
 // src/routes/api/search/reindex/+server.js
-//
-// POST /api/search/reindex
-// Authorization: Bearer <SEARCH_ADMIN_TOKEN secret>
-//
-// Rebuilds the Vectorize index from the bundled post corpus:
-// chunk → embed (bge-base-en-v1.5, batches of 96) → upsert (batches
-// of 50). Idempotent — chunk ids are stable, so re-running replaces
-// content-in-place. Orphaned vectors (deleted posts) are ignored at
-// query time by the search route.
 
 import { json } from '@sveltejs/kit';
+import { buildAndUpsertIndex } from '$lib/blog/search-reindex.js';
 
+/**
+ * @type {import('./$types').RequestHandler}
+ */
 export async function POST({ request, platform }) {
-    const env = platform?.env || {};
-    const auth = (request.headers.get('authorization') || '').replace(
-        /^Bearer\s+/i,
-        ''
-    );
-    if (!env.SEARCH_ADMIN_TOKEN) {
-        return json(
-            { ok: false, error: 'SEARCH_ADMIN_TOKEN secret not set' },
-            { status: 503 }
-        );
-    }
-    if (auth !== env.SEARCH_ADMIN_TOKEN) {
-        return json({ ok: false, error: 'unauthorized' }, { status: 401 });
-    }
-    if (!env.AI || !env.VECTORIZE) {
-        return json(
-            { ok: false, error: 'AI or VECTORIZE binding missing' },
-            { status: 503 }
-        );
+    if (!platform?.env) {
+        return json({ error: 'Platform environment not available' }, { status: 500 });
     }
 
-    const { buildAndUpsertIndex } = await import('$lib/blog/search-reindex.js');
+    const env = platform.env;
+    
+    // Check authorization
+    const auth = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+    if (!env.SEARCH_ADMIN_TOKEN) {
+        return json({ ok: false, error: 'Admin token not configured' }, { status: 500 });
+    }
+    
+    if (auth !== env.SEARCH_ADMIN_TOKEN) {
+        return json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    // Check for required bindings
+    if (!env.AI || !env.VECTORIZE) {
+        return json({ 
+            ok: false, 
+            error: 'AI or VECTORIZE binding not available' 
+        }, { status: 500 });
+    }
+    
     try {
-        const stats = await buildAndUpsertIndex(env);
-        return json({ ok: true, ...stats });
-    } catch (e) {
-        console.error('[search] reindex failed:', e?.message);
-        return json({ ok: false, error: e?.message }, { status: 500 });
+        const result = await buildAndUpsertIndex(env);
+        return json({ 
+            ok: true, 
+            ...result 
+        });
+    } catch (/** @type {unknown} */ error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        console.error('[search] reindex failed:', err.message);
+        return json({ 
+            ok: false, 
+            error: err.message 
+        }, { status: 500 });
     }
 }

@@ -6,14 +6,29 @@
 
     // Svelte 5: Get props
     let { data } = $props();
-    
-    // Get translations from page data
-    let t = $derived($page.data?.t || {});
-    let lang = $derived($page.data?.lang || 'en');
 
-    // Locale-aware, SSR-stable date formatting (no bare toLocaleDateString).
+    // Get translations from page data
+    /** @type {Record<string, string>} */
+    let t = $derived(data?.t || {});
+    
+    /** @type {string} */
+    let lang = $derived(data?.lang || 'en');
+
+    // Locale-aware, SSR-stable date formatting
+    /** @type {{ en: string; es: string; fr: string }} */
     const DATE_LOCALES = { en: 'en-US', es: 'es-MX', fr: 'fr-FR' };
-    const fmtDate = (d) => new Date(d).toLocaleDateString(DATE_LOCALES[lang] || 'en-US');
+    
+    /**
+     * @param {string | Date} d
+     * @returns {string}
+     */
+
+const fmtDate = (d) => {
+    const langKey = /** @type {keyof typeof DATE_LOCALES} */ (lang);
+    const locale = DATE_LOCALES[langKey] || 'en-US';
+    return new Date(d).toLocaleDateString(locale);
+};
+
 </script>
 
 <svelte:head>

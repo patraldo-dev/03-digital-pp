@@ -1,129 +1,61 @@
-<form class="contact-form" on:submit|preventDefault={handleSubmit}>
-    <div class="form-group">
-        <label for="name">{label('contact_form_name', 'Name')} *</label>
-        <input
-            type="text"
-            id="name"
-            name="name"
-            autocomplete="name"
-            bind:value={formData.name}
-            required
-            disabled={loading}
-        />
-    </div>
-
-    <div class="form-group">
-        <label for="email">{label('contact_form_email', 'Email')} *</label>
-        <input
-            type="email"
-            id="email"
-            name="email"
-            autocomplete="email"
-            bind:value={formData.email}
-            required
-            disabled={loading}
-        />
-    </div>
-
-    <div class="form-group">
-        <label for="subject">{label('contact_form_subject', 'Subject')} *</label>
-        <input
-            type="text"
-            id="subject"
-            name="subject"
-            autocomplete="off"
-            bind:value={formData.subject}
-            required
-            disabled={loading}
-        />
-    </div>
-
-    <div class="form-group">
-        <label for="message">{label('contact_form_message', 'Message')} *</label>
-        <textarea
-            id="message"
-            name="message"
-            bind:value={formData.message}
-            rows="6"
-            required
-            disabled={loading}
-        ></textarea>
-    </div>
-
-    <input
-        type="text"
-        name="website"
-        aria-hidden="true"
-        style="display: none !important; opacity: 0; height: 0; width: 0; position: absolute;"
-        tabindex="-1"
-        autocomplete="off"
-    />
-
-    {#if message}
-        <div class="message" class:success={messageType === 'success'} class:error={messageType === 'error'} role={messageType === 'error' ? 'alert' : 'status'}>
-            {message}
-        </div>
-    {/if}
-
-    <button type="submit" class="btn" disabled={loading}>
-        {#if loading}
-            {label('contact_form_sending', 'Sending...')}
-        {:else}
-            {label('contact_form_send', 'Send Message')}
-        {/if}
-    </button>
-</form>
-
 <script>
-    /** @type {{ t?: Record<string, string> }} */
+    // src/lib/components/ContactForm.svelte
+    
     let { t = {} } = $props();
-
-    const label = (key, fallback) => t?.[key] || fallback;
-
-    let formData = {
+    
+    /** @type {{ name: string; email: string; subject: string; message: string }} */
+    let formData = $state({
         name: '',
         email: '',
         subject: '',
         message: ''
-    };
-
-    let loading = false;
-    let message = '';
-    let messageType = '';
-
-    async function handleSubmit() {
+    });
+    
+    /** @type {boolean} */
+    let loading = $state(false);
+    
+    /** @type {string} */
+    let message = $state('');
+    
+    /** @type {string} */
+    let messageType = $state('');
+    
+    /**
+     * @param {string} key
+     * @param {string} fallback
+     * @returns {string}
+     */
+    const label = (key, fallback) => t?.[key] || fallback;
+    
+    /**
+     * @param {Event} e
+     */
+    async function handleSubmit(e) {
+        e.preventDefault();
+        
         loading = true;
         message = '';
-
+        messageType = '';
+        
         try {
-            const response = await fetch('/api/contact', {
+            const resp = await fetch('/api/contact', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                message = result.message || 'Thank you! Your message has been sent successfully.';
-                messageType = 'success';
-                
-                // Reset form
-                formData = {
-                    name: '',
-                    email: '',
-                    subject: '',
-                    message: ''
-                };
-            } else {
-                message = result.error || 'Sorry, there was an error sending your message. Please try again.';
-                messageType = 'error';
+            
+            const data = await resp.json();
+            
+            if (!resp.ok) {
+                throw new Error(data.error || 'Failed to send message');
             }
-        } catch (error) {
-            console.error('Contact form error:', error);
-            message = 'Sorry, there was an error sending your message. Please try again.';
+            
+            message = 'Message sent successfully!';
+            messageType = 'success';
+            formData = { name: '', email: '', subject: '', message: '' };
+        } catch (/** @type {unknown} */ err) {
+            const error = err instanceof Error ? err : new Error(String(err));
+            message = error.message || 'Failed to send message';
             messageType = 'error';
         } finally {
             loading = false;
@@ -131,87 +63,120 @@
     }
 </script>
 
+<form class="contact-form" onsubmit={handleSubmit}>
+    <div class="form-group">
+        <label for="name">{label('contact_name', 'Name')}</label>
+        <input
+            id="name"
+            type="text"
+            bind:value={formData.name}
+            required
+            disabled={loading}
+        />
+    </div>
+    
+    <div class="form-group">
+        <label for="email">{label('contact_email', 'Email')}</label>
+        <input
+            id="email"
+            type="email"
+            bind:value={formData.email}
+            required
+            disabled={loading}
+        />
+    </div>
+    
+    <div class="form-group">
+        <label for="subject">{label('contact_subject', 'Subject')}</label>
+        <input
+            id="subject"
+            type="text"
+            bind:value={formData.subject}
+            required
+            disabled={loading}
+        />
+    </div>
+    
+    <div class="form-group">
+        <label for="message">{label('contact_message', 'Message')}</label>
+        <textarea
+            id="message"
+            bind:value={formData.message}
+            rows="5"
+            required
+            disabled={loading}
+        ></textarea>
+
+    </div>
+    
+    {#if message}
+        <div class="message {messageType}">
+            {message}
+        </div>
+    {/if}
+    
+    <button type="submit" disabled={loading}>
+        {loading ? 'Sending...' : label('contact_send', 'Send Message')}
+    </button>
+</form>
+
 <style>
     .contact-form {
         max-width: 600px;
         margin: 0 auto;
     }
-
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
-
-    label {
+    .form-group label {
         display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #333;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+        color: #2c3e50;
     }
-
-    input,
-    textarea {
+    .form-group input,
+    .form-group textarea {
         width: 100%;
         padding: 0.75rem;
-        border: 2px solid #ddd;
-        border-radius: 4px;
         font-size: 1rem;
-        transition: border-color 0.3s ease;
-        font-family: inherit;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        transition: border-color 0.2s;
     }
-
-    input:focus,
-    textarea:focus {
+    .form-group input:focus,
+    .form-group textarea:focus {
         outline: none;
-        border-color: #5a6e65;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     }
-
-    input:disabled,
-    textarea:disabled {
-        background-color: #f5f5f5;
-        cursor: not-allowed;
-    }
-
-    textarea {
-        resize: vertical;
-        min-height: 120px;
-    }
-
     .message {
-        padding: 1rem;
+        padding: 0.75rem;
         border-radius: 4px;
         margin-bottom: 1rem;
-        font-weight: 500;
     }
-
     .message.success {
-        background-color: #d4edda;
+        background: #d4edda;
         color: #155724;
         border: 1px solid #c3e6cb;
     }
-
     .message.error {
-        background-color: #f8d7da;
+        background: #f8d7da;
         color: #721c24;
         border: 1px solid #f5c6cb;
     }
-
     button {
-        width: 100%;
-        padding: 1rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        background: #5a6e65;
-        color: white;
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        color: #fff;
+        background: #007bff;
         border: none;
-        border-radius: 8px;
+        border-radius: 4px;
         cursor: pointer;
-        transition: background 0.3s;
+        transition: background 0.2s;
     }
-
     button:hover:not(:disabled) {
-        background: #4a5e55;
+        background: #0056b3;
     }
-
     button:disabled {
         opacity: 0.6;
         cursor: not-allowed;

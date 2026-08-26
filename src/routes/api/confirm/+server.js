@@ -1,106 +1,90 @@
 // src/routes/api/confirm/+server.js
-import { redirect } from '@sveltejs/kit';
+
+import { json } from '@sveltejs/kit';
 import { sendEmail } from '$lib/email.js';
-import { getTranslations } from '$lib/i18n/server.js';
 
+/**
+ * GET /api/confirm - Confirm email subscription
+ * @type {import('./$types').RequestHandler}
+ */
 export async function GET({ url, platform, request }) {
-    const { MAILGUN_FROM_EMAIL } = platform.env;
+    if (!platform?.env) {
+        return json({ error: 'Platform environment not available' }, { status: 500 });
+    }
 
+    const { MAILGUN_FROM_EMAIL, DB } = platform.env;
     const token = url.searchParams.get('token');
 
     if (!token) {
-        throw redirect(303, '/confirmation-success?error=invalid');
+        return json({ error: 'Missing confirmation token' }, { status: 400 });
     }
 
     try {
-        const i18n = await getTranslations(request);
-        const t = i18n.t;
-
         // Find subscriber by token
-        const subscriber = await platform.env.DB
+        const subscriberResult = await DB
             .prepare(`
-                SELECT id, email, type, token_expires_at, confirmed 
+                SELECT email, type, token_expires_at, lang
                 FROM subscribers 
-                WHERE confirmation_token = ?
+                WHERE confirmation_token = ? AND active = false
             `)
             .bind(token)
             .first();
 
-        if (!subscriber) {
-            throw redirect(303, '/confirmation-success?error=invalid');
+        if (!subscriberResult) {
+            return json({ error: 'Invalid or expired token' }, { status: 400 });
         }
 
-        if (subscriber.confirmed) {
-            // Already confirmed
-            throw redirect(303, '/confirmation-success?already=true');
-        }
+        const subscriber = /** @type {{ email: string; type: string; token_expires_at: string; lang: string }} */ (subscriberResult);
 
         // Check if token is expired
         const now = new Date();
-        const expiresAt = new Date(subscriber.token_expires_at);
-        
-        if (now > expiresAt) {
-            throw redirect(303, '/confirmation-success?error=expired');
+        const expiresAt = new Date(String(subscriber.token_expires_at));
+        if (expiresAt < now) {
+            return json({ error: 'Token expired' }, { status: 400 });
         }
 
         // Confirm the subscription
-        await platform.env.DB
+        await DB
             .prepare(`
                 UPDATE subscribers 
-                SET confirmed = true, confirmed_at = ?, confirmation_token = null, token_expires_at = null
-                WHERE id = ?
+                SET active = true, confirmation_token = NULL, confirmed_at = CURRENT_TIMESTAMP
+                WHERE email = ?
             `)
-            .bind(new Date().toISOString(), subscriber.id)
+            .bind(subscriber.email)
             .run();
+
+        // Get translations for the welcome email
+        const lang = subscriber.lang || 'en';
+        const translations = await import(`$lib/i18n/locales/${lang}.json`);
+        /** @type {Record<string, string>} */
+        const t = translations.default || translations;
 
         // Send welcome email
         const emailHtml = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-                <div style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eee;">
-                    <h1 style="color: #C94C35; margin: 0;">${t.welcome_title}</h1>
-                </div>
-                <div style="padding: 20px 0;">
-                    <p style="font-size: 16px; color: #333; line-height: 1.6;">
-                        ${t.welcome_body}
-                    </p>
-                </div>
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="https://pinchepoutine.digital" style="background-color: #C94C35; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                        ${t.welcome_button}
-                    </a>
-                </div>
-                <div style="text-align: center; padding-top: 20px; border-top: 1px solid #eee; color: #888; font-size: 12px;">
-                    <p>${t.welcome_footer}</p>
-                </div>
-            </div>
+            <h1>${t.welcome_title || 'Welcome!'}</h1>
+            <p>${t.welcome_body || 'Thank you for confirming your subscription.'}</p>
+            <p>${t.welcome_footer || 'You will now receive updates from us.'}</p>
+            <hr>
+            <small><a href="https://yoursite.com/unsubscribe?email=${encodeURIComponent(subscriber.email)}">${t.unsubscribe || 'Unsubscribe'}</a></small>
         `;
 
-        const emailText = `${t.welcome_title}
-
-${t.welcome_body}
-
-${t.welcome_footer}`;
-
-        const emailSent = await sendEmail({
+        await sendEmail({
             from: MAILGUN_FROM_EMAIL,
             to: subscriber.email,
-            subject: t.welcome_subject,
-            text: emailText,
+            subject: t.welcome_subject || 'Welcome to our newsletter!',
+            text: `${t.welcome_title || 'Welcome!'}\n\n${t.welcome_body || 'Thank you for confirming your subscription.'}`,
             html: emailHtml
         }, platform.env);
 
-        if (!emailSent) {
-            console.error('Failed to send welcome email');
-        }
+        return json({ 
+            success: true, 
+            message: 'Email confirmed successfully!',
+            email: subscriber.email
+        });
 
-        // Redirect to success page
-        throw redirect(303, '/confirmation-success');
-
-    } catch (error) {
-        if (error.status === 302 || error.status === 303) {
-            throw error;
-        }
-        console.error('Confirmation API error:', error);
-        throw redirect(303, '/confirmation-success?error=server');
+    } catch (/** @type {unknown} */ error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        console.error('Confirmation error:', err);
+        return json({ error: err.message || 'Failed to confirm email' }, { status: 500 });
     }
 }

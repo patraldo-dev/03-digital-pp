@@ -1,34 +1,38 @@
+// src/routes/blog/+page.server.js
+
 import { getBlogPosts } from '$lib/blog/loader.js';
 
-const POSTS_PER_PAGE = 6;
-
-export async function load({ url, locals }) {
+/** @type {import('./$types').PageServerLoad} */
+export async function load({ url }) {
+    const lang = url.searchParams.get('lang') || 'en';
     const page = parseInt(url.searchParams.get('page') || '1');
-    const offset = (page - 1) * POSTS_PER_PAGE;
-    const locale = locals.lang || 'en';
-
-    // Get all posts for the current locale
-    const allPosts = await getBlogPosts(locale);
-
+    const pageSize = 10;
+    
+    const allPosts = await getBlogPosts(lang);
+    
     // Sort posts by date (newest first)
-    const sortedPosts = allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const sortedPosts = allPosts.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB.getTime() - dateA.getTime();
+    });
 
-    // Get posts for current page
-    const posts = sortedPosts.slice(offset, offset + POSTS_PER_PAGE);
-
-    // Calculate pagination info
-    const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+    // Pagination
+    const totalPosts = sortedPosts.length;
+    const totalPages = Math.ceil(totalPosts / pageSize);
+    const currentPage = Math.max(1, Math.min(page, totalPages));
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    const paginatedPosts = sortedPosts.slice(start, end);
 
     return {
-        posts,
-        // Full title index for the sidebar (posts above are the
-        // paginated 6; the sidebar lists every post regardless).
-        allPosts: sortedPosts.map((p) => ({ slug: p.slug, title: p.title, date: p.date })),
+        allPosts: sortedPosts,
+        posts: paginatedPosts,
         pagination: {
-            currentPage: page,
+            currentPage,
             totalPages,
-            hasNext: page < totalPages,
-            hasPrev: page > 1
-        }
+            totalPosts
+        },
+        lang
     };
 }

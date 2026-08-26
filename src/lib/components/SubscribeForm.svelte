@@ -1,173 +1,140 @@
 <script>
-	let { 
-		type = 'newsletter',
-		t = {}
-	} = $props();
-
-	let email = $state('');
-	let loading = $state(false);
-	let message = $state('');
-	let success = $state(false);
-
-	const getText = (key, fallback) => t?.[key] || fallback;
-
-	async function handleSubmit(e) {
-		e.preventDefault();
-		
-		if (!email.trim()) {
-			message = getText('subscribe_form_error_empty', 'Please enter your email address');
-			return;
-		}
-
-		loading = true;
-		message = '';
-
-		try {
-			const response = await fetch('/api/subscribe', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email: email.trim(), type })
-			});
-
-			const result = await response.json();
-			
-			if (result.success) {
-				success = true;
-				email = '';
-				
-				// Different messages based on status
-				if (result.status === 'confirmed') {
-					message = result.message || getText('subscribe_error_already_subscribed', 'You are already subscribed.');
-				} else if (result.status === 'resent') {
-					message = result.message || getText('subscribe_resend_message', 'Confirmation email resent. Please check your inbox!');
-				} else {
-					message = getText('subscribe_success_message', 'Please check your email to confirm your subscription.');
-				}
-				
-				setTimeout(() => {
-					success = false;
-					message = '';
-				}, 5000);
-			} else {
-				message = result.message || getText('subscribe_error_generic', 'Something went wrong. Please try again.');
-			}
-		} catch (error) {
-			console.error('Subscription error:', error);
-			message = getText('subscribe_form_error_network', 'Network error. Please try again.');
-		} finally {
-			loading = false;
-		}
-	}
+    // src/lib/components/SubscribeForm.svelte
+    
+    let { t = {}, type = 'newsletter' } = $props();
+    
+    /** @type {string} */
+    let email = $state('');
+    
+    /** @type {boolean} */
+    let loading = $state(false);
+    
+    /** @type {string} */
+    let message = $state('');
+    
+    /** @type {string} */
+    let messageType = $state('');
+    
+    /**
+     * @param {string} key
+     * @param {string} fallback
+     * @returns {string}
+     */
+    const getText = (key, fallback) => t?.[key] || fallback;
+    
+    /**
+     * @param {Event} e
+     */
+    async function handleSubmit(e) {
+        e.preventDefault();
+        
+        if (!email) return;
+        
+        loading = true;
+        message = '';
+        messageType = '';
+        
+        try {
+            const resp = await fetch('/api/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, type })
+            });
+            
+            const data = await resp.json();
+            
+            if (!resp.ok) {
+                throw new Error(data.message || 'Failed to subscribe');
+            }
+            
+            message = data.message || 'Please check your email to confirm!';
+            messageType = 'success';
+            email = '';
+        } catch (/** @type {unknown} */ err) {
+            const error = err instanceof Error ? err : new Error(String(err));
+            message = error.message || 'Failed to subscribe';
+            messageType = 'error';
+        } finally {
+            loading = false;
+        }
+    }
 </script>
 
-<div class="subscribe-form">
-	{#if success}
-		<div class="success-message" role="status">
-			<h3><span aria-hidden="true">🎉</span> {getText('subscribe_form_thanks', 'Thank you!')}</h3>
-			<p>{message}</p>
-			<p class="reset-hint">{getText('subscribe_form_reset_hint', 'Form will reset in a few seconds...')}</p>
-		</div>
-	{:else}
-		<form onsubmit={handleSubmit}>
-			<div class="form-group">
-				<input
-					bind:value={email}
-					type="email"
-					name="email"
-					aria-label={getText('subscribe_form_label', 'Email address')}
-					placeholder={getText('subscribe_form_placeholder', 'Enter your email address')}
-					autocomplete="email"
-					required
-					disabled={loading}
-					class="email-input"
-				/>
-				<button type="submit" disabled={loading} class="submit-button">
-					{loading ? getText('subscribe_form_subscribing', 'Subscribing...') : getText('subscribe_form_button', 'Subscribe')}
-				</button>
-			</div>
-		</form>
-	{/if}
-
-	{#if message && !success}
-		<p class="error-message" role="alert">{message}</p>
-	{/if}
-</div>
+<form class="subscribe-form" onsubmit={handleSubmit}>
+    <div class="form-group">
+        <input
+            type="email"
+            placeholder={getText('subscribe_placeholder', 'Enter your email')}
+            bind:value={email}
+            required
+            disabled={loading}
+        />
+    </div>
+    
+    {#if message}
+        <div class="message {messageType}">
+            {message}
+        </div>
+    {/if}
+    
+    <button type="submit" disabled={loading}>
+        {loading ? 'Subscribing...' : getText('subscribe_button', 'Subscribe')}
+    </button>
+</form>
 
 <style>
-	.subscribe-form {
-		width: 100%;
-		margin: 0 auto;
-	}
-
-	.form-group {
-		display: flex;
-		gap: 0.5rem;
-		margin-bottom: 1rem;
-	}
-
-	.email-input {
-		flex: 1;
-		padding: 0.75rem;
-		border: 2px solid #e5e7eb;
-		border-radius: 0.5rem;
-		font-size: 1rem;
-	}
-
-	.email-input:focus {
-		outline: none;
-		border-color: #5a6e65;
-	}
-
-	.submit-button {
-		padding: 0.75rem 1.5rem;
-		flex: 1;
-		background-color: #5a6e65;
-		color: white;
-		border: none;
-		border-radius: 0.5rem;
-		font-size: 1rem;
-		cursor: pointer;
-		transition: background-color 0.2s;
-	}
-
-	.submit-button:hover:not(:disabled) {
-		background-color: #4a5e55;
-	}
-
-	.submit-button:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-
-	.success-message {
-		text-align: center;
-		padding: 2rem;
-		background-color: #f0fdf4;
-		border: 2px solid #22c55e;
-		border-radius: 0.5rem;
-		color: #15803d;
-	}
-
-	.success-message h3 {
-		margin: 0 0 0.5rem 0;
-	}
-
-	.reset-hint {
-		font-size: 0.875rem;
-		color: #16a34a;
-		margin-top: 1rem;
-		font-style: italic;
-	}
-
-	.error-message {
-		color: #dc2626;
-		text-align: center;
-		margin-top: 0.5rem;
-	}
-
-	@media (max-width: 480px) {
-		.form-group {
-			flex-direction: column;
-		}
-	}
+    .subscribe-form {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .form-group {
+        flex: 1;
+        min-width: 200px;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+    .form-group input:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    .message {
+        width: 100%;
+        padding: 0.5rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+    .message.success {
+        background: #d4edda;
+        color: #155724;
+    }
+    .message.error {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    button {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        color: #fff;
+        background: #28a745;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+        white-space: nowrap;
+    }
+    button:hover:not(:disabled) {
+        background: #1e7e34;
+    }
+    button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 </style>

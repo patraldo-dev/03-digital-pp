@@ -1,52 +1,59 @@
 <script>
+    // src/routes/contact/+page.svelte
+    
+    import { onMount } from 'svelte';
     import ContactForm from '$lib/components/ContactForm.svelte';
     import { page } from '$app/stores';
-    import { onMount } from 'svelte';
-
+    
+    // Get translations from page data
     let { data } = $props();
+    
+    /** @type {Record<string, string>} */
     let t = $derived(data?.t || {});
     
-    // Guadalajara local time (GMT-6)
+    /** @type {string} */
     let guadalajaraTime = $state('');
+    
+    /** @type {HTMLElement[]} */
     let parallaxLayers = $state([]);
     
     onMount(() => {
-        // Parallax scroll effect — skipped entirely for reduced-motion users
-        // (the global CSS block only stills transitions, not JS transforms).
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-        // Parallax scroll effect
+        // Update time
+        const updateTime = () => {
+            const now = new Date();
+            const guadalajara = new Date(now.toLocaleString('en-US', { timeZone: 'America/Mexico_City' }));
+            guadalajaraTime = guadalajara.toLocaleString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'America/Mexico_City'
+            });
+        };
+        updateTime();
+        const interval = setInterval(updateTime, 10000);
+        
+        // Parallax effect
         const layers = document.querySelectorAll('.parallax-layer');
-        parallaxLayers = Array.from(layers);
-
-        function handleScroll() {
+        /** @type {HTMLElement[]} */
+        const layerArray = /** @type {HTMLElement[]} */ (Array.from(layers));
+        parallaxLayers = layerArray;
+        
+        const handleScroll = () => {
             const scrolled = window.scrollY;
-            layers.forEach((layer, index) => {
+            layerArray.forEach((layer, index) => {
                 const speed = (index + 1) * 0.05;
                 layer.style.transform = `translateY(${scrolled * speed}px)`;
             });
-        }
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    });
-    
-    onMount(() => {
-        function updateTime() {
-            const now = new Date();
-            guadalajaraTime = now.toLocaleTimeString('en-US', {
-                timeZone: 'America/Mexico_City',
-                hour: '2-digit',
-                minute: '2-digit',
-                
-                hour12: false
-            });
-        }
+        };
         
-        updateTime();
-        const interval = setInterval(updateTime, 1000);
+        window.addEventListener('scroll', handleScroll);
         
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('scroll', handleScroll);
+        };
     });
 </script>
 

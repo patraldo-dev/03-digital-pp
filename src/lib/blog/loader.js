@@ -1,6 +1,22 @@
 // src/lib/blog/loader.js
 
+/** @type {string[]} */
 const SUPPORTED_LOCALES = ['en', 'fr', 'es'];
+
+/**
+ * @typedef {Object} BlogPost
+ * @property {string} slug - The post slug
+ * @property {string} title - The post title
+ * @property {string} date - The post date
+ * @property {string} author - The post author
+ * @property {string} excerpt - The post excerpt
+ * @property {string[]} tags - The post tags
+ * @property {string} source_lang - The source language from folder
+ * @property {string} original_lang - The original language (explicit or source)
+ * @property {boolean} translated - Whether this is a translation
+ * @property {string} content - Flat content for legacy consumers
+ * @property {Array<{title: string, content: string}>} [sections] - Sections if present
+ */
 
 /**
  * Resolves a locale to a supported locale, defaulting to 'en'
@@ -16,7 +32,11 @@ function resolveLocale(locale) {
     return 'en';
 }
 
-/** Derive a locale code from a glob path like './en/foo.json' → 'en' */
+/**
+ * Derive a locale code from a glob path like './en/foo.json' → 'en'
+ * @param {string} path - The file path
+ * @returns {string} - The locale code
+ */
 function localeFromPath(path) {
     for (const loc of SUPPORTED_LOCALES) {
         if (path.includes(`/${loc}/`)) return loc;
@@ -28,9 +48,12 @@ function localeFromPath(path) {
  * Build the internal content string from a raw post object.
  * Preserves sections for the client renderer; also provides a flat
  * `content` fallback for legacy consumers.
+ * @param {any} mod - The imported module
+ * @param {string} path - The file path
+ * @returns {BlogPost | null} - The built post object or null if invalid
  */
 function buildPost(mod, path) {
-    const post = mod.default || mod;
+    const post = /** @type {BlogPost} */ (mod.default || mod);
     if (!post || !post.slug) return null;
     const sourceLang = localeFromPath(path);
     return {
@@ -43,7 +66,7 @@ function buildPost(mod, path) {
         translated: post.translated || false,
         // Flat content for legacy/preview consumers
         content: post.sections
-            ? post.sections.map((s) => `## ${s.title}\n\n${s.content}`).join('\n\n')
+            ? post.sections.map((/** @type {{title: string, content: string}} */ s) => `## ${s.title}\n\n${s.content}`).join('\n\n')
             : post.content || ''
     };
 }
@@ -58,12 +81,13 @@ function buildPost(mod, path) {
  * (genuine translations). Otherwise the first copy found is used.
  *
  * @param {string} locale - The reader's locale (affects dedupe priority only)
- * @returns {Promise<Array>} - Blog post objects
+ * @returns {Promise<BlogPost[]>} - Blog post objects
  */
 export async function getBlogPosts(locale = 'en') {
     const resolvedLocale = resolveLocale(locale);
     const modules = import.meta.glob('./**/*.json', { eager: true });
 
+    /** @type {Map<string, BlogPost>} */
     const bySlug = new Map();
     for (const [path, mod] of Object.entries(modules)) {
         const post = buildPost(mod, path);
@@ -88,12 +112,13 @@ export async function getBlogPosts(locale = 'en') {
  *
  * @param {string} slug - The post slug
  * @param {string} locale - The reader's locale (preferred, then fallback)
- * @returns {Promise<object|null>}
+ * @returns {Promise<BlogPost | null>}
  */
 export async function getBlogPost(slug, locale = 'en') {
     const resolvedLocale = resolveLocale(locale);
     const modules = import.meta.glob('./**/*.json', { eager: true });
 
+    /** @type {BlogPost | null} */
     let fallback = null;
     for (const [path, mod] of Object.entries(modules)) {
         const post = buildPost(mod, path);

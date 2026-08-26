@@ -11,6 +11,7 @@
 // deploy, index rebuild), the first search bootstraps it once per
 // isolate instead of returning degraded results forever.
 
+import { buildAndUpsertIndex } from '$lib/blog/search-reindex.js';
 import { json } from '@sveltejs/kit';
 import {
     getCorpus,
@@ -32,6 +33,13 @@ const EMBED_TIMEOUT_MS = 4000;
 const VECTOR_TIMEOUT_MS = 3000;
 const RERANK_TIMEOUT_MS = 2500;
 
+/**
+ * @template T
+ * @param {Promise<T>} promise
+ * @param {number} ms
+ * @param {string} label
+ * @returns {Promise<T>}
+ */
 function withTimeout(promise, ms, label) {
     return Promise.race([
         promise,
@@ -45,7 +53,12 @@ function withTimeout(promise, ms, label) {
 const cache = new Map();
 const CACHE_MAX = 64;
 
-/** Embedding texts in batches; returns null on any failure. */
+/**
+ * Embedding texts in batches; returns null on any failure.
+ * @param {App.Platform['env']} env
+ * @param {string[]} texts
+ * @returns {Promise<number[][] | null>}
+ */
 async function embed(env, texts) {
     if (!env.AI) return null;
     try {
@@ -56,39 +69,53 @@ async function embed(env, texts) {
                 EMBED_TIMEOUT_MS,
                 'embed'
             );
-            const rows = res?.data || res?.result?.data || res?.result;
+const rows = /** @type {any} */ (res)?.data || 
+             /** @type {any} */ (res)?.result?.data ||
+             /** @type {any} */ (res)?.result || [];
+
             if (!Array.isArray(rows)) return null;
             out.push(...rows);
         }
         return out;
-    } catch (e) {
-        console.error('[search] embed failed:', e?.message);
+    } catch (/** @type {unknown} */ e) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        console.error('[search] embed failed:', err.message);
         return null;
     }
 }
 
 /** One-time-per-isolate bootstrap lock for the empty-index case. */
+/** @type {Promise<{ upserted: number }> | null} */
 let bootstrapPromise = null;
 
+/**
+ * @param {App.Platform['env']} env
+ * @returns {Promise<void>}
+ */
 async function ensureIndexed(env) {
     if (!env.VECTORIZE || !env.AI) return;
     try {
         const info = await env.VECTORIZE.describe();
-        if ((info?.vectorCount || 0) > 0) return;
+        if ((info?.vectorsCount || 0) > 0) return;
         if (!bootstrapPromise) {
             const { buildAndUpsertIndex } = await import(
                 '$lib/blog/search-reindex.js'
             );
-            bootstrapPromise = buildAndUpsertIndex(env).finally(() => {
-                bootstrapPromise = null;
-            });
         }
+bootstrapPromise = buildAndUpsertIndex(env).finally(() => {
+    bootstrapPromise = null;
+}) 
+
         await bootstrapPromise;
-    } catch (e) {
-        console.error('[search] bootstrap check failed:', e?.message);
+    } catch (/** @type {unknown} */ e) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        console.error('[search] bootstrap check failed:', err.message);
     }
 }
 
+/**
+ * @type {import('./$types').RequestHandler}
+ */
 export async function GET({ url, platform, setHeaders }) {
     const started = Date.now();
     const q = (url.searchParams.get('q') || '').trim();
@@ -101,7 +128,8 @@ export async function GET({ url, platform, setHeaders }) {
         return json({ query: q, results: [], stages: {}, took: 0 });
     }
 
-    const env = platform?.env || {};
+    /** @type {App.Platform['env']} */
+    const env = /** @type {App.Platform['env']} */ (platform?.env || {});
     const cacheKey = q.toLowerCase();
     const hit = cache.get(cacheKey);
     if (hit) return json(hit);
@@ -131,11 +159,15 @@ export async function GET({ url, platform, setHeaders }) {
                 for (const m of res?.matches || []) {
                     // Self-heal: skip vectors whose chunk is gone
                     if (!byId.has(m.id)) continue;
-                    semantic.push({ chunk: byId.get(m.id), score: m.score });
+                    const chunk = byId.get(m.id);
+                    if (chunk) {
+                        semantic.push({ chunk, score: m.score });
+                    }
                 }
                 embedded = true;
-            } catch (e) {
-                console.error('[search] vector query failed:', e?.message);
+            } catch (/** @type {unknown} */ e) {
+                const err = e instanceof Error ? e : new Error(String(e));
+                console.error('[search] vector query failed:', err.message);
             }
         }
     }
@@ -167,22 +199,24 @@ export async function GET({ url, platform, setHeaders }) {
 
     // ── Stage 3: cross-encoder rerank of the fused top slice ──
     let rerank = false;
+    /** @type {Array<{entry: any, rscore: number}> | null} */
     let reranked = null;
     if (env.AI) {
         try {
             const slice = candidates.slice(0, 8);
-            const res = await withTimeout(
-                env.AI.run(RERANK_MODEL, {
-                    query: q,
-                    contexts: slice.map((c) => ({ text: c.chunk.searchText.slice(0, 700) })),
-                    top_k: slice.length
-                }),
-                RERANK_TIMEOUT_MS,
-                'rerank'
-            );
+
+const res = await withTimeout(
+    env.AI.run(RERANK_MODEL, /** @type {any} */ ({
+        query: q,
+        contexts: slice.map((c) => ({ text: c.chunk.searchText.slice(0, 700) })),
+        top_k: slice.length
+    })),
+    RERANK_TIMEOUT_MS,
+    'rerank'
+);
+
             // Response shape varies by runtime version — accept the known ones.
-            const rows =
-                res?.response?.results || res?.response || res?.results || res?.data;
+            const rows = /** @type {any} */ (res)?.data || [];
             if (Array.isArray(rows) && rows.length) {
                 const scored = rows
                     .map((r, i) => ({
@@ -196,16 +230,17 @@ export async function GET({ url, platform, setHeaders }) {
                     rerank = true;
                 }
             }
-        } catch (e) {
-            console.error('[search] rerank failed (RRF order stands):', e?.message);
+        } catch (/** @type {unknown} */ e) {
+            const err = e instanceof Error ? e : new Error(String(e));
+            console.error('[search] rerank failed (RRF order stands):', err.message);
         }
     }
 
-    const ordered = rerank
-        ? reranked.map((r) => ({ chunk: r.entry.chunk, relevance: r.rscore }))
+    const ordered = rerank && reranked
+        ? reranked.map((r) => ({ chunk: r.entry.chunk, relevance: r.rscore, rrf: 0 }))
         : candidates.map((c) => ({
               chunk: c.chunk,
-              relevance: null,
+              relevance: 0,
               rrf: c.score
           }));
 
@@ -214,21 +249,23 @@ export async function GET({ url, platform, setHeaders }) {
     // vs probabilities), so the display is calibrated RELATIVE to the
     // top hit: best match = 99%, everything else a share of it.
     const seen = new Set();
+    /** @type {Array<{slug: string, lang: string, title: string, date: string, speaker: string | null, snippet: string, terms: string, match: number}>} */
     const results = [];
     const topRerank = rerank ? Math.max(ordered[0]?.relevance ?? 0, 1e-6) : 1;
-    for (const { chunk, relevance, rrf } of ordered) {
-        const key = `${chunk.lang}:${chunk.slug}`;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        const { snippet, terms } = makeSnippet(chunk, q);
-        let pct;
-        if (rerank && relevance !== null && relevance !== undefined) {
-            const share = Math.max(relevance, 0) / topRerank;
-            pct = Math.max(1, Math.min(99, Math.round(share * 99)));
-        } else {
-            const top = ordered[0]?.rrf || rrf || 1;
-            pct = Math.max(30, Math.min(99, Math.round((rrf / top) * 99)));
-        }
+for (const { chunk, relevance, rrf } of ordered) {
+    const key = `${chunk.lang}:${chunk.slug}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const snippetResult = makeSnippet(chunk, q);
+const { snippet, terms } = /** @type {any} */ (snippetResult);
+    let pct;
+    if (rerank && relevance !== null && relevance !== undefined) {
+        const share = Math.max(relevance, 0) / topRerank;
+        pct = Math.max(1, Math.min(99, Math.round(share * 99)));
+    } else {
+        const top = ordered[0]?.rrf || rrf || 1;
+        pct = Math.max(30, Math.min(99, Math.round((rrf / top) * 99)));
+    }
         results.push({
             slug: chunk.slug,
             lang: chunk.lang,
