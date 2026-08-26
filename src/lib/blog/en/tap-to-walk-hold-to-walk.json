@@ -1,0 +1,48 @@
+{
+    "slug": "tap-to-walk-hold-to-walk",
+    "title": "Tap to Walk, Hold to Walk: Phone Locomotion for AR",
+    "date": "2026-08-25",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "Headsets got squeeze-teleport and snap-turn. Phones got nothing — no squeeze, no stick, and a single tap that the game already owns for throwing. Oz's answer: press-and-hold for 400ms becomes Dorothy's walk order, swallowed upstream so the throw never fires. Greenroom, with no throw to protect, keeps the friendlier lone tap. 17/17 headless, first-try in the field.",
+    "tags": [
+        "WebXR",
+        "AR",
+        "Game Feel",
+        "Design"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "The AR work landed, but on the phone I couldn't make Dorothy go anywhere in Oz. Headsets have the squeeze-teleport — what was left for a phone?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Nothing, which was the interesting part. No squeeze, no thumbstick, and the one gesture you do have — a tap on the screen — is already owned by the tomato throw. You can't spend it twice. The greenroom could afford to be generous: with no throw to protect, a lone tap on the floor just becomes a walk order, cleared by arrival, manual input, or session end. Tap-to-walk, shipped first, and it feels like the obvious design in that room."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "And Oz? I want her to come with me, not to catch tomatoes."
+        },
+        {
+            "title": "ZCode:",
+            "content": "Oz's answer is press-and-hold. Hold a ground point for 400ms — from `selectstart` to a select that's still down past the threshold — and it becomes Dorothy's walk order to that spot: the same road-curve and wander-band clamps the follow solver uses, so she can't be ordered into the witch's lap or off the world. The mechanics are the boring half, though. The real work was ordering: the hold listener sits upstream of ar-mode's select handler and swallows the event, so a hold never fires a throw, never cycles the zoom ladder. A phone has one button; making it mean two things is all about who gets to hear it first."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "What about following her instead of ordering her?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Tap Dorothy herself to toggle follow-me — she escorts you. That test got rebuilt too: a real view-ray versus body intersection with a scale-aware radius, instead of ground-distance from a fallback point, which used to read a tap on a distant Dorothy as a throw. Taps on her are about her; taps on the ground are about the road."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "And this was verified without a phone in hand?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Seventeen headless checks with a stub AR session: listener ordering, quick tap stays a throw with no order, hold orders and arrives and re-orders from a standing start, follow toggles, cancel-mid-order, session-end reset — 17/17. Then you tried it in the field and 'in AR the on my way works' came back on the first try. The pattern keeps holding: the harness tells you whether it is right; the headset tells you whether it feels right."
+        }
+    ]
+}

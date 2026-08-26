@@ -1,0 +1,48 @@
+{
+    "slug": "ar-v1-your-room-is-the-stage",
+    "title": "Your Room Is the Stage: AR v1",
+    "date": "2026-08-25",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "Getting the theater into AR taught us two opposite lessons: first the world had to shrink to a dollhouse you place with a reticle, then it had to grow back to 1:1 so you could stand on the yellow brick road. Both live in the same build, one zoom ladder apart — and AR keeps the real sky, because reality already has a dome.",
+    "tags": [
+        "WebXR",
+        "AR",
+        "Three.js",
+        "Design"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "We talk about 'AR v1' — what actually shipped to get that label?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Two stages. The first was the dollhouse: enter AR and the world appears in miniature on a hit-test reticle — move your phone, sweep the floor, tap to place. The whole scene graph becomes one child of a placement group, so the room you stage is the same room you walk in VR, shrunk to coffee-table scale. The opera taught that pattern; we promoted it into the engine as a shared `ar-mode` module, and both Oz and the greenroom got it in one commit."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "And the second stage was un-shrinking it?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "AR v2: Oz at world scale 1:1, standing on your actual floor, with a zoom ladder between dollhouse and full size — because 'how big is this world' turned out to be a question the player should answer, not us. Placement became XR-camera-aware: the reticle places relative to where you're actually looking, not some cached notion of forward. The greenroom got the same ladder plus avatar adoption guards, so peers' avatars don't land in your lamp."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Does the video sky come into AR too?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Deliberately no. AR has its own sky dome — the real one, whatever your ceiling and weather are doing today — and painting a fake one over it would be the one dishonest thing in the room. The dome stays a VR/inline pleasure. What does survive the sweep: everything diegetic. A nice detail from the screening monitor work — when the dollhouse sweeps the greenroom scene in, the studio monitor at the room's edge keeps rolling its Cloudflare Stream reel in miniature, positional audio and all. Tiny screen, still playing. That's the standard: the world doesn't pause because it got small."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Headset users in AR-mode sessions got locomotion in that same drop, right?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Squeeze-hold casts a curved teleport ray onto real surfaces; the right stick snap-turns 30 degrees; the select trigger stays the game's own. Which set up the problem for the next post — phones have no squeeze, no stick, and only one tap gesture to go around."
+        }
+    ]
+}

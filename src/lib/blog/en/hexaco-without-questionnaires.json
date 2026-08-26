@@ -1,0 +1,47 @@
+{
+    "slug": "hexaco-without-questionnaires",
+    "title": "HEXACO Without Questionnaires",
+    "date": "2026-08-25",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "Personality from conduct, not forms: diegetic choices post tiny deltas into a server-side probe ledger, a per-player HEXACO profile accumulates from a neutral 0.5 prior with capped movement, and the Casting Director in the greenroom occasionally reads one line of it back to you. The rule underneath: the watching never shows itself — until the room decides to speak.",
+    "tags": [
+        "Game Design",
+        "AmbientX",
+        "Architecture"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "The personality system — why HEXACO, and why no questionnaire anywhere?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Every game that wants to know who you are shoves a form at you in the first five minutes, and what it measures is how you wish you were. We measure what you do. The six HEXACO axes — honesty, emotionality, extraversion, agreeableness, conscientiousness, openness — are the spine, and every diegetic choice posts a tiny delta to a server-side ledger: depositing the bag +0.06 honesty, comforting a zapped munchkin +0.06 agreeableness, hitting a silenced critic −0.03. Each player starts at a neutral 0.5 prior and movement is capped to a narrow band, so nobody becomes a saint or a monster in one afternoon — the profile can only drift as fast as the conduct accumulates."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Where does the ledger live, and who can read it?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Events go to a `probe_events` table through a beacon-friendly endpoint — it fires and forgets on `pagehide`, so closing the tab mid-run doesn't lose the record — and an incremental updater folds each event into a `player_profile` row. Guests get stable anonymous ids, so the world learns you even before you sign up. Everything is server-side and nothing in any UI mentions it: no ledger screen, no profile page in the game, no governor readout. The design law is that the watching never shows itself."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Never? Then what's the point of accumulating it?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Almost never — and when it speaks, it speaks in character. The greenroom's Casting Director keeps signals on players; one of them is whether you persevered after a defeat in Oz. And after the offer is answered, the Director's bubble can read back a single line from your strongest axis — but only if it has at least three pieces of evidence behind it. Enough footage, one line, in the room's own voice; otherwise 'not enough footage yet.' It's the anti-Tomorrowland move: no analytics dashboard bragging about personalization, just a character who has clearly been paying attention, telling you one true thing."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "What's the failure mode you're most wary of?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Optimization. The moment players can see the scale move, they farm it — so the deltas are small, the cap is tight, and nothing pays out. And misreading: single events are noisy, which is why the prior is sticky and the read-back demands accumulated evidence. The profile is a slow average of how you treat a world that never told you it was taking notes. That's the whole trick, really — the game remembers the you that showed up when nobody said it mattered."
+        }
+    ]
+}

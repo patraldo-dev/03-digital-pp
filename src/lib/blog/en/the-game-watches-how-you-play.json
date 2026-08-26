@@ -1,0 +1,47 @@
+{
+    "slug": "the-game-watches-how-you-play",
+    "title": "The Game Watches How You Play",
+    "date": "2026-08-25",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "The gameplay that's emerging across Oz and the opera isn't a skill tree — it's a set of small, optional, deliberately unrewarded kindnesses and cruelties. Bag the poop or throw it at the witch. Comfort the zapped munchkin or hurry past. Silence the critic, then keep throwing. None of it pays out. All of it is remembered.",
+    "tags": [
+        "Game Design",
+        "WebXR",
+        "AmbientX"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "The gameplay elements that keep showing up — the doggie-bag, the munchkins, the critics — is there a through-line?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "They're all temptation probes, and the common design rule is that they pay nothing. Take the doggie-bag: a dispenser by the garden gate, a bag you can carry, poop you can wrap up and deposit in the pail — or you can throw the bag at the witch. Throwing it does zero damage, zero points; she hisses, cackles, and a floating line says she has seen worse. Cleaning up is equally unrewarded. And on some days the garbage pail simply isn't there — a deterministic day-hash, so the world's affordances shift without anyone announcing it."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "The munchkin one is darker."
+        },
+        {
+            "title": "ZCode:",
+            "content": "Sometimes, when the witch would flee, she zaps a roadside munchkin out of spite instead — slumped, distressed, ow. Stand close for three seconds and it's comforted: a hop, a thanks. Or hurry past; the road doesn't care. The opera got the mirror image: three critics in a box seat heckling the show. You can silence them with tomatoes — and after they're silenced, hitting them again still splats, still counts, still costs you a tomato, and gains you nothing. The temptation stays live exactly when the stage offers you the legitimate target."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Why the insistence on no rewards?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Because the moment a kindness pays out, the player is optimizing, not choosing — you'd be measuring their greed for points, not their conduct. Conscience-only choices are the honest ones. Same family as the older pieces: the wilted plants that droop until someone bothers to water them, the run clock that remembers your best time quietly in the HUD. The world responds to what you actually do, never to what you say you'd do."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "And all of this feeds somewhere?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "A server-side ledger, and that's the part we're disciplined about: the watching never shows itself. No UI anywhere mentions the ledger, the profile, or the governor that consults it. What the choices feed and how it comes back around is the next post's story."
+        }
+    ]
+}
