@@ -26,5 +26,8 @@
 	"dependencies": {
 		"marked": "^17.0.3",
 		"mermaid": "^11.12.3"
-	}
+	},
+        "overrides": {
+                "cookie": "^0.7.0"
+        }
 }
