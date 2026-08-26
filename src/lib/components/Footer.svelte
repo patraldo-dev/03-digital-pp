@@ -1,9 +1,8 @@
 <script>
-    import { page } from '$app/stores';
     import SubscribeForm from './SubscribeForm.svelte';
 
-    // Get translations from page data (set in layout load function)
-    let t = $derived($page.data?.t || {});
+    // Receive props from layout instead of using $page directly
+    let { lang = 'en', t = {} } = $props();
 </script>
 
 <footer class="footer">
@@ -36,111 +35,3 @@
     </div>
 </footer>
 
-<style>
-    .footer-container {
-        box-sizing: border-box;
-        width: 100%;
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 2rem;
-    }
-
-    .footer {
-        background: #0a0a0b;
-        color: #e0e0e0;
-        padding: 3rem 0 1rem;
-        margin-top: 4rem;
-    }
-
-    .footer-content {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-
-    .footer-section h3 {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-        color: #f0f0f0;
-    }
-
-    .footer-section h3 .digital {
-        font-size: 0.7em;
-        color: #5a6e65;
-        font-weight: 500;
-    }
-
-    .footer-section h4 {
-        margin-bottom: 1rem;
-        color: #f0f0f0;
-    }
-
-    .footer-section p {
-        margin-bottom: 1rem;
-        color: #888;
-        line-height: 1.6;
-    }
-
-    .footer-section ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .footer-section ul li {
-        margin-bottom: 0.5rem;
-    }
-
-    .footer-section ul li a {
-        color: #888;
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
-
-    .footer-section ul li a:hover {
-        color: #5a6e65;
-    }
-
-    .newsletter {
-        max-width: 300px;
-    }
-
-    .footer-bottom {
-        border-top: 1px solid #1a1a1d;
-        padding-top: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .footer-bottom p {
-        margin: 0;
-        color: #888;
-    }
-
-    .footer-links {
-        display: flex;
-        gap: 1rem;
-    }
-
-    .footer-links a {
-        color: #888;
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: color 0.3s ease;
-    }
-
-    .footer-links a:hover {
-        color: #5a6e65;
-    }
-
-    @media (max-width: 768px) {
-        .footer-bottom {
-            flex-direction: column;
-            text-align: center;
-        }
-    }
-</style>

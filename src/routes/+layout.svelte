@@ -5,15 +5,16 @@
     import '../app.css';
 
     let t = $derived($page.data?.t || {});
+    let lang = $derived($page.data?.lang || 'en');
 </script>
 
 <div style="display: contents">
     <a class="skip-link" href="#main">{t.skip_to_content || 'Skip to content'}</a>
-    <Header />
+    <Header {lang} {t} />
     <main id="main" tabindex="-1">
         <slot />
     </main>
-    <Footer />
+    <Footer {lang} {t} />
 </div>
 
 <style>

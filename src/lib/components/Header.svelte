@@ -19,8 +19,7 @@
     <div class="container">
         <div class="header-inner">
             <a href="/" class="logo">
-                <span>📝</span>
-                <span>{t.site_title || 'My Blog'}</span>
+                <span>{t.site_title || "¡Pinche Poutine! Digital"}</span>
             </a>
             
             <button class="menu-toggle" onclick={() => menuOpen = !menuOpen}>
