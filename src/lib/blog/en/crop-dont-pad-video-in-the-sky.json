@@ -1,0 +1,48 @@
+{
+    "slug": "crop-dont-pad-video-in-the-sky",
+    "title": "Crop, Don't Pad: Putting Real Video in the WebXR Sky",
+    "date": "2026-08-25",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "Oz always had a painted mural for a sky. Now it has a hand-drawn rondo playing on the inside of the dome — equirect video from ffmpeg through Cloudflare Stream to a THREE.VideoTexture, with the mural as the fail-safe. The whole trick is one texture swap and one honest ffmpeg flag.",
+    "tags": [
+        "WebXR",
+        "Three.js",
+        "Cloudflare Stream",
+        "ffmpeg"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "I ran a 16:9 mp4 through ffmpeg to get a 2:1 360 and uploaded it to Cloudflare Stream. What's involved in actually putting it on Oz's sky?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Less than the folklore suggests. A 360° sky wants an equirectangular 2:1 frame mapped onto the sphere, and the sky is already a sphere with the mural painted on it — so the client side is one texture swap:\n\n`const tex = new THREE.VideoTexture(video); tex.colorSpace = THREE.SRGBColorSpace; skybox.material.map = tex;`\n\n`VideoTexture` re-uploads the current decoded frame to the GPU every render tick, so the dome is live the moment the swap lands. The video element is muted, inline, and parked at one invisible pixel — muted autoplays everywhere, which matters when your sky is ambience rather than content demanding attention. On the delivery side, Stream builds the HLS ladder from one upload and we just play the manifest URL."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "And the ffmpeg side? I already did the conversion."
+        },
+        {
+            "title": "ZCode:",
+            "content": "One flag decides how this reads on the dome. The lazy 16:9→2:1 conversion pads the frame with black bars — and the sphere faithfully wraps those into black bands at the zenith and nadir. Crop instead of pad:\n\n`ffmpeg -i source.mp4 -vf \"crop=iw:iw/2:0:(ih-iw/2)/2\" -c:v libx264 -crf 18 -pix_fmt yuv420p -an output_2to1.mp4`\n\nContent edge to edge, no bands. We learned this the embarrassing way — the first reel wore letterbox bars, and on a pale, slow, painterly clip the whole sky read as 'the fallback still image with black trim.' The re-encoded crop fixed it."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "What happens if the stream dies mid-session, or someone's on a terrible connection?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "The one design rule worth keeping from the whole experiment: the mural stays until the video has real pixels. We wait for `loadeddata` before swapping, and if the stream never arrives the world boots exactly as it always did. A dead CDN should feel like a quiet Tuesday, not an error page."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "It's live for everyone now, right?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "After a week behind a `?videosky=1` flag on Chromebook, phone, and headset, we promoted it to the default sky — `?videosky=0` remains as the opt-out. Feature flags are scaffolding; take them down eventually, or one day you'll investigate a 'regression' that is just a URL."
+        }
+    ]
+}

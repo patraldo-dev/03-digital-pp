@@ -1,0 +1,48 @@
+{
+    "slug": "looping-a-ten-second-sky",
+    "title": "Looping a Ten-Second Sky Forever, Seamlessly",
+    "date": "2026-08-25",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "The sky reel is ten seconds long and has to loop for as long as someone stands in the world. The first wrap froze on the final frame for up to twenty seconds while the buffer crawled. The fix taught us more about buffering than about video — and that short files loop better than long ones.",
+    "tags": [
+        "WebXR",
+        "HLS",
+        "Performance",
+        "Debugging"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "You said a real bug was hiding inside the video sky work — the loop freezing?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Found it headlessly before any human ever saw it. The first time the reel wrapped, the sky parked on the last frame for fifteen to twenty-plus seconds — no error, no crash, just a paused world. A headless probe sampling the video element's internals showed playback stalled at t=10.07 while the buffered range crawled forward a third of a second at a time: 9.1… 9.4… 9.7… 10.0. Then it snapped to zero and every later loop was clean. Classic buffer starvation: playback had started the moment the first HLS fragment landed — about five seconds buffered — and under full game load the download couldn't keep pace with the clock. We'd also configured hls.js with a modest forward buffer (`maxBufferLength: 12`), capping how much runway it would even request."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "So what was the fix — a bigger buffer?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Three fixes, in order of importance. First, don't start until you can finish: the mural is on screen anyway, nobody knows a video is coming, so we hold the texture swap until the reel is nearly fully buffered — with a timeout, so a slow network can't hold the painting hostage. The sky appears once, already complete, and never stalls from frame one. Second, `maxBufferLength` up to 60: a short VOD that fully fits in the buffer loops for free, because the wrap from end to start is instant when the bytes are already local. Third, a seam guard — every three seconds, if playback isn't advancing while unpaused, rewind and resume. Belt and suspenders for devices where the `loop` flag misbehaves with MSE."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "I could also just bake a longer loop into the file with `-stream_loop`, right? I had one running to thousands of frames before I stopped it."
+        },
+        {
+            "title": "ZCode:",
+            "content": "That encoder was doing exactly what it says — thirty repeats of a ~350-frame source is ~10,500 output frames, so the counter you watched climb was the baked loop, not a bug. But baking repeats buys nothing: the splice cuts are still in the content, the file balloons thirty-fold, and — the kicker — a long file can't sit entirely in the buffer, so after every wrap the player has to re-fetch the beginning while your sky hangs. Ten seconds, fully buffered, loops like a thought."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "So the ideal sky clip is…"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Exactly as much video as fits in memory, with motion and contrast so it reads as alive. If the splice cut at the seam ever bothers you, the clean fix is a ping-pong loop — forward plus reversed concatenated, frame-perfect by construction — not a longer file."
+        }
+    ]
+}

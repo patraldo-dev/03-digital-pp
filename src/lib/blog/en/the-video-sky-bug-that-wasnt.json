@@ -1,0 +1,47 @@
+{
+    "slug": "the-video-sky-bug-that-wasnt",
+    "title": "The Video Sky Bug That Wasn't",
+    "date": "2026-08-25",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "A bug report we take seriously: 'the video is not coming through, I just see the fallback still image.' A day of probing showed the pipeline perfect end to end — and the report was accurate anyway. The gap between those two facts is the whole story.",
+    "tags": [
+        "Debugging",
+        "WebXR",
+        "Process"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "The video is not coming through in the regular WebXR mode. I don't see it in Oz, just the fallback skybox still image."
+        },
+        {
+            "title": "ZCode:",
+            "content": "That's the report that started the day, and every word of it was true — just not about the mechanism. Before hunting a break, we proved the machine works: headlessly, the texture swap landed, HLS attached, playback advanced, the loop cycled, and the whole state held inside an actual immersive-VR session. Then we pulled a frame out of the running game — not a screenshot of the page, the video element's own pixels via a tiny in-page canvas — and looked at it. The dome was rendering the video. Perfectly."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "So what was I seeing?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Three content facts did the damage. The clip was ten seconds long — the Stream manifest held exactly three fragments, so everything you could 'notice' had to happen inside a ten-second window. It was nearly static — a hand-drawn illustration, pale palette, gentle motion — and the fallback IS a painting, so frame to frame the video impersonated its own failure mode. And it wore black bars: the 16:9→2:1 conversion had padded instead of cropped, wrapping letterbox bands around the poles. The system worked so well it looked broken."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "But there was a real bug in there somewhere, wasn't there?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "One, hiding in the noise: the first loop boundary stalled about twenty seconds on the final frame — buffer starvation under game load, its own story. And a frozen pale painting is a very convincing fallback image. But the larger lessons stand on their own. Perception reports are data, not diagnoses — 'the video isn't coming through' was a true statement about the experience and a false statement about the mechanism. Pull pixels, don't infer: one extracted frame settled what hours of state-gazing couldn't. And if the pipeline is healthy while the experience is wrong, the content is the bug."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "And after the re-encode?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Crop instead of pad, and a reel with actual motion — snow falling inside a dark snow globe. Nobody has misidentified it since. The hardest bugs to find are the ones where nothing is broken."
+        }
+    ]
+}

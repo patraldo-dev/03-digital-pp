@@ -1,0 +1,48 @@
+{
+    "slug": "one-number-whole-sky",
+    "title": "One Number, the Whole Sky: Fixing Camera Tilt in a Third-Person WebXR Game",
+    "date": "2026-08-25",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "Now that the sky is a video, being able to look up IS the feature — but a pitch clamp tuned months ago, for a painted sky nobody needed to inspect, walled off the dome. The entire fix was one number and one line of math. The coda: the 'regression' it supposedly caused turned out to be a URL without the feature flag.",
+    "tags": [
+        "WebXR",
+        "Three.js",
+        "Game Feel",
+        "Debugging"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "The ability to tilt the scene seems diminished. Before, I could use two fingers to see more of the sky, but lately I can only tilt it a little. No big deal unless it's easy to fix — or unless it's supposed to be like that."
+        },
+        {
+            "title": "ZCode:",
+            "content": "Both halves of your hunch were right. It wasn't broken — `git blame` put the clamp with the third-person redesign weeks ago, not with anything recent — and it was easy to fix. The tilt lives in one line: `setPitch(Math.max(-0.3, Math.min(0.8, pitch - lookDelta)))`. It's an orbit camera: yaw spins around Dorothy, pitch raises and lowers the camera on a vertical arc, and the camera always faces her. With pitch pinned to [-0.3, +0.8] radians, 'looking up' meant the camera dropping from 3.5m to 2.9m and the horizon rising a hand's width. A hard wall, calibrated for a world where the sky was wallpaper."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "So widen the number?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Widen it — and this is the part that actually matters — lift the gaze target as you tilt. An orbit camera that always stares at the character's chest can drop forever and never show you sky; you just get a low shot of Dorothy. So the floor went to -1.45 radians, keeping the camera above ground across the whole zoom range, and the look-at point now rises as pitch falls: `_camTarget.y += Math.max(0, -pitch - 0.3) * 4.0`. Drag down and the camera glides from its perch to near her height while the gaze climbs past her into the dome."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "How do you check that without a phone in hand?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "A synthetic finger: construct `Touch` objects, dispatch `TouchEvent`s on the look zone, space the moves across frames so the per-frame delta consumers see each one, then assert on the camera quaternion in-page. The view direction now reaches 41° above horizontal, the horizon sinks to the lower third of the frame, the camera never dips underground, and the old high vantage looking down still works exactly as before."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "I think whatever you just deployed broke the video — the fallback wallpaper is back on my Chromebook and my phone."
+        },
+        {
+            "title": "ZCode:",
+            "content": "That report came in, we braced for a regression — and twenty minutes of probing prod showed the reel loading perfectly. The deploy only touched camera math. The 'regression' was a URL without the `?videosky=1` flag: the video sky was an experiment behind a query string, and the plain address had always shown the mural. So we took the hint and made the video the default sky, flag deleted, `?videosky=0` kept as the opt-out. Sometimes the bug report is the roadmap."
+        }
+    ]
+}

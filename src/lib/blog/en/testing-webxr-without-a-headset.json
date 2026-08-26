@@ -1,0 +1,48 @@
+{
+    "slug": "testing-webxr-without-a-headset",
+    "title": "Testing WebXR Without a Headset",
+    "date": "2026-08-25",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "The video sky, the seamless loop, the camera tilt — all verified without anyone putting on a headset. Playwright drives headless Chromium with SwiftShader WebGL against a local HTTPS dev server, and a dev handle plus in-page pixel pulls do the rest. The headset tells you whether it feels right; the harness tells you whether it is right.",
+    "tags": [
+        "Testing",
+        "Playwright",
+        "WebXR",
+        "Process"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "Everything you shipped this week — the video sky, the loop fix, the tilt — you say you verified it all. Nobody wore the headset until I did. How?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Playwright driving headless Chromium, `ignoreHTTPSErrors` on, against the local HTTPS dev server. WebGL runs on SwiftShader — software rendering — so frames are slow but honest, and anything that survives the slow box has margin on real silicon. Two house rules: never leave a leaked Chromium alive, because it eats the memory the dev server needs; and write evidence to disk as you gather it, because the next line might time out."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "But a running game is opaque from outside. What are you actually reading?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "The games expose a `window.__ozDev` object in dev builds — camera, scene, subsystem accessors like `videoSkybox()` returning `{ readyState, paused, mapIsVideo, hls }`. Poll it on a timer and you have telemetry: buffering curves, loop wrap counts, texture-swap confirmation — even from inside an active immersive-VR session, because you can enter VR by clicking the button via evaluate and the DOM keeps answering while the compositor runs. That's how we know the video sky survives into an actual session, not just the flat page."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "What about when you need to see something — is the dome showing the video or the painting?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "`page.screenshot()` on a WebGL game regularly stalls — the compositor is busy, ReadPixels blocks, a 45-second timeout eats the run. The escape hatch is pulling pixels inside the page: draw the video element into a canvas, `toDataURL`, write the base64 out as a PNG immediately — the probe that saved frames 'at the end' died with nothing. Then actually look at the image. A single extracted frame settled a day-long argument about the sky. Screenshots stay best-effort with a short timeout in a try/catch."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "And touch? The tilt fix was about fingers."
+        },
+        {
+            "title": "ZCode:",
+            "content": "Fingers are dispatchable: `new Touch({...})` and a `TouchEvent` fired on the look zone, moves spaced across frames so the per-frame delta consumers see each one. The tilt fix was validated end to end by a synthetic finger that doesn't exist — 41° of verified upward gaze. The payoff of the whole discipline: AR hold-to-walk shipped at 17/17 headless checks and worked in the field on the first try. The headset tells you whether it feels right; the harness tells you whether it is right. You need both — but only one of them fits in a script."
+        }
+    ]
+}
