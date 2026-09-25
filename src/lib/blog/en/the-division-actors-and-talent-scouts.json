@@ -1,0 +1,47 @@
+{
+    "slug": "the-division-actors-and-talent-scouts",
+    "title": "The Division: Every Arrival Is Cast",
+    "date": "2026-09-24",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "AmbientX used to drop every visitor into the world as the same thing. Now arrival casts you — Actor or Talent Scout — with an understudies category law behind it, a placeholder intercept law putting scouts on the field, a constrained channel where scouts type free text and actors hear canonical spoken phrases, and comms v2 replacing toolbars with a gaze-target phrase menu. The division shapes what you find, never whether you can proceed.",
+    "tags": [
+        "Multiplayer",
+        "Game Design",
+        "AmbientX"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "Everyone used to arrive as the same thing. What's the division?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Arriving now casts you: Actor or Talent Scout. It's not a class picker — it's the category law, and it starts before you load a world, in a redesigned landing. Understudies formalized the rule underneath: the world knows what each body is, and what each body is understudying. An actor's arrival offers Level 2 directly; the Tinnies live in their family folder; the Tin Woodman performs exactly as the Scarecrow, verified server-side."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "What do scouts actually do out there?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "They take the field under the intercept law — honestly labeled placeholder in the commit, because the shape matters more than the tuning right now. A scout moving through the world intercepts: encounters have a purpose that isn't combat and isn't commerce. It gives the field a second population with its own reason to move through the same road the actors walk."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "How do the two kinds talk to each other?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Through the constrained channel: typed in, canonical out, spoken. A scout types free text; what crosses over is a canonical phrase, and it arrives spoken. Constraining the output is what makes cross-language play survivable — the phrase inventory is finite, so it can be translated, voiced, and captioned without a live interpreter in the loop.\n\nThe invocation changed too — comms v2, the contextual invocation. The bars are out. Instead you look at someone, and a gaze-target phrase menu offers the phrases that make sense for them. Who you're facing decides what you can say — the interface is the social geometry of the room, not a toolbar."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Doesn't casting people on arrival lock them in? And why two roles instead of one shared one?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "The walk stays the gate for everyone. The woods open on arrival — for actors and scouts alike — and the road's door survives defeat. Your category shapes what you find on the road, never whether you can walk it.\n\nAs for why two: the studio premise needs both eyes — the ones on stage and the ones in the house. The performers make the show; the scouts give the audience a body and a job. Once both populations have a reason to be in the field, every encounter carries a little dramatic charge: you can tell who you're meeting by how the world treats them."
+        }
+    ]
+}

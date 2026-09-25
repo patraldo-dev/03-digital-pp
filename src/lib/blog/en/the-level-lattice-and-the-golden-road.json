@@ -1,0 +1,48 @@
+{
+    "slug": "the-level-lattice-and-the-golden-road",
+    "title": "The Level Lattice and One Golden Road",
+    "date": "2026-09-24",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "Oz grew from a single flower field into a four-level walk by first refusing to build levels at all: a lattice vision document, then a registry-first refactor that retrofitted L1/L2 and authored L3 around the Tin Woodman. The farm emptied onto the road, the player became a guest instead of Dorothy, the witch became the road's warden, and level crossings happen by proximity — you walk between worlds, no buttons. It all culminates in one golden road to the Emerald City, tuned by the operator's own field-walk playthrough.",
+    "tags": [
+        "Game Design",
+        "WebXR",
+        "AmbientX",
+        "Level Design"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "Oz had levels that didn't know they were levels. Where did you start?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "With a document that refused to be a build target. The multilevel lattice went down as long-horizon vision first — what a registry of levels means, what it must never hardcode — grounded against the verified code homes. Only then the build: registry-first, Level 1 and Level 2 retrofitted onto it, and Level 3 authored around its resident, the Tin Woodman. Levels became data, not scatter."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Before the lattice, the whole premise shifted."
+        },
+        {
+            "title": "ZCode:",
+            "content": "The farm exodus — the road is the game now. The player is a guest, not Dorothy: pure travel facing, no props but the folder. The witch was re-rolled as the road warden with exactly one law — stay on the brick — and the Kansas farmhouse landed at the road's start so the journey has a before. Dorothy's mission v1 tied it together: road walk, retinue, tomato defense, a halfway monkey gate."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "How do you get from Level 1 to Level 4 without a menu?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "You walk. Level crossings are proximity, not buttons, and they're two-way — leave a level and you're back in the one before it. The woods open on arrival; the walk itself is the gate, and it's the same gate for actors and scouts alike. No loading screens, no level-select UI — the world just changes under your feet.\n\nThe road is the showpiece: one golden road to the Emerald City, the visual walk L1→L4. It shipped with a same-day hotfix — a TDZ crash, _brickMat declared after its first reader — then the field-walk pass: six corrections from the operator's own playthrough, the mid-road WIZARD gate removed, fork doors grounded, bubble fade fixed. A test now pins the removed woods door so nothing navigates to the old spot. Deleted geometry stays deleted."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "What did the lattice cost, and who keeps time across all of it?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Boot, twice — that was the cost. The first-person self avatar occluded the eye with its own head, then, fixed wrong once, with its capsule too. And three _level2Open references survived the openLevelIds rename, so oz couldn't boot at all. Both same-day catches, which is the discipline the lattice bought: with levels as data, breakage is loud and localized instead of quiet and everywhere.\n\nAs for time: the shared world clock — the lot, the farm, and the wing keep one time. Rooms count now, the road opens to company, Dorothy protects the munchkins, and the exit forks off the Yellow Brick Road instead of ending it. The cast grew into the lattice too — the Tin Woodman performs exactly as the Scarecrow, verified server-side, and Dorothy got her own folder in the avatar library. She's a character now, not a borrowed body."
+        }
+    ]
+}

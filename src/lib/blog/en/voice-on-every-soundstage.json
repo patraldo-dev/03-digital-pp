@@ -1,0 +1,48 @@
+{
+    "slug": "voice-on-every-soundstage",
+    "title": "Voice on Every Soundstage: Twelve Retests and a Self-Healing SFU",
+    "date": "2026-09-24",
+    "original_lang": "en",
+    "author": "Patrouch & ZCode",
+    "excerpt": "Getting performers to hear each other in a WebXR studio took the better part of a week: a Cloudflare Calls SFU that was silent for everyone, a debugging ladder that fixed one rung at a time, twelve numbered retests, dead-session votes with due process, and a last mile that turned out to be Chrome. The healed stack now runs on all seven soundstages as one package — @webxr/voice — with multi-channel voice, role-scoped factions, and a mic gate that keeps every stage from being open mic.",
+    "tags": [
+        "WebRTC",
+        "Cloudflare Workers",
+        "AmbientX",
+        "Voice"
+    ],
+    "sections": [
+        {
+            "title": "Patrouch:",
+            "content": "Voice was silent for everyone in the green room. Was it one big bug?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "It was a ladder, and we only ever saw one rung at a time. The first discovery was structural — greenroom wasn't on the corrected calls-sfu that oz had already fixed, so the receive half of voice didn't exist yet. Then, each fix revealed the next failure: the Durable Object was discarding the SFU's error strings, so we added logging at every hop — publish verdicts, PeerConnection state transitions. With eyes finally open, the real rules emerged: never signal the SFU before ICE candidates exist, one PeerConnection per session, mids only after negotiation, evict dead publisher sessions, re-assert the registry on any answer."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "How do you even debug a call that fails for nobody-specific?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "Ground truth before opinion. We minted full session ids at creation so logs could be joined, added a 6.5-second abort ceiling so hangs turn into errors instead of fog, and built a read-only sfu-debug probe that asks the worker's own credential what the platform actually holds — not what our code hopes it holds. Retests became a discipline: numbered like rounds, each with its own commit and ledger. Retest #10 was pull-fail recycling; retest #12 was the first time an answered pull worked end to end."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "You call it self-healing. What exactly heals?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "The sessions do, mostly by being correctly killed. Real Cloudflare TURN credentials replaced an openrelay stopgap. A connect watchdog spots dead sessions. But the interesting part is due process: votes to evict a wedged session are transport-proven — the DO probes the accused before any kill, and a verified false accuser gets recycled itself. The recycler has a budget and rate caps so the cure can't become the disease. Democracy over sockets needs exactly the safeguards democracy over people does.\n\nAnd after the platform side healed, streams still arrived silent — the last mile was Chrome, not the SFU. Remote audio needed a decode-unlock; we found it with media-plane triage, comparing mic levels, negotiated directions, and RTP counters hop by hop. When a platform behaves oddly at the very last mile, suspect the browser before the infrastructure."
+        },
+        {
+            "title": "Patrouch:",
+            "content": "Then it went from one room to seven. Who gets to talk at all?"
+        },
+        {
+            "title": "ZCode:",
+            "content": "The healed stack got extracted into @webxr/voice — one package, one mount per soundstage. Opera first, then oz with a party-scoping seam, farm, and finally voice plus factions moved into the WorldRoom base class so every world inherits them; parade and bulls-reversed completed the set. All seven soundstages, live in prod, with multi-channel — one publish pairing per channel, channel-aware ground truth, and opera's faction huddle of same-role channels alongside the stage broadcast.\n\nWho talks: free registration to speak or perform — no stage is open mic, and the gate is visible now, toasts and gate events instead of console-only silence. One confession for the road: after the rollout, voice on parade, backlot, and bulls sat dormant because their CALLS_APP_ID vars were missing. Config is code. It just doesn't always review like it."
+        }
+    ]
+}
