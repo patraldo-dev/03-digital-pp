@@ -26,7 +26,12 @@
 const fmtDate = (d) => {
     const langKey = /** @type {keyof typeof DATE_LOCALES} */ (lang);
     const locale = DATE_LOCALES[langKey] || 'en-US';
-    return new Date(d).toLocaleDateString(locale);
+    // Date-only strings parse as UTC midnight and drift a day west of
+    // Greenwich; anchor them to local midnight instead.
+    const dt = typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)
+        ? new Date(d + 'T00:00:00')
+        : new Date(d);
+    return dt.toLocaleDateString(locale);
 };
 
 </script>

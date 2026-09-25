@@ -14,7 +14,12 @@
 const fmtDate = (d) => {
     const langKey = /** @type {keyof typeof DATE_LOCALES} */ (lang);
     const locale = DATE_LOCALES[langKey] || 'en-US';
-    return new Date(d).toLocaleDateString(locale);
+    // Date-only strings ("2026-09-24") parse as UTC midnight and drift
+    // a day west of Greenwich; anchor them to local midnight instead.
+    const dt = typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)
+        ? new Date(d + 'T00:00:00')
+        : new Date(d);
+    return dt.toLocaleDateString(locale);
 };
     
     /** @type {HTMLDetailsElement | null} */
@@ -25,26 +30,30 @@ const fmtDate = (d) => {
     
     $effect(() => {
         if (typeof window !== 'undefined') {
-            const mediaQuery = window.matchMedia('(max-width: 768px)');
+            // 1023px is where the post page's grid stacks this sidebar
+            // above the article. Past that line the index becomes a
+            // roll-out menu: it seats itself closed on small screens,
+            // open as a sidebar column on wide ones. Re-seating only
+            // happens on mount and on breakpoint crossings — a
+            // reader's manual toggle is never fought.
+            const mediaQuery = window.matchMedia('(max-width: 1023px)');
             mq = mediaQuery;
-            
-            const forceOpen = () => {
-                if (mediaQuery.matches && detailsEl && !detailsEl.open) {
-                    detailsEl.open = true;
-                }
+
+            const seat = () => {
+                if (detailsEl) detailsEl.open = !mediaQuery.matches;
             };
-            
-            mediaQuery.addEventListener('change', forceOpen);
-            forceOpen();
-            
+
+            mediaQuery.addEventListener('change', seat);
+            seat();
+
             return () => {
-                mediaQuery.removeEventListener('change', forceOpen);
+                mediaQuery.removeEventListener('change', seat);
             };
         }
     });
 </script>
 
-<details class="blog-index" bind:this={detailsEl} open>
+<details class="blog-index" bind:this={detailsEl}>
     <summary>{t.blog_index_open || 'Post index'} · {posts.length}</summary>
     <ul>
         {#each posts as post}
