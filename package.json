@@ -27,9 +27,6 @@
 		"marked": "^17.0.3",
 		"mermaid": "^11.12.3"
 	},
-	"overrides": {
-		"cookie": "^0.7.0"
-	},
 	"imports": {
 		"#lib": "./src/lib/index.js",
 		"#lib/*": "./src/lib/*"
