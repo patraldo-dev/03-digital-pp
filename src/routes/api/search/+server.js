@@ -18,6 +18,7 @@ import {
     lexicalSearch,
     makeSnippet
 } from '#lib/blog/search-core.js';
+import { env } from 'cloudflare:workers';
 
 const EMBED_MODEL = '@cf/baai/bge-base-en-v1.5';
 const RERANK_MODEL = '@cf/baai/bge-reranker-base';
@@ -129,7 +130,7 @@ export async function GET({ url, platform, setHeaders }) {
     }
 
     /** @type {App.Platform['env']} */
-    const env = /** @type {App.Platform['env']} */ (platform?.env || {});
+    const env = /** @type {App.Platform['env']} */ (env || {});
     const cacheKey = q.toLowerCase();
     const hit = cache.get(cacheKey);
     if (hit) return json(hit);

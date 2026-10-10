@@ -2,6 +2,7 @@
 
 import { json } from '@sveltejs/kit';
 import { sendEmail } from '#lib/email.js';
+import { env } from 'cloudflare:workers';
 
 const WINDOW_MS = 60000; // 1 minute
 const MAX_REQUESTS = 5;
@@ -52,11 +53,11 @@ async function checkRateLimit(request, kv, now) {
  * @type {import('./$types').RequestHandler}
  */
 export async function POST({ request, platform }) {
-    if (!platform?.env) {
+    if (!env) {
         return json({ error: 'Platform environment not available' }, { status: 500 });
     }
 
-    const { CONTACT_EMAIL, MAILGUN_FROM_EMAIL, MAILGUN_DOMAIN, CONTACT_KV } = platform.env;
+    const { CONTACT_EMAIL, MAILGUN_FROM_EMAIL, MAILGUN_DOMAIN, CONTACT_KV } = env;
     
     try {
         const data = await request.json();
@@ -90,7 +91,7 @@ export async function POST({ request, platform }) {
             subject: `Contact Form: ${subject}`,
             text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`,
             html: emailHtml
-        }, platform.env);
+        }, env);
         
         return json({ success: true, message: 'Email sent successfully' });
         

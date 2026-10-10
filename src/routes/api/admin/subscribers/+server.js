@@ -1,6 +1,7 @@
 // src/routes/api/admin/subscribers/+server.js
 
 import { json } from '@sveltejs/kit';
+import { env } from 'cloudflare:workers';
 
 /**
  * Check if request has valid admin token
@@ -18,11 +19,9 @@ function isAuthorized(request, env) {
  * @type {import('./$types').RequestHandler}
  */
 export async function GET({ request, platform }) {
-    if (!platform?.env) {
+    if (!env) {
         return json({ error: 'Platform environment not available' }, { status: 500 });
     }
-
-    const env = platform.env;
     if (!isAuthorized(request, env)) {
         return json({ error: 'Unauthorized' }, { status: 401 });
     }

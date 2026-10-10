@@ -2,17 +2,15 @@
 
 import { json } from '@sveltejs/kit';
 import { buildAndUpsertIndex } from '#lib/blog/search-reindex.js';
+import { env } from 'cloudflare:workers';
 
 /**
  * @type {import('./$types').RequestHandler}
  */
 export async function POST({ request, platform }) {
-    if (!platform?.env) {
+    if (!env) {
         return json({ error: 'Platform environment not available' }, { status: 500 });
     }
-
-    const env = platform.env;
-    
     // Check authorization
     const auth = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
     if (!env.SEARCH_ADMIN_TOKEN) {

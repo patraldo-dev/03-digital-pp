@@ -2,16 +2,17 @@
 
 import { json } from '@sveltejs/kit';
 import { sendEmail } from '#lib/email.js';
+import { env } from 'cloudflare:workers';
 
 /**
  * @type {import('./$types').RequestHandler}
  */
 export async function POST({ request, platform }) {
-    if (!platform?.env) {
+    if (!env) {
         return json({ error: 'Platform environment not available' }, { status: 500 });
     }
 
-    const { DB, MAILGUN_FROM_EMAIL } = platform.env;
+    const { DB, MAILGUN_FROM_EMAIL } = env;
     
     try {
         const data = await request.json();
@@ -50,7 +51,7 @@ export async function POST({ request, platform }) {
             subject: 'Unsubscribed successfully',
             text: 'You have been unsubscribed from our mailing list.',
             html: emailHtml
-        }, platform.env);
+        }, env);
         
         return json({ 
             success: true, 

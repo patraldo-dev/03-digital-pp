@@ -2,17 +2,18 @@
 
 import { json } from '@sveltejs/kit';
 import { sendEmail } from '#lib/email.js';
+import { env } from 'cloudflare:workers';
 
 /**
  * GET /api/confirm - Confirm email subscription
  * @type {import('./$types').RequestHandler}
  */
 export async function GET({ url, platform, request }) {
-    if (!platform?.env) {
+    if (!env) {
         return json({ error: 'Platform environment not available' }, { status: 500 });
     }
 
-    const { MAILGUN_FROM_EMAIL, DB } = platform.env;
+    const { MAILGUN_FROM_EMAIL, DB } = env;
     const token = url.searchParams.get('token');
 
     if (!token) {
@@ -74,7 +75,7 @@ export async function GET({ url, platform, request }) {
             subject: t.welcome_subject || 'Welcome to our newsletter!',
             text: `${t.welcome_title || 'Welcome!'}\n\n${t.welcome_body || 'Thank you for confirming your subscription.'}`,
             html: emailHtml
-        }, platform.env);
+        }, env);
 
         return json({ 
             success: true, 

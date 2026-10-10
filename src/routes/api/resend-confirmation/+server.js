@@ -3,16 +3,17 @@
 import { json } from '@sveltejs/kit';
 import { sendEmail } from '#lib/email.js';
 import { v4 as uuidv4 } from 'uuid';
+import { env } from 'cloudflare:workers';
 
 /**
  * @type {import('./$types').RequestHandler}
  */
 export async function POST({ request, platform }) {
-    if (!platform?.env) {
+    if (!env) {
         return json({ error: 'Platform environment not available' }, { status: 500 });
     }
 
-    const { DB, MAILGUN_FROM_EMAIL } = platform.env;
+    const { DB, MAILGUN_FROM_EMAIL } = env;
     
     try {
         const data = await request.json();
@@ -67,7 +68,7 @@ export async function POST({ request, platform }) {
             subject: t.confirm_subject || 'Confirm your subscription',
             text: `Please confirm your subscription: https://yoursite.com/api/confirm?token=${token}`,
             html: emailHtml
-        }, platform.env);
+        }, env);
         
         return json({ 
             success: true, 
