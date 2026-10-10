@@ -1,5 +1,5 @@
-import { sendEmail as sendMailgunEmail } from '$lib/email.js';
-import { getLocaleFromRequest } from '$lib/i18n/server.js';
+import { sendEmail as sendMailgunEmail } from '#lib/email.js';
+import { getLocaleFromRequest } from '#lib/i18n/server.js';
 
 /**
  * SvelteKit server hooks
@@ -7,7 +7,7 @@ import { getLocaleFromRequest } from '$lib/i18n/server.js';
 
 /**
  * Handle hook to set locale for each request
- * @type {import('@sveltejs/kit').Handle}
+ * @type {import('@sveltejs/kit/hooks').Handle}
  */
 export async function handle({ event, resolve }) {
     const lang = getLocaleFromRequest(event.request);
@@ -59,7 +59,7 @@ async function sendWeeklyEventUpdates(env) {
                 console.error('Failed to send weekly update to:', subscriber.email, err.message);
             }
 
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 100));
         }
     } catch (error) {
         console.error('Failed to send weekly event updates:', error);
@@ -86,11 +86,11 @@ async function sendNewsletter(env, subject, content) {
         for (const subscriber of subscribers.results) {
             try {
                 await sendMailgunEmail({
-                    from: env.CONTACT_EMAIL,
-                    to: subscriber.email,
-                    subject: subject,
-                    text: content,
-                    html: `
+                        from: env.CONTACT_EMAIL,
+                        to: subscriber.email,
+                        subject,
+                        text: content,
+                        html: `
                         <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
                             ${content}
                             <hr style="margin: 2rem 0;">
@@ -107,7 +107,7 @@ async function sendNewsletter(env, subject, content) {
                 console.error('Failed to send newsletter to:', subscriber.email, err.message);
             }
 
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 100));
         }
     } catch (error) {
         console.error('Failed to send newsletter:', error);

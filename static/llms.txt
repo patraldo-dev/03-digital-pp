@@ -1,0 +1,14 @@
+# ¡Pinche Poutine! Digital
+
+> A personal blog — articles, a reader mailing list, and contact. Posts live at /blog/<slug>.
+
+## Read
+
+- [Home](https://pinchepoutine.digital/): Latest posts and site intro.
+- [Blog](https://pinchepoutine.digital/blog): Full post archive; individual posts are served at /blog/<slug>.
+- [Contact](https://pinchepoutine.digital/contact): Get in touch.
+
+## Notes for AI agents
+
+- Post URLs are stable slugs under /blog/. The site supports reader language selection for date formatting.
+- Subscribe/unsubscribe flows are transactional pages (confirmation, resend) and not content.

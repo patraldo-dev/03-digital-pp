@@ -11,13 +11,13 @@
 // deploy, index rebuild), the first search bootstraps it once per
 // isolate instead of returning degraded results forever.
 
-import { buildAndUpsertIndex } from '$lib/blog/search-reindex.js';
+import { buildAndUpsertIndex } from '#lib/blog/search-reindex.js';
 import { json } from '@sveltejs/kit';
 import {
     getCorpus,
     lexicalSearch,
     makeSnippet
-} from '$lib/blog/search-core.js';
+} from '#lib/blog/search-core.js';
 
 const EMBED_MODEL = '@cf/baai/bge-base-en-v1.5';
 const RERANK_MODEL = '@cf/baai/bge-reranker-base';
@@ -99,7 +99,7 @@ async function ensureIndexed(env) {
         if ((info?.vectorsCount || 0) > 0) return;
         if (!bootstrapPromise) {
             const { buildAndUpsertIndex } = await import(
-                '$lib/blog/search-reindex.js'
+                '#lib/blog/search-reindex.js'
             );
         }
 bootstrapPromise = buildAndUpsertIndex(env).finally(() => {

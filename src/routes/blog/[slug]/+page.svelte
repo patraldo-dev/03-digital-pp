@@ -1,10 +1,10 @@
 <script>
-    import { browser } from '$app/environment';
+    import { browser } from '$app/env';
     import mermaid from 'mermaid';
     import { marked } from 'marked';
     import DOMPurify from 'dompurify';
     import { untrack } from 'svelte';
-    import BlogSidebar from '$lib/components/BlogSidebar.svelte';
+    import BlogSidebar from '#lib/components/BlogSidebar.svelte';
 
     let { data } = $props();
 
@@ -29,16 +29,15 @@
      * @param {string | Date} d
      * @returns {string}
      */
-const fmtDate = (d) => {
-    const langKey = /** @type {keyof typeof DATE_LOCALES} */ (readerLang);
-    const locale = DATE_LOCALES[langKey] || 'en-US';
-    // Date-only strings parse as UTC midnight and drift a day west of
-    // Greenwich; anchor them to local midnight instead.
-    const dt = typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)
-        ? new Date(d + 'T00:00:00')
-        : new Date(d);
-    return dt.toLocaleDateString(locale);
-};
+    const fmtDate = (d) => {
+        const langKey = /** @type {keyof typeof DATE_LOCALES} */ (readerLang);
+        const locale = DATE_LOCALES[langKey] || 'en-US';
+        // Date-only strings parse as UTC midnight and drift a day west of
+        // Greenwich; anchor them to local midnight instead.
+        const dt = typeof d === 'string' && (/^\d{4}-\d{2}-\d{2}$/).test(d) ? new Date(d + 'T00:00:00') : new Date(d);
+
+        return dt.toLocaleDateString(locale);
+    };
 
     /** @type {string} */
     let readerLang = $derived(data?.lang || 'en');
@@ -141,11 +140,7 @@ const fmtDate = (d) => {
     $effect(() => {
         if (!browser) return;
         try {
-            mermaid.initialize({
-                startOnLoad: false,
-                theme: 'default',
-                securityLevel: 'loose',
-            });
+            mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' });
         } catch (/** @type {unknown} */ err) {
             console.error('Mermaid init failed:', err instanceof Error ? err.message : String(err));
         }
@@ -156,14 +151,14 @@ const fmtDate = (d) => {
         if (!browser) return;
         renderedSections;
         const timer = setTimeout(() => {
-            try {
-                const elements = document.querySelectorAll('.post-content .mermaid');
-                if (elements.length) {
-                    mermaid.run({ querySelector: '.post-content .mermaid' });
+                try {
+                    const elements = document.querySelectorAll('.post-content .mermaid');
+                    if (elements.length) {
+                        mermaid.run({ querySelector: '.post-content .mermaid' });
+                    }
+                } catch (/** @type {unknown} */ err) {
+                    console.error('Mermaid render failed:', err instanceof Error ? err.message : String(err));
                 }
-            } catch (/** @type {unknown} */ err) {
-                console.error('Mermaid render failed:', err instanceof Error ? err.message : String(err));
-            }
         }, 100);
         return () => clearTimeout(timer);
     });
@@ -182,154 +177,157 @@ const fmtDate = (d) => {
 <article class="blog-post">
     <div class="container">
         <div class="blog-layout">
-        <aside class="index-col">
-            <BlogSidebar posts={data.allPosts || []} currentSlug={data.post?.slug} {t} />
-        </aside>
-        <div class="main-col">
-        <header class="post-header">
-            <a href="/blog" class="back-link">← {t.blog_post_back || 'Back to Blog'}</a>
-            <div class="badges-row">
-                <div class="badge">{t.blog_tag || 'Blog'}</div>
-                {#if isForeignToReader}
+            <aside class="index-col">
+                <BlogSidebar
+                    posts={data.allPosts || []}
+                    currentSlug={data.post?.slug}
+                    t={t}
+                />
+            </aside>
+            <div class="main-col">
+                <header class="post-header">
+                    <a href="/blog" class="back-link">← {t.blog_post_back || 'Back to Blog'}</a>
+                    <div class="badges-row">
+                        <div class="badge">{t.blog_tag || 'Blog'}</div>
+                        {#if isForeignToReader}
                     <div class="lang-badge" title={t.blog_original_lang_tip || 'This text is shown in its original language'}>
-                        {t.blog_original_lang || 'Originally in'} {LANG_NAMES[/** @type {keyof typeof LANG_NAMES} */ (postLang)] || postLang}
-                    </div>
-                {/if}
-            </div>
-            {#if isTranslated}
-                <div class="translation-notice">
-                    {t.blog_machine_translation || 'Machine translation'} · {LANG_NAMES[/** @type {keyof typeof LANG_NAMES} */ (postLang)] || postLang}
- 
-                    &nbsp;·&nbsp;
-                    <a href="/blog/{data.post?.slug}?lang={data.post?.original_lang || 'en'}">
-                        {t.blog_view_original || 'View original'}
-                    </a>
-                </div>
-            {/if}
-            <h1>{data.post?.title}</h1>
-            <div class="post-meta">
-                <span class="post-date">{fmtDate(data.post?.date)}</span>
-                <span class="post-author">by {data.post?.author}</span>
-            </div>
-            {#if data.post?.tags && data.post.tags.length > 0}
-                <div class="post-tags">
-                    {#each data.post.tags as tag}
-                        <span class="tag">{tag}</span>
-                    {/each}
-                </div>
-            {/if}
-        </header>
-
-        {#if data.previousPost || data.nextPost || data.oldestPost || data.latestPost}
-            <nav class="post-navigation top-nav" aria-label={t.blog_navigation || 'Post navigation'}>
-                {#if data.oldestPost && data.oldestPost.slug !== data.post?.slug}
-                    <a href="/blog/{data.oldestPost.slug}" class="nav-link end-link">
-                        <span class="nav-label">« {t.blog_index_oldest || 'Oldest'}</span>
-                        <span class="nav-title">{data.oldestPost.title}</span>
-                    </a>
-                {/if}
-                {#if data.previousPost}
-                    <a href="/blog/{data.previousPost.slug}" class="nav-link prev">
-                        <span class="nav-label">← {t.blog_post_prev || 'Previous'}</span>
-                        <span class="nav-title">{data.previousPost.title}</span>
-                    </a>
-                {/if}
-                {#if data.nextPost}
-                    <a href="/blog/{data.nextPost.slug}" class="nav-link next">
-                        <span class="nav-label">{t.blog_post_next || 'Next'} →</span>
-                        <span class="nav-title">{data.nextPost.title}</span>
-                    </a>
-                {/if}
-                {#if data.latestPost && data.latestPost.slug !== data.post?.slug}
-                    <a href="/blog/{data.latestPost.slug}" class="nav-link end-link latest">
-                        <span class="nav-label">{t.blog_index_latest || 'Latest'} »</span>
-                        <span class="nav-title">{data.latestPost.title}</span>
-                    </a>
-                {/if}
-            </nav>
-        {/if}
-
-        <div class="post-content">
-            {#if renderedSections.length > 0}
-                {#if hasLongTurns}
-                    <div class="turn-toolbar">
-                        <button
-                            type="button"
-                            class="turn-toggle"
-                            onclick={() => (forceExpand = forceExpand === true ? null : true)}
-                            class:active={forceExpand === true}
-                        >{t.blog_expand_all || 'Expand all'}</button>
-                        <button
-                            type="button"
-                            class="turn-toggle"
-                            onclick={() => (forceExpand = forceExpand === false ? null : false)}
-                            class:active={forceExpand === false}
-                        >{t.blog_collapse_all || 'Collapse all'}</button>
-                    </div>
-                {/if}
-
-                {#each renderedSections as section (section._idx)}
-                    {#if section._isSpeaker}
-                        <div
-                            class="conversation-turn {section._speaker.toLowerCase().replace(/\s+/g, '-')}"
-                            class:collapsed={section._isLong && !isExpanded(section)}
-                        >
-                            <div class="turn-header">
-                                <span class="speaker-badge">{section._speaker}</span>
-                                {#if section._turnLang}
-                                    <span class="turn-lang-chip lang-{section._turnLang}"> {LANG_NAMES[/** @type {keyof typeof LANG_NAMES} */ (section._turnLang)] || section._turnLang}</span>
-                                {/if}
+                                {t.blog_original_lang || 'Originally in'} {LANG_NAMES[/** @type {keyof typeof LANG_NAMES} */ (postLang)] || postLang}
                             </div>
-                            <div class="turn-body">{@html section._html}</div>
-                            {#if section._isLong}
-                                <button type="button" class="turn-expand-btn" onclick={() => toggleTurn(section)}>
-                                    {#if isExpanded(section)}
-                                        {t.blog_collapse || 'Show less'} ▲
-                                    {:else}
-                                        {t.blog_expand || 'Read more'} ▼
-                                    {/if}
-                                </button>
-                            {/if}
-                        </div>
-                    {:else}
-                        {#if section.title}
-                            <h2>{section.title}</h2>
                         {/if}
-                        <div class="section-body">{@html section._html}</div>
-                    {/if}
-                {/each}
-            {:else}
-                {@html safeHtmlContent}
-            {/if}
-        </div>
+                    </div>
+                    {#if isTranslated}
+                        <div class="translation-notice">
+                            {t.blog_machine_translation || 'Machine translation'} · {LANG_NAMES[/** @type {keyof typeof LANG_NAMES} */ (postLang)] || postLang} · 
 
-        <footer class="post-footer">
-            <nav class="post-navigation">
-                {#if data.previousPost}
+                            <a
+                                href="/blog/{data.post?.slug}?lang={data.post?.original_lang || 'en'}"
+                            >{t.blog_view_original || 'View original'}</a>
+                        </div>
+                    {/if}
+                    <h1>{data.post?.title}</h1>
+                    <div class="post-meta">
+                        <span class="post-date">{fmtDate(data.post?.date)}</span>
+                        <span class="post-author">by {data.post?.author}</span>
+                    </div>
+                    {#if data.post?.tags && data.post.tags.length > 0}
+                        <div class="post-tags">
+                            {#each data.post.tags as tag}
+                                <span class="tag">{tag}</span>
+                            {/each}
+                        </div>
+                    {/if}
+                </header>
+
+                {#if data.previousPost || data.nextPost || data.oldestPost || data.latestPost}
+            <nav class="post-navigation top-nav" aria-label={t.blog_navigation || 'Post navigation'}>
+                        {#if data.oldestPost && data.oldestPost.slug !== data.post?.slug}
+                    <a href="/blog/{data.oldestPost.slug}" class="nav-link end-link">
+                                <span class="nav-label">« {t.blog_index_oldest || 'Oldest'}</span>
+                                <span class="nav-title">{data.oldestPost.title}</span>
+                            </a>
+                        {/if}
+                        {#if data.previousPost}
                     <a href="/blog/{data.previousPost.slug}" class="nav-link prev">
-                        <span class="nav-label">← {t.blog_post_prev || 'Previous'}</span>
-                        <span class="nav-title">{data.previousPost.title}</span>
-                    </a>
-                {:else if data.oldestPost && data.oldestPost.slug !== data.post?.slug}
-                    <a href="/blog/{data.oldestPost.slug}" class="nav-link prev">
-                        <span class="nav-label">« {t.blog_index_oldest || 'Oldest'}</span>
-                        <span class="nav-title">{data.oldestPost.title}</span>
-                    </a>
-                {/if}
-                {#if data.nextPost}
+                                <span class="nav-label">← {t.blog_post_prev || 'Previous'}</span>
+                                <span class="nav-title">{data.previousPost.title}</span>
+                            </a>
+                        {/if}
+                        {#if data.nextPost}
                     <a href="/blog/{data.nextPost.slug}" class="nav-link next">
-                        <span class="nav-label">{t.blog_post_next || 'Next'} →</span>
-                        <span class="nav-title">{data.nextPost.title}</span>
-                    </a>
-                {:else if data.latestPost && data.latestPost.slug !== data.post?.slug}
-                    <a href="/blog/{data.latestPost.slug}" class="nav-link next">
-                        <span class="nav-label">{t.blog_index_latest || 'Latest'} »</span>
-                        <span class="nav-title">{data.latestPost.title}</span>
-                    </a>
+                                <span class="nav-label">{t.blog_post_next || 'Next'} →</span>
+                                <span class="nav-title">{data.nextPost.title}</span>
+                            </a>
+                        {/if}
+                        {#if data.latestPost && data.latestPost.slug !== data.post?.slug}
+                    <a href="/blog/{data.latestPost.slug}" class="nav-link end-link latest">
+                                <span class="nav-label">{t.blog_index_latest || 'Latest'} »</span>
+                                <span class="nav-title">{data.latestPost.title}</span>
+                            </a>
+                        {/if}
+                    </nav>
                 {/if}
-            </nav>
-        </footer>
-        </div>
+
+                <div class="post-content">
+                    {#if renderedSections.length > 0}
+                        {#if hasLongTurns}
+                            <div class="turn-toolbar">
+                                <button
+                                    type="button"
+                                    class="turn-toggle"
+                                    onclick={() => forceExpand = forceExpand === true ? null : true}
+                                    class:active={forceExpand === true}
+                                >{t.blog_expand_all || 'Expand all'}</button>
+                                <button
+                                    type="button"
+                                    class="turn-toggle"
+                                    onclick={() => forceExpand = forceExpand === false ? null : false}
+                                    class:active={forceExpand === false}
+                                >{t.blog_collapse_all || 'Collapse all'}</button>
+                            </div>
+                        {/if}
+
+                        {#each renderedSections as section (section._idx)}
+                            {#if section._isSpeaker}
+                                <div
+                                    class="conversation-turn {section._speaker.toLowerCase().replace(/\s+/g, '-')}"
+                                    class:collapsed={section._isLong && !isExpanded(section)}
+                                >
+                                    <div class="turn-header">
+                                        <span class="speaker-badge">{section._speaker}</span>
+                                        {#if section._turnLang}
+                                    <span class="turn-lang-chip lang-{section._turnLang}"> {LANG_NAMES[/** @type {keyof typeof LANG_NAMES} */ (section._turnLang)] || section._turnLang}</span>
+                                        {/if}
+                                    </div>
+                                    <div class="turn-body">{@html section._html}</div>
+                                    {#if section._isLong}
+                                <button type="button" class="turn-expand-btn" onclick={() => toggleTurn(section)}>
+                                            {#if isExpanded(section)}
+                                                {t.blog_collapse || 'Show less'} ▲
+                                            {:else}
+                                                {t.blog_expand || 'Read more'} ▼
+                                            {/if}
+                                        </button>
+                                    {/if}
+                                </div>
+                            {:else}
+                                {#if section.title}
+                                    <h2>{section.title}</h2>
+                                {/if}
+                                <div class="section-body">{@html section._html}</div>
+                            {/if}
+                        {/each}
+                    {:else}
+                        {@html safeHtmlContent}
+                    {/if}
+                </div>
+
+                <footer class="post-footer">
+                    <nav class="post-navigation">
+                        {#if data.previousPost}
+                    <a href="/blog/{data.previousPost.slug}" class="nav-link prev">
+                                <span class="nav-label">← {t.blog_post_prev || 'Previous'}</span>
+                                <span class="nav-title">{data.previousPost.title}</span>
+                            </a>
+                        {:else if data.oldestPost && data.oldestPost.slug !== data.post?.slug}
+                    <a href="/blog/{data.oldestPost.slug}" class="nav-link prev">
+                                <span class="nav-label">« {t.blog_index_oldest || 'Oldest'}</span>
+                                <span class="nav-title">{data.oldestPost.title}</span>
+                            </a>
+                        {/if}
+                        {#if data.nextPost}
+                    <a href="/blog/{data.nextPost.slug}" class="nav-link next">
+                                <span class="nav-label">{t.blog_post_next || 'Next'} →</span>
+                                <span class="nav-title">{data.nextPost.title}</span>
+                            </a>
+                        {:else if data.latestPost && data.latestPost.slug !== data.post?.slug}
+                    <a href="/blog/{data.latestPost.slug}" class="nav-link next">
+                                <span class="nav-label">{t.blog_index_latest || 'Latest'} »</span>
+                                <span class="nav-title">{data.latestPost.title}</span>
+                            </a>
+                        {/if}
+                    </nav>
+                </footer>
+            </div>
         </div>
     </div>
 </article>

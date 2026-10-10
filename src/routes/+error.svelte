@@ -9,9 +9,8 @@
 			: t.error_generic || 'Something went wrong';
 </script>
 
-<svelte:head>
-	<title>{status} - ¡Pinche Poutine! Digital</title>
-</svelte:head>
+<!-- @migration-task could not auto-migrate `$app/stores` to `$app/state`: legacy reactive statement (`$:`); migrate manually -->
+<svelte:head><title>{status} - ¡Pinche Poutine! Digital</title></svelte:head>
 
 <div class="error-page">
 	<p class="error-code" aria-hidden="true">{status}</p>

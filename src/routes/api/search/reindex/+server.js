@@ -1,7 +1,7 @@
 // src/routes/api/search/reindex/+server.js
 
 import { json } from '@sveltejs/kit';
-import { buildAndUpsertIndex } from '$lib/blog/search-reindex.js';
+import { buildAndUpsertIndex } from '#lib/blog/search-reindex.js';
 
 /**
  * @type {import('./$types').RequestHandler}

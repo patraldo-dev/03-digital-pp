@@ -1,7 +1,7 @@
 // src/routes/api/unsubscribe/+server.js
 
 import { json } from '@sveltejs/kit';
-import { sendEmail } from '$lib/email.js';
+import { sendEmail } from '#lib/email.js';
 
 /**
  * @type {import('./$types').RequestHandler}

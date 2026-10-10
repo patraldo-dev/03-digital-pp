@@ -34,7 +34,7 @@ export async function getTranslations(request) {
     
     // Dynamic import of the JSON file
     // Note: We use || translations to handle different Vite bundling behaviors
-    const translations = await import(`$lib/i18n/locales/${locale}.json`);
+    const translations = await import(`#lib/i18n/locales/${locale}.json`);
     
     return {
         lang: locale,

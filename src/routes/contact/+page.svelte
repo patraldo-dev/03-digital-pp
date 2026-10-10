@@ -2,9 +2,9 @@
     // src/routes/contact/+page.svelte
     
     import { onMount } from 'svelte';
-    import ContactForm from '$lib/components/ContactForm.svelte';
-    import { page } from '$app/stores';
-    
+    import ContactForm from '#lib/components/ContactForm.svelte';
+    import { page } from '$app/state';
+
     // Get translations from page data
     let { data } = $props();
     
@@ -80,17 +80,32 @@
     <div class="parallax-layer layer-bg"></div>
     <div class="parallax-layer layer-svg1">
         <svg viewBox="0 0 200 200" class="parallax-svg">
-            <circle cx="100" cy="100" r="80" fill="rgba(201, 76, 53, 0.1)"/>
+            <circle
+                cx="100"
+                cy="100"
+                r="80"
+                fill="rgba(201, 76, 53, 0.1)"
+            ></circle>
         </svg>
     </div>
     <div class="parallax-layer layer-svg2">
         <svg viewBox="0 0 300 300" class="parallax-svg">
-            <circle cx="150" cy="150" r="120" fill="rgba(141, 163, 153, 0.08)"/>
+            <circle
+                cx="150"
+                cy="150"
+                r="120"
+                fill="rgba(141, 163, 153, 0.08)"
+            ></circle>
         </svg>
     </div>
     <div class="parallax-layer layer-svg3">
         <svg viewBox="0 0 150 150" class="parallax-svg">
-            <circle cx="75" cy="75" r="60" fill="rgba(255, 255, 255, 0.05)"/>
+            <circle
+                cx="75"
+                cy="75"
+                r="60"
+                fill="rgba(255, 255, 255, 0.05)"
+            ></circle>
         </svg>
     </div>
 </div>
@@ -159,7 +174,7 @@
 
             <div class="contact-form-container" id="contact-form" tabindex="-1">
                 <h2>{t.contact_form_section || 'Send us a Message'}</h2>
-                <ContactForm {t} />
+                <ContactForm t={t} />
             </div>
         </div>
     </section>
@@ -199,12 +214,53 @@
         animation: float 20s infinite ease-in-out;
     }
 
-    .c1 { width: 60px; height: 60px; top: 10%; left: 10%; animation-delay: 0s; }
-    .c2 { width: 40px; height: 40px; top: 60%; left: 80%; animation-delay: -5s; }
-    .c3 { width: 80px; height: 80px; top: 70%; left: 20%; animation-delay: -10s; }
-    .c4 { width: 30px; height: 30px; top: 30%; left: 70%; animation-delay: -15s; }
-    .c5 { width: 50px; height: 50px; top: 80%; left: 50%; animation-delay: -7s; }
-    .c6 { width: 35px; height: 35px; top: 20%; left: 90%; animation-delay: -12s; }
+    .c1 {
+        width: 60px;
+        height: 60px;
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+
+    .c2 {
+        width: 40px;
+        height: 40px;
+        top: 60%;
+        left: 80%;
+        animation-delay: -5s;
+    }
+
+    .c3 {
+        width: 80px;
+        height: 80px;
+        top: 70%;
+        left: 20%;
+        animation-delay: -10s;
+    }
+
+    .c4 {
+        width: 30px;
+        height: 30px;
+        top: 30%;
+        left: 70%;
+        animation-delay: -15s;
+    }
+
+    .c5 {
+        width: 50px;
+        height: 50px;
+        top: 80%;
+        left: 50%;
+        animation-delay: -7s;
+    }
+
+    .c6 {
+        width: 35px;
+        height: 35px;
+        top: 20%;
+        left: 90%;
+        animation-delay: -12s;
+    }
 
     @keyframes float {
         0%, 100% { transform: translate(0, 0) scale(1); }
@@ -248,9 +304,17 @@
         filter: blur(10px);
     }
 
-    .layer-svg1 { transform: translateY(0); }
-    .layer-svg2 { transform: translateY(0); }
-    .layer-svg3 { transform: translateY(0); }
+    .layer-svg1 {
+        transform: translateY(0);
+    }
+
+    .layer-svg2 {
+        transform: translateY(0);
+    }
+
+    .layer-svg3 {
+        transform: translateY(0);
+    }
 
     .parallax-svg {
         position: absolute;

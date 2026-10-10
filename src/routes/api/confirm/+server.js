@@ -1,7 +1,7 @@
 // src/routes/api/confirm/+server.js
 
 import { json } from '@sveltejs/kit';
-import { sendEmail } from '$lib/email.js';
+import { sendEmail } from '#lib/email.js';
 
 /**
  * GET /api/confirm - Confirm email subscription
@@ -55,7 +55,7 @@ export async function GET({ url, platform, request }) {
 
         // Get translations for the welcome email
         const lang = subscriber.lang || 'en';
-        const translations = await import(`$lib/i18n/locales/${lang}.json`);
+        const translations = await import(`#lib/i18n/locales/${lang}.json`);
         /** @type {Record<string, string>} */
         const t = translations.default || translations;
 

@@ -1,20 +1,18 @@
 <script>
-    import Header from '$lib/components/Header.svelte';
-    import Footer from '$lib/components/Footer.svelte';
-    import { page } from '$app/stores';
+    import Header from '#lib/components/Header.svelte';
+    import Footer from '#lib/components/Footer.svelte';
+    import { page } from '$app/state';
     import '../app.css';
 
-    let t = $derived($page.data?.t || {});
-    let lang = $derived($page.data?.lang || 'en');
+    let t = $derived(page.data?.t || {});
+    let lang = $derived(page.data?.lang || 'en');
 </script>
 
 <div style="display: contents">
     <a class="skip-link" href="#main">{t.skip_to_content || 'Skip to content'}</a>
-    <Header {lang} {t} />
-    <main id="main" tabindex="-1">
-        <slot />
-    </main>
-    <Footer {lang} {t} />
+    <Header lang={lang} t={t} />
+    <main id="main" tabindex="-1"><slot></slot></main>
+    <Footer lang={lang} t={t} />
 </div>
 
 <style>

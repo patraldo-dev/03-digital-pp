@@ -66,9 +66,8 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Unsubscribe - ¡Pinche Poutine! Digital</title>
-</svelte:head>
+<!-- @migration-task could not auto-migrate `$app/stores` to `$app/state`: legacy reactive statement (`$:`); migrate manually -->
+<svelte:head><title>Unsubscribe - ¡Pinche Poutine! Digital</title></svelte:head>
 
 <div class="unsubscribe-page">
 	<h1>Unsubscribe from Email Updates</h1>

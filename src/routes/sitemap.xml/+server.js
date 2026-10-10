@@ -3,7 +3,7 @@
 // Builds the sitemap from the static routes plus every published post
 // across all supported locales (deduped by URL).
 
-import { getBlogPosts, SUPPORTED_LOCALES } from '$lib/blog/loader.js';
+import { getBlogPosts, SUPPORTED_LOCALES } from '#lib/blog/loader.js';
 
 const BASE_URL = 'https://pinchepoutine.digital';
 

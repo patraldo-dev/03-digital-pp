@@ -2,8 +2,8 @@
     // src/routes/confirmation-success/+page.svelte
     
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
-    
+    import { page } from '$app/state';
+
     /** @type {string | null} */
     let error = $state(null);
     
@@ -20,10 +20,10 @@
     let status = $state('verifying');
     
     onMount(() => {
-        const errorParam = $page.url.searchParams.get('error');
-        const emailParam = $page.url.searchParams.get('email');
-        const alreadyParam = $page.url.searchParams.get('already');
-        
+        const errorParam = page.url.searchParams.get('error');
+        const emailParam = page.url.searchParams.get('email');
+        const alreadyParam = page.url.searchParams.get('already');
+
         // Set state
         error = errorParam;
         email = emailParam || '';

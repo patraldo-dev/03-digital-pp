@@ -1,6 +1,6 @@
 // src/routes/blog/+page.server.js
 
-import { getBlogPosts } from '$lib/blog/loader.js';
+import { getBlogPosts } from '#lib/blog/loader.js';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ url }) {

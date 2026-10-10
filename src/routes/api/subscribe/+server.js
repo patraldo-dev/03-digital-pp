@@ -1,7 +1,7 @@
 // src/routes/api/subscribe/+server.js
 
 import { json } from '@sveltejs/kit';
-import { sendEmail } from '$lib/email.js';
+import { sendEmail } from '#lib/email.js';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -59,7 +59,7 @@ export async function POST({ request, platform }) {
                 
             // Get translations
             const lang = existingSubscriber.lang || 'en';
-            const { t } = await import(`$lib/i18n/locales/${lang}.json`);
+            const { t } = await import(`#lib/i18n/locales/${lang}.json`);
             
             const emailHtml = `
                 <h1>${t.confirm_title || 'Confirm Your Subscription'}</h1>
@@ -94,7 +94,7 @@ export async function POST({ request, platform }) {
             .bind(email, type, token, expiresAt.toISOString(), false, lang)
             .run();
             
-        const { t } = await import(`$lib/i18n/locales/${lang}.json`);
+        const { t } = await import(`#lib/i18n/locales/${lang}.json`);
         
         const emailHtml = `
             <h1>${t.confirm_title || 'Confirm Your Subscription'}</h1>

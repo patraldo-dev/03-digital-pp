@@ -1,7 +1,7 @@
 // src/routes/api/contact/+server.js
 
 import { json } from '@sveltejs/kit';
-import { sendEmail } from '$lib/email.js';
+import { sendEmail } from '#lib/email.js';
 
 const WINDOW_MS = 60000; // 1 minute
 const MAX_REQUESTS = 5;

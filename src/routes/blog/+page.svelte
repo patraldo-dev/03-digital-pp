@@ -1,8 +1,8 @@
 <script>
-    import { page } from '$app/stores';
-    import SubscribeForm from '$lib/components/SubscribeForm.svelte';
-    import BlogSidebar from '$lib/components/BlogSidebar.svelte';
-    import BlogSearch from '$lib/components/BlogSearch.svelte';
+    import { page } from '$app/state';
+    import SubscribeForm from '#lib/components/SubscribeForm.svelte';
+    import BlogSidebar from '#lib/components/BlogSidebar.svelte';
+    import BlogSearch from '#lib/components/BlogSearch.svelte';
 
     // Svelte 5: Get props
     let { data } = $props();
@@ -23,16 +23,15 @@
      * @returns {string}
      */
 
-const fmtDate = (d) => {
-    const langKey = /** @type {keyof typeof DATE_LOCALES} */ (lang);
-    const locale = DATE_LOCALES[langKey] || 'en-US';
-    // Date-only strings parse as UTC midnight and drift a day west of
-    // Greenwich; anchor them to local midnight instead.
-    const dt = typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)
-        ? new Date(d + 'T00:00:00')
-        : new Date(d);
-    return dt.toLocaleDateString(locale);
-};
+    const fmtDate = (d) => {
+        const langKey = /** @type {keyof typeof DATE_LOCALES} */ (lang);
+        const locale = DATE_LOCALES[langKey] || 'en-US';
+        // Date-only strings parse as UTC midnight and drift a day west of
+        // Greenwich; anchor them to local midnight instead.
+        const dt = typeof d === 'string' && (/^\d{4}-\d{2}-\d{2}$/).test(d) ? new Date(d + 'T00:00:00') : new Date(d);
+
+        return dt.toLocaleDateString(locale);
+    };
 
 </script>
 
@@ -71,50 +70,48 @@ const fmtDate = (d) => {
 <div class="container">
     <section class="blog-content">
         {#if data.allPosts && data.allPosts.length > 0}
-            <aside class="index-col">
-                <BlogSidebar posts={data.allPosts} {t} />
-            </aside>
+            <aside class="index-col"><BlogSidebar posts={data.allPosts} t={t} /></aside>
         {/if}
         <div class="main-col">
-        <BlogSearch {t} />
-        {#if data.posts && data.posts.length > 0}
-            <div class="posts-grid">
-                {#each data.posts as post}
-                    <article class="post-card">
-                        <div class="post-top">
-                            <span class="post-tag">{t.blog_tag || 'Blog'}</span>
-                            <span class="post-date">{fmtDate(post.date)}</span>
-                        </div>
-                        <h2 class="post-title"><a href="/blog/{post.slug}">{post.title}</a></h2>
-                        <p class="post-excerpt">{post.excerpt}</p>
+            <BlogSearch t={t} />
+            {#if data.posts && data.posts.length > 0}
+                <div class="posts-grid">
+                    {#each data.posts as post}
+                        <article class="post-card">
+                            <div class="post-top">
+                                <span class="post-tag">{t.blog_tag || 'Blog'}</span>
+                                <span class="post-date">{fmtDate(post.date)}</span>
+                            </div>
+                            <h2 class="post-title"><a href="/blog/{post.slug}">{post.title}</a></h2>
+                            <p class="post-excerpt">{post.excerpt}</p>
                         <a href="/blog/{post.slug}" class="read-more">{t.blog_read_story || 'Read Story'} <span class="arrow">→</span></a>
-                    </article>
-                {/each}
-            </div>
+                        </article>
+                    {/each}
+                </div>
 
-            <!-- Pagination -->
-            {#if data.pagination && data.pagination.totalPages > 1}
+                <!-- Pagination -->
+                {#if data.pagination && data.pagination.totalPages > 1}
                 <nav class="pagination" aria-label={t.blog_page_title || 'Blog pagination'}>
-                    {#if data.pagination.currentPage > 1}
+                        {#if data.pagination.currentPage > 1}
                         <a href="/blog?page={data.pagination.currentPage - 1}" class="pagination-link">← {t.blog_pagination_prev || 'Previous'}</a>
-                    {/if}
+                        {/if}
 
-                    <span class="pagination-info" aria-current="page">
-                        {t.blog_pagination_page || 'Page'} {data.pagination.currentPage} {t.blog_pagination_of || 'of'} {data.pagination.totalPages}
-                    </span>
+                        <span class="pagination-info" aria-current="page">
+                            {t.blog_pagination_page || 'Page'} {data.pagination.currentPage} {t.blog_pagination_of || 'of'} {data.pagination.totalPages}
+                        </span>
 
-                    {#if data.pagination.currentPage < data.pagination.totalPages}
+                        {#if data.pagination.currentPage < data.pagination.totalPages}
                         <a href="/blog?page={data.pagination.currentPage + 1}" class="pagination-link">{t.blog_pagination_next || 'Next'} →</a>
-                    {/if}
-                </nav>
+                        {/if}
+                    </nav>
+                {/if}
+            {:else}
+                <div class="empty-state">
+                    <h2>{t.blog_no_posts_title || 'Coming Soon!'}</h2>
+                    <p>{t.blog_no_posts_text || 'We\'re working on some great content. Check back soon for our latest insights and articles.'}</p>
+                    <a href="/contact" class="btn btn-primary">{t.blog_no_posts_btn || 'Stay Updated'}</a>
+                </div>
             {/if}
-        {:else}
-            <div class="empty-state">
-                <h2>{t.blog_no_posts_title || 'Coming Soon!'}</h2>
-                <p>{t.blog_no_posts_text || 'We\'re working on some great content. Check back soon for our latest insights and articles.'}</p>
-                <a href="/contact" class="btn btn-primary">{t.blog_no_posts_btn || 'Stay Updated'}</a>
-            </div>
-        {/if}
         </div>
     </section>
 
@@ -126,9 +123,9 @@ const fmtDate = (d) => {
                     <h2>{t.blog_newsletter_title || 'Never Miss a Post'}</h2>
                     <p>{t.blog_newsletter_desc || 'Subscribe to our newsletter and get the latest articles delivered to your inbox.'}</p>
                 </div>
-                <div class="newsletter-form-wrapper">
-                    <SubscribeForm {t} />
-                </div>
+
+                <div class="newsletter-form-wrapper"><SubscribeForm t={t} /></div>
+
                 <div class="newsletter-decoration">
                     <div class="circle c1"></div>
                     <div class="circle c2"></div>
@@ -172,12 +169,53 @@ const fmtDate = (d) => {
         animation: float 20s infinite ease-in-out;
     }
 
-    .c1 { width: 60px; height: 60px; top: 10%; left: 10%; animation-delay: 0s; }
-    .c2 { width: 40px; height: 40px; top: 60%; left: 80%; animation-delay: -5s; }
-    .c3 { width: 80px; height: 80px; top: 70%; left: 20%; animation-delay: -10s; }
-    .c4 { width: 30px; height: 30px; top: 30%; left: 70%; animation-delay: -15s; }
-    .c5 { width: 50px; height: 50px; top: 80%; left: 50%; animation-delay: -7s; }
-    .c6 { width: 35px; height: 35px; top: 20%; left: 90%; animation-delay: -12s; }
+    .c1 {
+        width: 60px;
+        height: 60px;
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+
+    .c2 {
+        width: 40px;
+        height: 40px;
+        top: 60%;
+        left: 80%;
+        animation-delay: -5s;
+    }
+
+    .c3 {
+        width: 80px;
+        height: 80px;
+        top: 70%;
+        left: 20%;
+        animation-delay: -10s;
+    }
+
+    .c4 {
+        width: 30px;
+        height: 30px;
+        top: 30%;
+        left: 70%;
+        animation-delay: -15s;
+    }
+
+    .c5 {
+        width: 50px;
+        height: 50px;
+        top: 80%;
+        left: 50%;
+        animation-delay: -7s;
+    }
+
+    .c6 {
+        width: 35px;
+        height: 35px;
+        top: 20%;
+        left: 90%;
+        animation-delay: -12s;
+    }
 
     @keyframes float {
         0%, 100% { transform: translate(0, 0) scale(1); }
@@ -528,9 +566,26 @@ const fmtDate = (d) => {
         background: var(--color-white);
     }
 
-    .c1 { width: 250px; height: 250px; top: 20%; right: 20%; }
-    .c2 { width: 180px; height: 180px; bottom: 20%; right: 40%; }
-    .c3 { width: 100px; height: 100px; top: 10%; right: 60%; }
+    .c1 {
+        width: 250px;
+        height: 250px;
+        top: 20%;
+        right: 20%;
+    }
+
+    .c2 {
+        width: 180px;
+        height: 180px;
+        bottom: 20%;
+        right: 40%;
+    }
+
+    .c3 {
+        width: 100px;
+        height: 100px;
+        top: 10%;
+        right: 60%;
+    }
 
     /* --- Buttons --- */
     .btn {

@@ -1,22 +1,27 @@
+<script>
+    import { page } from '$app/state';
+</script>
+
 <div class="admin-layout">
     <nav class="admin-nav">
         <div class="admin-header">
             <h1><a href="/admin">Admin Panel</a></h1>
         </div>
         <ul class="nav-links">
-            <li><a href="/admin/subscribers" class:active={$page.url.pathname === '/admin/subscribers'} aria-current={$page.url.pathname === '/admin/subscribers' ? 'page' : undefined}><span aria-hidden="true">📧</span> Subscribers</a></li>
-            <li><a href="/" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">🌐</span> View Site</a></li>
+            <li>
+                <a
+                    href="/admin/subscribers"
+                    class:active={page.url.pathname === '/admin/subscribers'}
+                    aria-current={page.url.pathname === '/admin/subscribers' ? 'page' : undefined}
+                ><span aria-hidden="true">📧</span>Subscribers</a>
+            </li>
+
+            <li><a href="/" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">🌐</span>View Site</a></li>
         </ul>
     </nav>
 
-    <div class="admin-main">
-        <slot />
-    </div>
+    <div class="admin-main"><slot></slot></div>
 </div>
-
-<script>
-    import { page } from '$app/stores';
-</script>
 
 <style>
     .admin-layout {

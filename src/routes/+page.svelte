@@ -1,10 +1,10 @@
 <script>
-    import SubscribeForm from '$lib/components/SubscribeForm.svelte';
-    import BlogSearch from '$lib/components/BlogSearch.svelte';
-    import { page } from '$app/stores';
+    import SubscribeForm from '#lib/components/SubscribeForm.svelte';
+    import BlogSearch from '#lib/components/BlogSearch.svelte';
+    import { page } from '$app/state';
 
     let { data } = $props();
-    let t = $derived($page.data?.t || {});
+    let t = $derived(page.data?.t || {});
 </script>
 
 <svelte:head>
@@ -33,12 +33,8 @@
     <div class="container">
         <div class="hero-content">
             <div class="badge ink-reveal">{t.home_hero_badge}</div>
-            <h1 class="ink-reveal">
-                <span class="gradient-text">{t.home_hero_title}</span>
-            </h1>
-            <div class="hero-search">
-                <BlogSearch {t} />
-            </div>
+            <h1 class="ink-reveal"><span class="gradient-text">{t.home_hero_title}</span></h1>
+            <div class="hero-search"><BlogSearch t={t} /></div>
         </div>
     </div>
 </div>
@@ -47,19 +43,18 @@
 <!-- Newsletter Section -->
 <section class="newsletter-section">
     <div class="newsletter-box">
-            <div class="newsletter-content">
-                <h2>{t.newsletter_title || 'Stay Connected'}</h2>
-                <p>{t.newsletter_subtitle || 'Subscribe for the latest tips on animation and web development.'}</p>
-                <div class="newsletter-form-wrapper">
-                    <SubscribeForm {t} />
-                </div>
-            </div>
-            <div class="newsletter-decoration">
-                <div class="circle c1"></div>
-                <div class="circle c2"></div>
-                <div class="circle c3"></div>
-            </div>
+        <div class="newsletter-content">
+            <h2>{t.newsletter_title || 'Stay Connected'}</h2>
+            <p>{t.newsletter_subtitle || 'Subscribe for the latest tips on animation and web development.'}</p>
+            <div class="newsletter-form-wrapper"><SubscribeForm t={t} /></div>
         </div>
+
+        <div class="newsletter-decoration">
+            <div class="circle c1"></div>
+            <div class="circle c2"></div>
+            <div class="circle c3"></div>
+        </div>
+    </div>
 </section>
 
 <!-- Projects Section -->
@@ -607,10 +602,26 @@
         background: var(--color-brick);
     }
 
-    .c1 { width: 250px; height: 250px; top: 20%; right: 20%; }
-    .c2 { width: 180px; height: 180px; bottom: 20%; right: 40%; }
-    .c3 { width: 100px; height: 100px; top: 10%; right: 60%; }
+    .c1 {
+        width: 250px;
+        height: 250px;
+        top: 20%;
+        right: 20%;
+    }
 
+    .c2 {
+        width: 180px;
+        height: 180px;
+        bottom: 20%;
+        right: 40%;
+    }
+
+    .c3 {
+        width: 100px;
+        height: 100px;
+        top: 10%;
+        right: 60%;
+    }
 
     @media (max-width: 768px) {
         .hero h1 {
