@@ -23,14 +23,23 @@ import { readFileSync, writeFileSync } from 'node:fs';
 const WORKER = '.svelte-kit/cloudflare/_worker.js';
 const MARKER = '// [cron-appended]';
 
-const src = readFileSync(WORKER, 'utf-8');
+let src = readFileSync(WORKER, 'utf-8');
 if (src.includes(MARKER)) {
     console.log('add-scheduled: handler already present, skipping');
     process.exit(0);
 }
+
+// Newer adapter emits an anonymous `export default { ... }`. Rename it to a
+// binding so the appended handler can reference worker_default.fetch.
 if (!src.includes('worker_default')) {
-    console.error('add-scheduled: generated worker shape changed — no worker_default');
-    process.exit(1);
+    const NEEDLE = 'export default {';
+    const first = src.indexOf(NEEDLE);
+    if (first === -1 || src.indexOf(NEEDLE, first + 1) !== -1) {
+        console.error('add-scheduled: generated worker shape changed — no worker_default, no unique export default');
+        process.exit(1);
+    }
+    src = src.replace(NEEDLE, 'const worker_default = {')
+        + '\nexport default worker_default;\n';
 }
 
 const handler = `
