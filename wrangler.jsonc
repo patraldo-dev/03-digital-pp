@@ -60,7 +60,56 @@
                         "database_name": "subscribers-db",
                         "database_id": "215a6b19-a550-4d91-acd9-dcf756dc9438"
                 }
-        ]
+        ],
+
+	// --- Staging environment --- isolated D1/KV/Vectorize so staging
+	// subscribe tests, contact submissions and search reindexes never
+	// touch prod data or the prod vector index (02-ca-patrouch precedent).
+	// Deploys as 03-digital-pp-staging on staging.pinchepoutine.digital.
+	// MAILGUN_API_KEY still needs a one-time `wrangler secret put
+	// MAILGUN_API_KEY --env staging` — worker secrets aren't inherited.
+	"env": {
+		"staging": {
+			"workers_dev": true,
+			"routes": [{ "pattern": "staging.pinchepoutine.digital", "custom_domain": true }],
+			// Bindings are not inherited by environments — mirror the
+			// top-level ones, pointed at the staging resources.
+			"secrets_store_secrets": [
+				{
+					"binding": "CLOUDFLARE_API_TOKEN",
+					"store_id": "1da7c182b2d345e9bc6a8f83421d23a7",
+					"secret_name": "CLOUDFLARE_API_TOKEN"
+				}
+			],
+			"vars": {
+				"MAILGUN_DOMAIN": "pinchepoutine.digital",
+				"CONTACT_EMAIL": "contact@pinchepoutine.digital",
+				"MAILGUN_FROM_EMAIL": "noreply@pinchepoutine.digital"
+			},
+			"kv_namespaces": [
+				{
+					"binding": "CONTACT_KV",
+					"id": "856673f643a24c1baf6aff8ece4d7a64"
+				}
+			],
+			"ai": {
+				"binding": "AI"
+			},
+			"vectorize": [
+				{
+					"binding": "VECTORIZE",
+					"index_name": "pp-blog-search-staging"
+				}
+			],
+			"d1_databases": [
+				{
+					"binding": "DB",
+					"database_name": "subscribers-db-staging",
+					"database_id": "b2cb5ec5-8e55-4ab4-aa39-205227f9e660"
+				}
+			]
+		}
+	},
         /**
          * Note: Set MAILGUN_API_KEY as a secret using:
          * wrangler secret put MAILGUN_API_KEY
