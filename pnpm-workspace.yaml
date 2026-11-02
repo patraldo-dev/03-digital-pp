@@ -1,0 +1,13 @@
+# Config-only workspace file (single package — no packages list).
+# pnpm 11+ reads its settings here, not from package.json/.npmrc.
+#
+# Native postinstall script approvals, same as the webxr project: pnpm blocks
+# dependency build scripts by default for supply-chain safety. These two are
+# required or the toolchain silently breaks:
+#   - esbuild: prebuilt binary used by Vite/rolldown
+#   - workerd: Cloudflare's runtime binary, needed by `wrangler dev` (preview)
+# Without this, `pnpm install --frozen-lockfile` exits non-zero
+# (ERR_PNPM_IGNORED_BUILDS) and deploys from a clean checkout fail.
+allowBuilds:
+  esbuild: true
+  workerd: true
