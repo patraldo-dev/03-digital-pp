@@ -66,7 +66,7 @@ export async function GET({ url, platform, request }) {
             <p>${t.welcome_body || 'Thank you for confirming your subscription.'}</p>
             <p>${t.welcome_footer || 'You will now receive updates from us.'}</p>
             <hr>
-            <small><a href="https://yoursite.com/unsubscribe?email=${encodeURIComponent(subscriber.email)}">${t.unsubscribe || 'Unsubscribe'}</a></small>
+            <small><a href="https://pinchepoutine.digital/unsubscribe?email=${encodeURIComponent(subscriber.email)}">${t.unsubscribe || 'Unsubscribe'}</a></small>
         `;
 
         await sendEmail({

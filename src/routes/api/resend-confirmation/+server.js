@@ -57,7 +57,7 @@ export async function POST({ request, platform }) {
         const emailHtml = `
             <h1>${t.confirm_title || 'Confirm Your Subscription'}</h1>
             <p>${t.confirm_body || 'Please confirm your subscription by clicking the link below:'}</p>
-            <p><a href="https://yoursite.com/api/confirm?token=${token}">${t.confirm_button || 'Confirm Subscription'}</a></p>
+            <p><a href="https://pinchepoutine.digital/api/confirm?token=${token}">${t.confirm_button || 'Confirm Subscription'}</a></p>
             <hr>
             <small>This link expires in 24 hours.</small>
         `;
@@ -66,7 +66,7 @@ export async function POST({ request, platform }) {
             from: MAILGUN_FROM_EMAIL,
             to: email,
             subject: t.confirm_subject || 'Confirm your subscription',
-            text: `Please confirm your subscription: https://yoursite.com/api/confirm?token=${token}`,
+            text: `Please confirm your subscription: https://pinchepoutine.digital/api/confirm?token=${token}`,
             html: emailHtml
         }, env);
         

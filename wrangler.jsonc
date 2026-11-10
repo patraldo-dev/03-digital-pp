@@ -52,7 +52,11 @@
 	"vars": {
                 "MAILGUN_DOMAIN": "pinchepoutine.digital",
 	       	"CONTACT_EMAIL": "contact@pinchepoutine.digital",
-	       	"MAILGUN_FROM_EMAIL": "noreply@pinchepoutine.digital"
+	       	"MAILGUN_FROM_EMAIL": "noreply@pinchepoutine.digital",
+		// Turnstile — public sitekey (TEST key: always passes; replace with the
+		// real widget key when created in dash.cloudflare.com → Turnstile).
+		// The secret is a wrangler secret: TURNSTILE_SECRET.
+		"TURNSTILE_SITE_KEY": "1x00000000000000000000AA"
         },
         "d1_databases": [
                 {
@@ -84,7 +88,11 @@
 			"vars": {
 				"MAILGUN_DOMAIN": "pinchepoutine.digital",
 				"CONTACT_EMAIL": "contact@pinchepoutine.digital",
-				"MAILGUN_FROM_EMAIL": "noreply@pinchepoutine.digital"
+				"MAILGUN_FROM_EMAIL": "noreply@pinchepoutine.digital",
+		// Turnstile — public sitekey (TEST key: always passes; replace with the
+		// real widget key when created in dash.cloudflare.com → Turnstile).
+		// The secret is a wrangler secret: TURNSTILE_SECRET.
+		"TURNSTILE_SITE_KEY": "1x00000000000000000000AA"
 			},
 			"kv_namespaces": [
 				{

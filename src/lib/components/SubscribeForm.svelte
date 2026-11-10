@@ -2,6 +2,17 @@
     // src/lib/components/SubscribeForm.svelte
     
     let { t = {}, type = 'newsletter' } = $props();
+    import { turnstileSiteKey, renderWidget } from '#lib/turnstile.js';
+    import { onMount } from 'svelte';
+
+    let tsEl = $state(null);
+    let ts = null; // widget controller
+    onMount(async () => {
+        const unsub = turnstileSiteKey.subscribe(async (key) => {
+            if (key && tsEl && !ts) ts = await renderWidget(tsEl, key);
+        });
+        return () => { unsub(); ts?.remove(); };
+    });
     
     /** @type {string} */
     let email = $state('');
@@ -38,8 +49,9 @@
             const resp = await fetch('/api/subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, type })
+                body: JSON.stringify({ email, type, turnstileToken: ts?.getToken() || '' })
             });
+            ts?.reset(); // tokens are single-use
             
             const data = await resp.json();
             
@@ -77,6 +89,7 @@
         </div>
     {/if}
     
+    <div class="ts-slot" bind:this={tsEl}></div>
     <button type="submit" disabled={loading}>
         {loading ? 'Subscribing...' : getText('subscribe_button', 'Subscribe')}
     </button>
@@ -89,6 +102,7 @@
         flex-wrap: wrap;
         align-items: center;
     }
+    .ts-slot { width: 100%; margin-bottom: 0.5rem; min-height: 65px; }
     .form-group {
         flex: 1;
         min-width: 200px;

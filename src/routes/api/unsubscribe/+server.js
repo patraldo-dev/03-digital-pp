@@ -42,7 +42,7 @@ export async function POST({ request, platform }) {
         const emailHtml = `
             <h1>You've Been Unsubscribed</h1>
             <p>You have been successfully unsubscribed from our mailing list.</p>
-            <p>If this was a mistake, you can <a href="https://yoursite.com/subscribe">resubscribe</a> at any time.</p>
+            <p>If this was a mistake, you can <a href="https://pinchepoutine.digital/subscribe">resubscribe</a> at any time.</p>
         `;
         
         await sendEmail({

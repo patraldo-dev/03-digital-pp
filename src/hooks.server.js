@@ -51,7 +51,7 @@ async function sendWeeklyEventUpdates(env) {
                         </ul>
                         <p>See you there!</p>
                         <hr>
-                        <small><a href="https://yoursite.com/unsubscribe?email=${encodeURIComponent(subscriber.email)}">Unsubscribe</a></small>
+                        <small><a href="https://pinchepoutine.digital/unsubscribe?email=${encodeURIComponent(subscriber.email)}">Unsubscribe</a></small>
                     `
                 }, env);
             } catch (/** @type {unknown} */ error) {
@@ -95,7 +95,7 @@ async function sendNewsletter(env, subject, content) {
                             ${content}
                             <hr style="margin: 2rem 0;">
                             <small>
-                                <a href="https://yoursite.com/unsubscribe?email=${encodeURIComponent(subscriber.email)}">
+                                <a href="https://pinchepoutine.digital/unsubscribe?email=${encodeURIComponent(subscriber.email)}">
                                     Unsubscribe
                                 </a>
                             </small>

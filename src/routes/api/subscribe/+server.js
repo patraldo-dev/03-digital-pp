@@ -25,7 +25,24 @@ export async function POST({ request, platform }) {
     
     try {
         const data = await request.json();
-        const { email, type = 'newsletter' } = data;
+        const { email, type = 'newsletter', turnstileToken } = data;
+
+        // Turnstile spam gate — enforced whenever the secret is configured.
+        if (env.TURNSTILE_SECRET) {
+            const verify = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    secret: env.TURNSTILE_SECRET,
+                    response: turnstileToken || '',
+                    remoteip: request.headers.get('cf-connecting-ip') || ''
+                })
+            });
+            const v = await verify.json();
+            if (!v.success) {
+                return json({ error: 'Captcha verification failed', code: 'turnstile_failed' }, { status: 400 });
+            }
+        }
         
         if (!email || !isValidEmail(email)) {
             return json({ error: 'Invalid email address' }, { status: 400 });
@@ -60,19 +77,19 @@ export async function POST({ request, platform }) {
                 
             // Get translations
             const lang = existingSubscriber.lang || 'en';
-            const { t } = await import(`#lib/i18n/locales/${lang}.json`);
+            const locale = await import(`#lib/i18n/locales/${lang}.json`);
             
             const emailHtml = `
-                <h1>${t.confirm_title || 'Confirm Your Subscription'}</h1>
-                <p>${t.confirm_body || 'Please confirm your subscription by clicking the link below:'}</p>
-                <p><a href="https://yoursite.com/api/confirm?token=${token}">${t.confirm_button || 'Confirm Subscription'}</a></p>
+                <h1>${locale.confirm_title || 'Confirm Your Subscription'}</h1>
+                <p>${locale.confirm_body || 'Please confirm your subscription by clicking the link below:'}</p>
+                <p><a href="https://pinchepoutine.digital/api/confirm?token=${token}">${locale.confirm_button || 'Confirm Subscription'}</a></p>
             `;
             
             await sendEmail({
                 from: MAILGUN_FROM_EMAIL,
                 to: email,
-                subject: t.confirm_subject || 'Confirm your subscription',
-                text: `Please confirm your subscription: https://yoursite.com/api/confirm?token=${token}`,
+                subject: locale.confirm_subject || 'Confirm your subscription',
+                text: `Please confirm your subscription: https://pinchepoutine.digital/api/confirm?token=${token}`,
                 html: emailHtml
             }, env);
             
@@ -89,25 +106,25 @@ export async function POST({ request, platform }) {
         
         await DB
             .prepare(`
-                INSERT INTO subscribers (email, type, confirmation_token, token_expires_at, active, lang)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO subscribers (email, type, confirmation_token, token_expires_at, active, lang, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             `)
-            .bind(email, type, token, expiresAt.toISOString(), false, lang)
+            .bind(email, type, token, expiresAt.toISOString(), false, lang, new Date().toISOString())
             .run();
             
-        const { t } = await import(`#lib/i18n/locales/${lang}.json`);
+        const locale = await import(`#lib/i18n/locales/${lang}.json`);
         
         const emailHtml = `
-            <h1>${t.confirm_title || 'Confirm Your Subscription'}</h1>
-            <p>${t.confirm_body || 'Please confirm your subscription by clicking the link below:'}</p>
-            <p><a href="https://yoursite.com/api/confirm?token=${token}">${t.confirm_button || 'Confirm Subscription'}</a></p>
+            <h1>${locale.confirm_title || 'Confirm Your Subscription'}</h1>
+            <p>${locale.confirm_body || 'Please confirm your subscription by clicking the link below:'}</p>
+            <p><a href="https://pinchepoutine.digital/api/confirm?token=${token}">${locale.confirm_button || 'Confirm Subscription'}</a></p>
         `;
         
         await sendEmail({
             from: MAILGUN_FROM_EMAIL,
             to: email,
-            subject: t.confirm_subject || 'Confirm your subscription',
-            text: `Please confirm your subscription: https://yoursite.com/api/confirm?token=${token}`,
+            subject: locale.confirm_subject || 'Confirm your subscription',
+            text: `Please confirm your subscription: https://pinchepoutine.digital/api/confirm?token=${token}`,
             html: emailHtml
         }, env);
         

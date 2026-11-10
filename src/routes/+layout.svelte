@@ -3,8 +3,10 @@
     import Footer from '#lib/components/Footer.svelte';
     import { page } from '$app/state';
     import '../app.css';
+    import { turnstileSiteKey } from '#lib/turnstile.js';
 
     let t = $derived(page.data?.t || {});
+    $effect(() => { turnstileSiteKey.set(page.data?.turnstileSiteKey || ''); });
     let lang = $derived(page.data?.lang || 'en');
 </script>
 
