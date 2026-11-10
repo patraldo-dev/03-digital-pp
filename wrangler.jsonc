@@ -54,9 +54,9 @@
 	       	"CONTACT_EMAIL": "contact@pinchepoutine.digital",
 	       	"MAILGUN_FROM_EMAIL": "noreply@pinchepoutine.digital",
 		// Turnstile — public sitekey (TEST key: always passes; replace with the
-		// real widget key when created in dash.cloudflare.com → Turnstile).
+		// real widget key — Spin widget covering ambientx.dev + pinchepoutine.digital).
 		// The secret is a wrangler secret: TURNSTILE_SECRET.
-		"TURNSTILE_SITE_KEY": "1x00000000000000000000AA"
+		"TURNSTILE_SITE_KEY": "0x4AAAAAAFhU0wjDmsJPF7wC"
         },
         "d1_databases": [
                 {
@@ -90,9 +90,9 @@
 				"CONTACT_EMAIL": "contact@pinchepoutine.digital",
 				"MAILGUN_FROM_EMAIL": "noreply@pinchepoutine.digital",
 		// Turnstile — public sitekey (TEST key: always passes; replace with the
-		// real widget key when created in dash.cloudflare.com → Turnstile).
+		// real widget key — Spin widget covering ambientx.dev + pinchepoutine.digital).
 		// The secret is a wrangler secret: TURNSTILE_SECRET.
-		"TURNSTILE_SITE_KEY": "1x00000000000000000000AA"
+		"TURNSTILE_SITE_KEY": "0x4AAAAAAFhU0wjDmsJPF7wC"
 			},
 			"kv_namespaces": [
 				{
